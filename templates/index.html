@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyMap — Precision Personal Expense Tracker with Machine Learning</title>
+    <!-- Inter Tight (Awwwards Epple standard) & Monospace Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- AUTHENTICATION SCREEN (EPPLE EDITORIAL SPLIT) -->
+    <div id="auth-screen" class="auth-screen">
+        <div class="auth-container">
+            <!-- Left Branding Showcase with High-Res Photography -->
+            <div class="auth-hero">
+                <div>
+                    <div class="brand-badge">
+                        Intelligent Wealth Management • v2.0
+                    </div>
+                </div>
+
+                <!-- Editorial Photography Hero Card -->
+                <div class="auth-hero-image-wrap">
+                    <img src="/static/images/hero.jpg" alt="Modern workspace and wealth analytics" class="auth-hero-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80';">
+                    <div class="auth-hero-overlay">
+                        <h2>Precision Personal Finance.</h2>
+                        <p>Precision personal finance powered by machine-learning forecasting and automated Bayesian categorization.</p>
+                    </div>
+                </div>
+
+                <!-- Epple Style Feature Matrix -->
+                <div class="hero-features">
+                    <div class="hero-feature-item">
+                        <span>Model 01</span>
+                        <strong>Naive Bayes</strong>
+                        <p>Automated text categorization with Laplace smoothing.</p>
+                    </div>
+                    <div class="hero-feature-item">
+                        <span>Model 02</span>
+                        <strong>Regression</strong>
+                        <p>Time-series velocity & linear projection slope.</p>
+                    </div>
+                    <div class="hero-feature-item">
+                        <span>Model 03</span>
+                        <strong>Outliers</strong>
+                        <p>Z-Score (+2.5σ) and IQR threshold outlier detection.</p>
+                    </div>
+                </div>
+
+                <div class="demo-quick-banner">
+                    <button id="quick-demo-btn" class="btn btn-primary btn-lg">
+                        Launch Demo Session (1-Click)
+                    </button>
+                    <span class="demo-hint">Instantly populates 30+ pre-seeded records across 7 categories for live demonstration.</span>
+                </div>
+            </div>
+
+            <!-- Right Login / Sign Up Card -->
+            <div class="auth-card-wrapper">
+                <div class="auth-card glass-panel">
+                    <div class="auth-header">
+                        <div class="app-logo">
+                            <span class="logo-icon">🗺️</span>
+                            <span class="logo-text">Money<strong>Map</strong></span>
+                        </div>
+                        <div class="auth-tabs">
+                            <button id="tab-login-btn" class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+                            <button id="tab-register-btn" class="auth-tab" onclick="switchAuthTab('register')">Create Account</button>
+                        </div>
+                    </div>
+
+                    <!-- LOGIN FORM -->
+                    <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label for="login-email">Email Address</label>
+                            <input type="email" id="login-email" class="form-input" placeholder="alex@moneymap.io" required autocomplete="username">
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input type="password" id="login-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">
+                            <span>Sign In</span>
+                        </button>
+                    </form>
+
+                    <!-- REGISTER FORM -->
+                    <form id="register-form" class="auth-form hidden" onsubmit="handleRegister(event)">
+                        <div class="form-group">
+                            <label for="reg-name">Full Name</label>
+                            <input type="text" id="reg-name" class="form-input" placeholder="Alex Sharma" required autocomplete="name">
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-email">Work or Personal Email</label>
+                            <input type="email" id="reg-email" class="form-input" placeholder="alex@moneymap.io" required autocomplete="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-password">Password</label>
+                            <input type="password" id="reg-password" class="form-input" placeholder="Min 6 characters" minlength="6" required autocomplete="new-password">
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-currency">Currency</label>
+                            <select id="reg-currency" class="form-select">
+                                <option value="₹" selected>₹ Indian Rupee (INR)</option>
+                                <option value="$">$ US Dollar (USD)</option>
+                                <option value="€">€ Euro (EUR)</option>
+                                <option value="£">£ British Pound (GBP)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">
+                            <span>Register & Start</span>
+                        </button>
+                    </form>
+
+                    <div class="auth-footer">
+                        <span>Enterprise Architecture: Layered Presentation, Logic & Persistent SQLite</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
+    <div id="main-app" class="main-app hidden">
+        <!-- EPPLE TOP NAVBAR -->
+        <header class="navbar">
+            <div class="nav-brand">
+                <div class="app-logo">
+                    <span class="logo-icon">🗺️</span>
+                    <span class="logo-text">Money<strong>Map</strong></span>
+                </div>
+                <span class="nav-badge">Pro v2.0</span>
+            </div>
+
+            <nav class="nav-links">
+                <button class="nav-item active" onclick="switchView('dashboard')">
+                    <span>Overview</span>
+                </button>
+                <button class="nav-item" onclick="switchView('transactions')">
+                    <span>Transactions</span>
+                </button>
+                <button class="nav-item" onclick="switchView('budgets')">
+                    <span>Budgets</span>
+                </button>
+                <button class="nav-item" onclick="switchView('ml-lab')">
+                    <span>Intelligence Lab</span>
+                </button>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="btn btn-sm btn-ghost" onclick="triggerSeedData()" title="Reload sample demonstration transactions">
+                    Reset Demo
+                </button>
+                <button class="btn btn-sm btn-primary" onclick="openAddTransactionModal()">
+                    + Add Transaction
+                </button>
+                <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+                    🌙
+                </button>
+                <div class="user-menu">
+                    <div class="user-avatar" id="nav-user-initials">AS</div>
+                    <div class="user-info">
+                        <span class="user-name" id="nav-user-name">Alex Sharma</span>
+                        <a href="javascript:void(0)" onclick="handleLogout()" class="logout-link">Sign Out</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT CONTAINER -->
+        <main class="content-container">
+
+            <!-- ================= VIEW 1: DASHBOARD ================= -->
+            <section id="view-dashboard" class="app-view active">
+                <!-- Epple Manifesto Headline -->
+                <div class="dashboard-manifesto">
+                    <div>
+                        <span class="editorial-tag">Overview — <span id="dash-current-month">October 2026</span> • Hello, <span id="dash-greeting-name">Alex</span></span>
+                        <h2 class="manifesto-title">Precision Finance. <span>Systematically tracked</span> and intelligently forecasted.</h2>
+                    </div>
+                    <div class="banner-quick-actions">
+                        <button class="btn btn-emerald btn-sm" onclick="openAddTransactionModal('income')">+ Income</button>
+                        <button class="btn btn-rose btn-sm" onclick="openAddTransactionModal('expense')">- Expense</button>
+                    </div>
+                </div>
+
+                <!-- KPI Cards Row -->
+                <div class="kpi-grid">
+                    <!-- Balance -->
+                    <div class="kpi-card glass-panel">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Net Balance</span>
+                            <span class="editorial-tag">01 / LIQUIDITY</span>
+                        </div>
+                        <div class="kpi-value" id="kpi-balance">₹0.00</div>
+                        <div class="kpi-subtext" id="kpi-balance-sub">Current standing</div>
+                    </div>
+
+                    <!-- Total Income -->
+                    <div class="kpi-card glass-panel">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Total Inflows</span>
+                            <span class="editorial-tag">02 / CREDITS</span>
+                        </div>
+                        <div class="kpi-value income-text" id="kpi-income">₹0.00</div>
+                        <div class="kpi-subtext" id="kpi-income-sub">Salary, Inflow & Transfers</div>
+                    </div>
+
+                    <!-- Total Expenses -->
+                    <div class="kpi-card glass-panel">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Total Outflows</span>
+                            <span class="editorial-tag">03 / DEBITS</span>
+                        </div>
+                        <div class="kpi-value expense-text" id="kpi-expense">₹0.00</div>
+                        <div class="kpi-subtext" id="kpi-expense-sub">This month expenditure</div>
+                    </div>
+
+                    <!-- AI Financial Health Score -->
+                    <div class="kpi-card glass-panel">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Financial Health</span>
+                            <span class="editorial-tag">04 / SCORE</span>
+                        </div>
+                        <div class="health-score-container">
+                            <div class="health-score-number" id="kpi-health-score">--</div>
+                            <div class="health-score-badge" id="kpi-health-badge">Calculating...</div>
+                        </div>
+                        <div class="health-progress-bar">
+                            <div class="health-progress-fill" id="kpi-health-fill" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EPPLE MODULAR CATEGORY CARDS WITH HIGH-RES PHOTOGRAPHY -->
+                <div class="category-systems-section">
+                    <div class="section-title-wrap">
+                        <div>
+                            <span class="editorial-tag">Spending Categories</span>
+                            <h3>Categories & Systems</h3>
+                        </div>
+                        <button class="btn btn-sm btn-ghost" onclick="switchView('transactions')">View Ledger →</button>
+                    </div>
+
+                    <div class="category-photo-grid">
+                        <!-- Card 1: Food & Dining -->
+                        <div class="cat-photo-card" onclick="filterByCategory('Food & Dining')">
+                            <div class="cat-photo-thumb">
+                                <img src="/static/images/food.jpg" alt="Food & Dining" class="cat-photo-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80';">
+                            </div>
+                            <div class="cat-photo-content">
+                                <div class="cat-photo-header">
+                                    <span class="cat-photo-name">Food & Dining</span>
+                                    <span class="cat-photo-tag">Daily</span>
+                                </div>
+                                <div class="cat-photo-spend" id="cat-spend-food">₹8,490</div>
+                                <div class="cat-photo-sub">Canteen, groceries & coffee</div>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Education -->
+                        <div class="cat-photo-card" onclick="filterByCategory('Education')">
+                            <div class="cat-photo-thumb">
+                                <img src="/static/images/education.jpg" alt="Education & Learning" class="cat-photo-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=800&q=80';">
+                            </div>
+                            <div class="cat-photo-content">
+                                <div class="cat-photo-header">
+                                    <span class="cat-photo-name">Education</span>
+                                    <span class="cat-photo-tag">Academic</span>
+                                </div>
+                                <div class="cat-photo-spend" id="cat-spend-edu">₹6,850</div>
+                                <div class="cat-photo-sub">Books, exam fees & courses</div>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Transportation -->
+                        <div class="cat-photo-card" onclick="filterByCategory('Transportation')">
+                            <div class="cat-photo-thumb">
+                                <img src="/static/images/transportation.jpg" alt="Transportation & Commute" class="cat-photo-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1506388398822-866b2889530f?auto=format&fit=crop&w=800&q=80';">
+                            </div>
+                            <div class="cat-photo-content">
+                                <div class="cat-photo-header">
+                                    <span class="cat-photo-name">Transportation</span>
+                                    <span class="cat-photo-tag">Mobility</span>
+                                </div>
+                                <div class="cat-photo-spend" id="cat-spend-transit">₹1,170</div>
+                                <div class="cat-photo-sub">Metro recharge, bus & cabs</div>
+                            </div>
+                        </div>
+
+                        <!-- Card 4: Housing & Utilities -->
+                        <div class="cat-photo-card" onclick="filterByCategory('Housing & Utilities')">
+                            <div class="cat-photo-thumb">
+                                <img src="/static/images/housing.jpg" alt="Housing & Living" class="cat-photo-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80';">
+                            </div>
+                            <div class="cat-photo-content">
+                                <div class="cat-photo-header">
+                                    <span class="cat-photo-name">Housing & Utilities</span>
+                                    <span class="cat-photo-tag">Fixed</span>
+                                </div>
+                                <div class="cat-photo-spend" id="cat-spend-housing">₹9,898</div>
+                                <div class="cat-photo-sub">Hostel rent, wifi & power</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forecast Banner (Epple Precision Orange) -->
+                <div class="forecast-banner glass-panel" id="dashboard-forecast-card">
+                    <div class="forecast-icon-box">
+                        <span>⚡</span>
+                    </div>
+                    <div class="forecast-content">
+                        <div class="forecast-tag">Predictive Spending Forecast</div>
+                        <div class="forecast-message" id="forecast-status-msg">Analyzing burn-rate velocity...</div>
+                        <div class="forecast-stats">
+                            <span>Daily Burn: <strong id="forecast-burn-rate">₹0/day</strong></span>
+                            <span>•</span>
+                            <span>Projected Total: <strong id="forecast-projected-total">₹0</strong></span>
+                            <span>•</span>
+                            <span>Allocated Budget: <strong id="forecast-total-budget">₹0</strong></span>
+                        </div>
+                    </div>
+                    <div class="forecast-action">
+                        <button class="btn btn-sm btn-ghost" onclick="switchView('ml-lab')">Inspect ML Engine →</button>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="charts-grid">
+                    <div class="chart-card glass-panel">
+                        <div class="chart-header">
+                            <div>
+                                <span class="editorial-tag">Time-Series</span>
+                                <h3>Cash Flow Timeline</h3>
+                                <p class="chart-subtitle">Daily income credits vs expense debits</p>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="cashflow-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card glass-panel">
+                        <div class="chart-header">
+                            <div>
+                                <span class="editorial-tag">Distribution</span>
+                                <h3>Expenses by Category</h3>
+                                <p class="chart-subtitle">Breakdown across functional categories</p>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="category-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions Table Preview -->
+                <div class="recent-section glass-panel">
+                    <div class="section-header">
+                        <div>
+                            <span class="editorial-tag">Ledger</span>
+                            <h3>Recent Activity</h3>
+                            <p class="section-subtitle">Latest recorded entries</p>
+                        </div>
+                        <button class="btn btn-sm btn-ghost" onclick="switchView('transactions')">All Transactions →</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Outlier Check</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-transactions-tbody">
+                                <tr><td colspan="6" class="text-center py-4">Loading transaction data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ================= VIEW 2: TRANSACTIONS ================= -->
+            <section id="view-transactions" class="app-view">
+                <div class="view-header">
+                    <div>
+                        <h2>Transactions</h2>
+                        <p>Search, filter, and audit all recorded financial transactions.</p>
+                    </div>
+                    <div class="view-header-actions">
+                        <button class="btn btn-outline" onclick="exportCSV()">
+                            Export CSV
+                        </button>
+                        <button class="btn btn-primary" onclick="openAddTransactionModal()">
+                            + Add Transaction
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters Toolbar -->
+                <div class="toolbar glass-panel">
+                    <div class="toolbar-search">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="filter-search" class="search-input" placeholder="Search by note, description or merchant..." oninput="debounceFilterTransactions()">
+                    </div>
+
+                    <div class="toolbar-filters">
+                        <select id="filter-type" class="filter-select" onchange="fetchTransactions()">
+                            <option value="all">All Types</option>
+                            <option value="expense">Expenses Only</option>
+                            <option value="income">Incomes Only</option>
+                        </select>
+
+                        <select id="filter-category" class="filter-select" onchange="fetchTransactions()">
+                            <option value="all">All Categories</option>
+                            <option value="Food & Dining">Food & Dining</option>
+                            <option value="Transportation">Transportation</option>
+                            <option value="Education">Education</option>
+                            <option value="Housing & Utilities">Housing & Utilities</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Salary / Allowance">Salary / Allowance</option>
+                            <option value="Freelance / Projects">Freelance / Projects</option>
+                        </select>
+
+                        <input type="date" id="filter-start-date" class="filter-date" onchange="fetchTransactions()" title="Start Date">
+                        <input type="date" id="filter-end-date" class="filter-date" onchange="fetchTransactions()" title="End Date">
+
+                        <button class="btn btn-sm btn-ghost" onclick="resetFilters()" title="Reset filters">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Full Transaction Table -->
+                <div class="glass-panel">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Category</th>
+                                    <th>Description / Merchant</th>
+                                    <th>Amount</th>
+                                    <th>Outlier Status</th>
+                                    <th class="text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="full-transactions-tbody">
+                                <tr><td colspan="7" class="text-center py-4">Loading transactions...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ================= VIEW 3: BUDGETS ================= -->
+            <section id="view-budgets" class="app-view">
+                <div class="view-header">
+                    <div>
+                        <h2>Monthly Budgets</h2>
+                        <p>Define spending limits per category and track utilization.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openBudgetModal()">
+                        + Set Budget Limit
+                    </button>
+                </div>
+
+                <!-- Budgets Summary Bar -->
+                <div class="budget-summary-grid">
+                    <div class="budget-summary-card glass-panel">
+                        <span class="summary-label">Total Allocated</span>
+                        <span class="summary-value" id="budget-sum-allocated">₹0.00</span>
+                    </div>
+                    <div class="budget-summary-card glass-panel">
+                        <span class="summary-label">Total Spent</span>
+                        <span class="summary-value expense-text" id="budget-sum-spent">₹0.00</span>
+                    </div>
+                    <div class="budget-summary-card glass-panel">
+                        <span class="summary-label">Remaining Cushion</span>
+                        <span class="summary-value income-text" id="budget-sum-remaining">₹0.00</span>
+                    </div>
+                </div>
+
+                <!-- Budget Cards Grid -->
+                <div class="budget-cards-grid" id="budget-cards-container">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+
+            <!-- ================= VIEW 4: INTELLIGENCE LAB ================= -->
+            <section id="view-ml-lab" class="app-view">
+                <div class="view-header">
+                    <div>
+                        <div class="brand-badge mb-2">
+                            Intelligence Engine Sandbox
+                        </div>
+                        <h2>Machine Learning Engine</h2>
+                        <p>Empirical evaluation of the Bayesian categorizer, time-series forecaster, and anomaly detector.</p>
+                    </div>
+                </div>
+
+                <!-- Model 1: NLP Classifier Sandbox -->
+                <div class="ml-lab-card glass-panel">
+                    <div class="ml-lab-header">
+                        <div class="ml-tag">Algorithm 01 / Categorization</div>
+                        <h3>Multinomial Naive Bayes Classifier</h3>
+                        <p>Enter any transaction note or merchant name below. The model tokenizes the string, applies Laplace smoothing, and evaluates class posterior probabilities.</p>
+                    </div>
+
+                    <div class="ml-sandbox-input-box">
+                        <input type="text" id="ml-test-input" class="form-input form-input-lg" placeholder="Type: 'Dominos pizza swiggy' or 'Semester exam fees' or 'Metro card recharge'..." oninput="handleMLSandboxInput()">
+                    </div>
+
+                    <div class="ml-sandbox-result" id="ml-sandbox-result">
+                        <div class="sandbox-prediction-badge">
+                            <span>Predicted Category:</span>
+                            <strong id="sandbox-predicted-cat">Food & Dining</strong>
+                            <span class="confidence-pill" id="sandbox-predicted-conf">98.2% Confidence</span>
+                        </div>
+
+                        <div class="sandbox-probs-list">
+                            <span class="prob-title">Class Posterior Distribution:</span>
+                            <div id="sandbox-prob-bars" class="prob-bars-grid">
+                                <!-- Bars populated by JS -->
+                            </div>
+                        </div>
+
+                        <div class="ml-math-explainer">
+                            <strong>Algorithmic Formulation & Principles:</strong>
+                            <p>
+                                <code>P(C|D) ∝ P(C) × ∏ P(w|C)</code> with Laplace smoothing
+                                <code>P(w|C) = (count(w, C) + α) / (total_words(C) + α × |V|)</code>.
+                                The online active learning module continuously updates token likelihoods upon user transaction entry.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model 2: Forecaster -->
+                <div class="ml-lab-card glass-panel">
+                    <div class="ml-lab-header">
+                        <div class="ml-tag">Algorithm 02 / Time-Series</div>
+                        <h3>Month-End Expenditure Forecaster</h3>
+                        <p>Combines weighted historical velocity with linear regression trend estimation.</p>
+                    </div>
+
+                    <div class="ml-forecast-grid">
+                        <div class="forecast-metric-box">
+                            <span class="f-label">Current Spend</span>
+                            <span class="f-val" id="lab-curr-spend">₹0</span>
+                            <span class="f-sub" id="lab-days-elapsed">Day 0 of month</span>
+                        </div>
+                        <div class="forecast-metric-box">
+                            <span class="f-label">Daily Burn Rate</span>
+                            <span class="f-val" id="lab-burn-rate">₹0 / day</span>
+                            <span class="f-sub">Blended historical + 7-day rate</span>
+                        </div>
+                        <div class="forecast-metric-box">
+                            <span class="f-label">Projected Month-End</span>
+                            <span class="f-val" style="color: var(--accent-orange);" id="lab-projected-spend">₹0</span>
+                            <span class="f-sub" id="lab-budget-target">Target: ₹0</span>
+                        </div>
+                        <div class="forecast-metric-box">
+                            <span class="f-label">Spending Slope (m)</span>
+                            <span class="f-val" id="lab-slope">+₹0.00</span>
+                            <span class="f-sub">Velocity slope y = mx + c</span>
+                        </div>
+                    </div>
+
+                    <div class="forecast-status-box" id="lab-forecast-alert">
+                        <!-- Alert content -->
+                    </div>
+                </div>
+
+                <!-- Model 3: Outlier Detection -->
+                <div class="ml-lab-card glass-panel">
+                    <div class="ml-lab-header">
+                        <div class="ml-tag">Algorithm 03 / Outlier Detection</div>
+                        <h3>Statistical Z-Score & Interquartile Range (IQR) Alerts</h3>
+                        <p>Identifies transactions deviating significantly (Z-score ≥ +2.5σ or 1.5× IQR) from category distributions.</p>
+                    </div>
+
+                    <div class="anomalies-list" id="lab-anomalies-container">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Model 4: AI Recommendations -->
+                <div class="ml-lab-card glass-panel">
+                    <div class="ml-lab-header">
+                        <div class="ml-tag">Algorithm 04 / Advisory</div>
+                        <h3>Financial Health & Ratio Analysis</h3>
+                        <p>Evaluation against the 50/30/20 personal finance rule, savings buffer, and category concentration.</p>
+                    </div>
+
+                    <div class="recommendations-container" id="lab-recommendations-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL: ADD / EDIT TRANSACTION -->
+    <div id="transaction-modal" class="modal-overlay hidden" onclick="handleModalBackdropClick(event, 'transaction-modal')">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modal-title">Record Transaction</h3>
+                <button class="modal-close" onclick="closeModal('transaction-modal')">✕</button>
+            </div>
+            <form id="transaction-form" onsubmit="handleTransactionSubmit(event)">
+                <input type="hidden" id="tx-id" value="">
+
+                <div class="type-segmented-control mb-3">
+                    <button type="button" id="tx-type-expense" class="segment-btn active" onclick="selectTxType('expense')">
+                        Expense
+                    </button>
+                    <button type="button" id="tx-type-income" class="segment-btn" onclick="selectTxType('income')">
+                        Income
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label for="tx-description">
+                        Description / Note / Merchant
+                        <span class="label-hint">Auto-categorization active</span>
+                    </label>
+                    <input type="text" id="tx-description" class="form-input" placeholder="e.g. Starbucks cold brew, Metro card, Textbook" required oninput="handleDescriptionInput(event)">
+                    
+                    <!-- Live ML Suggestion Bubble -->
+                    <div id="ml-suggestion-bubble" class="ml-suggestion-bubble hidden">
+                        <span class="ai-sparkle">Suggested:</span>
+                        <strong id="ml-suggested-category">Food & Dining</strong>
+                        <span class="ml-confidence-tag" id="ml-suggested-conf">(95% match)</span>
+                        <button type="button" class="btn-apply-suggestion" onclick="applySuggestedCategory()">Apply</button>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label for="tx-amount">Amount (<span class="currency-label">₹</span>)</label>
+                        <input type="number" id="tx-amount" class="form-input" placeholder="0.00" step="0.01" min="0.01" required>
+                    </div>
+                    <div class="form-group flex-1">
+                        <label for="tx-date">Date</label>
+                        <input type="date" id="tx-date" class="form-input" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tx-category">Category</label>
+                    <select id="tx-category" class="form-select" required>
+                        <option value="Food & Dining">Food & Dining</option>
+                        <option value="Transportation">Transportation</option>
+                        <option value="Education">Education & Learning</option>
+                        <option value="Housing & Utilities">Housing & Utilities</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Salary / Allowance">Salary / Allowance</option>
+                        <option value="Freelance / Projects">Freelance / Projects</option>
+                    </select>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('transaction-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btn-save-tx">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: SET BUDGET -->
+    <div id="budget-modal" class="modal-overlay hidden" onclick="handleModalBackdropClick(event, 'budget-modal')">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Set Category Budget</h3>
+                <button class="modal-close" onclick="closeModal('budget-modal')">✕</button>
+            </div>
+            <form id="budget-form" onsubmit="handleBudgetSubmit(event)">
+                <div class="form-group">
+                    <label for="budget-category">Category</label>
+                    <select id="budget-category" class="form-select" required>
+                        <option value="Food & Dining">Food & Dining</option>
+                        <option value="Transportation">Transportation</option>
+                        <option value="Education">Education</option>
+                        <option value="Housing & Utilities">Housing & Utilities</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Healthcare">Healthcare</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="budget-limit">Monthly Limit (<span class="currency-label">₹</span>)</label>
+                    <input type="number" id="budget-limit" class="form-input" placeholder="e.g. 5000" min="0" step="100" required>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('budget-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Budget</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FLOATING AI CHATBOT TRIGGER BUTTON -->
+    <div id="ai-chat-launcher" class="ai-chat-launcher hidden" onclick="toggleAIChat()">
+        <div class="launcher-pulse"></div>
+        <div class="launcher-btn">
+            <span class="launcher-icon">💬</span>
+            <span class="launcher-text">AI Advisor <span class="launcher-chip">Reduce Expenses</span></span>
+        </div>
+    </div>
+
+    <!-- FLOATING AI CHATBOT WINDOW -->
+    <div id="ai-chat-widget" class="ai-chat-widget hidden">
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <div class="chat-status-dot"></div>
+                <div>
+                    <h4>MoneyMap AI Advisor</h4>
+                    <span class="chat-status-text">Active Wealth Coach • Real-Time Analysis</span>
+                </div>
+            </div>
+            <div class="chat-header-actions">
+                <button class="chat-action-btn" onclick="resetAIChat()" title="Restart chat session">🔄</button>
+                <button class="chat-action-btn" onclick="toggleAIChat()" title="Close chat">✕</button>
+            </div>
+        </div>
+
+        <div class="chat-body" id="chat-messages-container">
+            <!-- Messages rendered dynamically -->
+        </div>
+
+        <!-- Quick prompt chips -->
+        <div class="chat-chips-scroll" id="chat-chips-bar">
+            <button class="chat-chip" onclick="sendQuickPrompt('How can I reduce my expenses?')">💡 Reduce Expenses</button>
+            <button class="chat-chip" onclick="sendQuickPrompt('Where am I overspending this month?')">🔍 Spending Breakdown</button>
+            <button class="chat-chip" onclick="sendQuickPrompt('Analyze my anomalies and leaks')">⚠️ Audit Leaks</button>
+            <button class="chat-chip" onclick="sendQuickPrompt('How to save ₹5,000 this month?')">🎯 Save ₹5,000</button>
+            <button class="chat-chip" onclick="sendQuickPrompt('Audit my subscriptions')">📱 Subscriptions</button>
+            <button class="chat-chip" onclick="sendQuickPrompt('How is my 50/30/20 budget doing?')">🏛️ 50/30/20 Rule</button>
+        </div>
+
+        <form class="chat-input-bar" onsubmit="handleSendChatMessage(event)">
+            <input type="text" id="chat-input-field" class="chat-input" placeholder="Ask how to reduce expenses, cut food spend..." autocomplete="off">
+            <button type="submit" class="chat-send-btn" id="chat-send-btn" title="Send message">
+                <span>➤</span>
+            </button>
+        </form>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
