@@ -62,7 +62,7 @@ If $Z \ge 2.5$ or $x > Q_3 + 1.5 \times (Q_3 - Q_1)$, the transaction is flagged
 In your terminal, navigate to the project directory and run:
 
 ```bash
-cd /Users/abc/.gemini/antigravity/scratch/personal-expense-tracker
+cd /Users/abc/1st year project "
 python3 app.py
 ```
 
