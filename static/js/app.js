@@ -85,8 +85,11 @@ async function apiRequest(endpoint, options = {}) {
     try {
         const res = await fetch(endpoint, options);
         if (res.status === 401) {
-            handleLogout();
-            throw new Error("Session expired. Please sign in again.");
+            const isAuthEndpoint = endpoint.includes("/api/auth/login") || endpoint.includes("/api/auth/register");
+            if (!isAuthEndpoint) {
+                handleLogout(false);
+                throw new Error("Session expired. Please sign in again.");
+            }
         }
         const data = await res.json();
         if (!res.ok) {
@@ -233,14 +236,16 @@ async function quickDemoLogin() {
     }
 }
 
-function handleLogout() {
+function handleLogout(showToastMsg = true) {
     state.token = null;
     state.user = null;
     localStorage.removeItem("moneymap_token");
     localStorage.removeItem("expenseai_token");
     fetch("/api/auth/logout", { method: "POST" });
     showAuthScreen();
-    showToast("Signed out", "info");
+    if (showToastMsg) {
+        showToast("Signed out", "info");
+    }
 }
 
 function showAuthScreen() {

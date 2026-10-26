@@ -4,15 +4,32 @@ Handles SQLite schema creation, migrations, and CRUD operations.
 """
 
 import os
+import shutil
 import sqlite3
 from datetime import datetime, timedelta
 
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tracker.db")
+DEFAULT_DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tracker.db")
+
+
+def get_db_path():
+    """Returns database path, ensuring writable /tmp location in serverless (e.g. Vercel)."""
+    if os.environ.get("VERCEL") or not os.access(os.path.dirname(os.path.abspath(__file__)), os.W_OK):
+        tmp_db = os.environ.get("TRACKER_DB_PATH", "/tmp/tracker.db")
+        if not os.path.exists(tmp_db) and os.path.exists(DEFAULT_DB_PATH):
+            try:
+                shutil.copy2(DEFAULT_DB_PATH, tmp_db)
+            except Exception:
+                pass
+        return tmp_db
+    return os.environ.get("TRACKER_DB_PATH", DEFAULT_DB_PATH)
+
+
+DB_PATH = get_db_path()
 
 
 def get_db_connection(db_path=None):
     """Returns a connection to the SQLite database with Row factory enabled."""
-    path = db_path or DB_PATH
+    path = db_path or get_db_path()
     conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
@@ -21,7 +38,8 @@ def get_db_connection(db_path=None):
 
 def init_db(db_path=None):
     """Initializes the database schema if tables do not exist."""
-    conn = get_db_connection(db_path)
+    path = db_path or get_db_path()
+    conn = get_db_connection(path)
     with conn:
         conn.execute("""
             CREATE TABLE IF NOT EXISTS users (
@@ -66,7 +84,20 @@ def init_db(db_path=None):
         conn.execute("CREATE INDEX IF NOT EXISTS idx_trans_user_date ON transactions(user_id, date)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_trans_user_cat ON transactions(user_id, category)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_budgets_user ON budgets(user_id, month_year)")
+
+        # Ensure demo user exists
+        demo_user = conn.execute("SELECT id FROM users WHERE email = 'demo@moneymap.io'").fetchone()
+        demo_user_id = None
+        if not demo_user:
+            cursor = conn.execute(
+                "INSERT INTO users (name, email, password_hash, currency) VALUES (?, ?, ?, ?)",
+                ("Alex Sharma", "demo@moneymap.io", "f384560cf382b401d9591b701b68774b$52c60be35264ac3dcf603d6e18c6ea668d1e8959f909298a949123f895561ecf", "₹")
+            )
+            demo_user_id = cursor.lastrowid
     conn.close()
+
+    if demo_user_id:
+        seed_demo_data(demo_user_id, db_path=path)
 
 
 # ---------------- USER CRUD ----------------
