@@ -136,10 +136,12 @@ class TestPersonalExpenseTracker(unittest.TestCase):
         self.assertEqual(netflix_res["category"], "Entertainment")
 
     def test_spending_forecasting(self):
+        from datetime import datetime, timedelta
+        now = datetime.now()
         sample_transactions = [
-            {"type": "expense", "amount": 500.0, "date": "2026-10-01"},
-            {"type": "expense", "amount": 300.0, "date": "2026-10-05"},
-            {"type": "expense", "amount": 400.0, "date": "2026-10-10"},
+            {"type": "expense", "amount": 500.0, "date": (now - timedelta(days=10)).strftime("%Y-%m-%d")},
+            {"type": "expense", "amount": 300.0, "date": (now - timedelta(days=5)).strftime("%Y-%m-%d")},
+            {"type": "expense", "amount": 400.0, "date": now.strftime("%Y-%m-%d")},
         ]
         forecast = ml_engine.forecast_monthly_spending(sample_transactions, monthly_budget=15000.0)
         self.assertIn("projected_total", forecast)
@@ -167,10 +169,12 @@ class TestPersonalExpenseTracker(unittest.TestCase):
     # ---------------- REST API INTEGRATION TESTS ----------------
 
     def test_rest_api_auth_and_transactions(self):
-        # 1. Register user
+        # 1. Register user (unique email to avoid collision with seeded demo user)
+        import time
+        unique_email = f"integration_{int(time.time())}@test.com"
         reg_resp = self.client.post("/api/auth/register", json={
             "name": "Integration User",
-            "email": "integration@test.com",
+            "email": unique_email,
             "password": "password123",
             "currency": "₹"
         })
