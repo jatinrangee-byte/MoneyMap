@@ -945,15 +945,21 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .manifesto-title {
-    font-size: 2.2rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    max-width: 750px;
-    line-height: 1.18;
+    font-family: var(--font-editorial);
+    font-size: 2.1rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    max-width: 780px;
+    line-height: 1.25;
 }
 
 .manifesto-title span {
-    color: var(--accent-orange);
+    color: var(--forest-800);
+    font-style: italic;
+}
+
+[data-theme="dark"] .manifesto-title span {
+    color: var(--color-income);
 }
 
 /* KPI Cards Grid */
@@ -965,21 +971,30 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .kpi-card {
-    padding: 24px;
+    padding: 22px 24px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-subtle);
+    transition: border-color var(--transition);
+}
+
+.kpi-card:hover {
+    border-color: var(--border-strong);
 }
 
 .kpi-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
     margin-bottom: 12px;
 }
 
 .kpi-title {
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     font-weight: 700;
     color: var(--text-secondary);
     text-transform: uppercase;
@@ -992,13 +1007,15 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
     margin-bottom: 4px;
     letter-spacing: -0.03em;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
 }
 
 .income-text { color: var(--color-income); }
 .expense-text { color: var(--color-expense); }
 
 .kpi-subtext {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--text-muted);
 }
 
@@ -1007,7 +1024,7 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     align-items: baseline;
     gap: 10px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .health-score-number {
@@ -1015,16 +1032,23 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 2.1rem;
     font-weight: 700;
     color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
 }
 
 .health-score-badge {
-    font-size: 0.76rem;
+    font-size: 0.74rem;
     font-weight: 700;
     padding: 3px 10px;
     border-radius: var(--radius-pill);
-    background: var(--accent-orange-dim);
-    color: var(--accent-orange);
-    border: 1px solid rgba(235, 77, 40, 0.25);
+    background: var(--forest-100);
+    color: var(--forest-800);
+    border: 1px solid rgba(15, 45, 35, 0.12);
+}
+
+[data-theme="dark"] .health-score-badge {
+    background: var(--accent-forest-dim);
+    color: var(--color-income);
+    border-color: rgba(52, 211, 153, 0.25);
 }
 
 .health-progress-bar {
@@ -1038,12 +1062,12 @@ h1, h2, h3, h4, h5, h6 {
 .health-progress-fill {
     height: 100%;
     border-radius: var(--radius-pill);
-    background: var(--accent-orange);
+    background: var(--color-income);
     transition: width 0.6s ease;
 }
 
 /* ==========================================================================
-   EPPLE MODULAR CATEGORY CARDS (WITH HIGH-RES PHOTOGRAPHY)
+   EDITORIAL CATEGORY SPENDING CARDS (TYPOGRAPHIC & CLEAN)
    ========================================================================== */
 
 .category-systems-section {
@@ -1058,8 +1082,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .section-title-wrap h3 {
-    font-size: 1.4rem;
+    font-size: 1.35rem;
     font-weight: 700;
+    letter-spacing: -0.02em;
 }
 
 .category-photo-grid {
@@ -1068,129 +1093,197 @@ h1, h2, h3, h4, h5, h6 {
     gap: 18px;
 }
 
-.cat-photo-card {
+.cat-editorial-card {
     background: var(--bg-surface);
     border: 1px solid var(--border-hairline);
     border-radius: var(--radius-card);
-    overflow: hidden;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    transition: transform var(--transition), border-color var(--transition);
+    justify-content: space-between;
+    gap: 14px;
+    transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
     cursor: pointer;
 }
 
-.cat-photo-card:hover {
-    transform: translateY(-3px);
-    border-color: var(--accent-orange);
+.cat-editorial-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--forest-800);
+    box-shadow: var(--shadow-subtle);
 }
 
-.cat-photo-thumb {
-    width: 100%;
-    aspect-ratio: 16 / 10;
-    overflow: hidden;
-    position: relative;
-    background: var(--bg-surface-inset);
+[data-theme="dark"] .cat-editorial-card:hover {
+    border-color: var(--color-income);
 }
 
-.cat-photo-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.5s ease;
-}
-
-.cat-photo-card:hover .cat-photo-img {
-    transform: scale(1.05);
-}
-
-.cat-photo-content {
-    padding: 16px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.cat-photo-header {
+.cat-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.cat-photo-name {
-    font-size: 0.95rem;
-    font-weight: 700;
+.cat-card-glyph {
+    font-size: 1.3rem;
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface-inset);
+    border: 1px solid var(--border-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.cat-photo-tag {
-    font-size: 0.7rem;
+.cat-card-tag {
+    font-size: 0.68rem;
     font-weight: 700;
     text-transform: uppercase;
-    color: var(--accent-orange);
+    letter-spacing: 0.08em;
+    background: var(--forest-100);
+    color: var(--forest-800);
+    padding: 3px 8px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(15, 45, 35, 0.12);
 }
 
-.cat-photo-spend {
-    font-family: var(--font-mono);
-    font-size: 1.25rem;
-    font-weight: 700;
+[data-theme="dark"] .cat-card-tag {
+    background: var(--accent-forest-dim);
+    color: var(--color-income);
+    border-color: rgba(52, 211, 153, 0.25);
+}
+
+.cat-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.cat-card-name {
+    font-size: 0.95rem;
+    font-weight: 600;
     color: var(--text-primary);
 }
 
-.cat-photo-sub {
+.cat-card-spend {
+    font-family: var(--font-mono);
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+    margin: 2px 0;
+}
+
+.cat-card-sub {
     font-size: 0.76rem;
     color: var(--text-muted);
 }
 
-/* Forecast Banner */
+.cat-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-hairline);
+    padding-top: 10px;
+    margin-top: 4px;
+}
+
+.cat-arrow {
+    transition: transform var(--transition);
+}
+
+.cat-editorial-card:hover .cat-arrow {
+    transform: translateX(3px);
+    color: var(--forest-800);
+}
+
+[data-theme="dark"] .cat-editorial-card:hover .cat-arrow {
+    color: var(--color-income);
+}
+
+/* ==========================================================================
+   PREDICTIVE SPENDING FORECAST (EDITORIAL INTELLIGENCE)
+   ========================================================================== */
+
 .forecast-banner {
     display: flex;
     align-items: center;
     gap: 24px;
-    padding: 22px 30px;
+    padding: 22px 28px;
     margin-bottom: 28px;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-hairline);
-    border-left: 4px solid var(--accent-orange);
+    background: var(--forest-50);
+    border: 1px solid rgba(15, 45, 35, 0.14);
+    border-left: 4px solid var(--forest-800);
     border-radius: var(--radius-card);
+    transition: all var(--transition);
+}
+
+[data-theme="dark"] .forecast-banner {
+    background: var(--forest-950);
+    border-color: rgba(52, 211, 153, 0.2);
+    border-left-color: var(--color-income);
 }
 
 .forecast-icon-box {
-    font-size: 1.8rem;
-    background: var(--accent-orange-dim);
-    color: var(--accent-orange);
-    width: 52px;
-    height: 52px;
+    font-size: 1.4rem;
+    background: var(--forest-100);
+    color: var(--forest-800);
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(15, 45, 35, 0.12);
+    flex-shrink: 0;
+}
+
+[data-theme="dark"] .forecast-icon-box {
+    background: var(--accent-forest-dim);
+    color: var(--color-income);
+    border-color: rgba(52, 211, 153, 0.25);
 }
 
 .forecast-content { flex: 1; }
 
 .forecast-tag {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 700;
-    color: var(--accent-orange);
+    color: var(--forest-800);
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 2px;
+    letter-spacing: 0.08em;
+    margin-bottom: 3px;
+}
+
+[data-theme="dark"] .forecast-tag {
+    color: var(--color-income);
 }
 
 .forecast-message {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 3px;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    line-height: 1.4;
 }
 
 .forecast-stats {
     display: flex;
+    flex-wrap: wrap;
     gap: 14px;
-    font-size: 0.85rem;
+    font-size: 0.84rem;
     color: var(--text-secondary);
 }
 
-.forecast-stats strong { color: var(--text-primary); }
+.forecast-stats strong {
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+
 
 /* Charts Grid */
 .charts-grid {

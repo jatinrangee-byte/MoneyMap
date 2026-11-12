@@ -411,6 +411,10 @@ function renderCashflowChart(dailyTimeline) {
     const incomeData = dailyTimeline.map(d => d.income);
     const expenseData = dailyTimeline.map(d => d.expense);
 
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    const textMuted = isDark ? "#97a69f" : "#717d77";
+    const gridColor = isDark ? "rgba(255, 255, 255, 0.06)" : "rgba(10, 31, 24, 0.05)";
+
     state.charts.cashflow = new Chart(ctx, {
         type: "bar",
         data: {
@@ -419,16 +423,16 @@ function renderCashflowChart(dailyTimeline) {
                 {
                     label: "Inflows (Credits)",
                     data: incomeData.length ? incomeData : [0],
-                    backgroundColor: "#15803d", // Deep Forest Green
-                    borderRadius: 4,
-                    maxBarThickness: 22
+                    backgroundColor: "#15623e", // Deep Hunter Emerald
+                    borderRadius: 3,
+                    maxBarThickness: 20
                 },
                 {
                     label: "Outflows (Debits)",
                     data: expenseData.length ? expenseData : [0],
-                    backgroundColor: "#eb4d28", // Epple Precision Vermilion
-                    borderRadius: 4,
-                    maxBarThickness: 22
+                    backgroundColor: "#9e2a2b", // Editorial Burgundy
+                    borderRadius: 3,
+                    maxBarThickness: 20
                 }
             ]
         },
@@ -438,19 +442,19 @@ function renderCashflowChart(dailyTimeline) {
             plugins: {
                 legend: {
                     position: "top",
-                    labels: { color: "#8b8d96", font: { family: "Inter Tight", weight: "600" } }
+                    labels: { color: textMuted, font: { family: "Inter", weight: "600", size: 12 } }
                 }
             },
             scales: {
                 x: {
                     grid: { display: false },
-                    ticks: { color: "#8b8d96", font: { family: "Inter Tight" } }
+                    ticks: { color: textMuted, font: { family: "Inter", size: 11 } }
                 },
                 y: {
-                    grid: { color: "rgba(255, 255, 255, 0.05)" },
+                    grid: { color: gridColor },
                     ticks: {
-                        color: "#8b8d96",
-                        font: { family: "JetBrains Mono" },
+                        color: textMuted,
+                        font: { family: "JetBrains Mono", size: 11 },
                         callback: val => `${state.currency}${val}`
                     }
                 }
@@ -470,11 +474,15 @@ function renderCategoryChart(categories) {
     const labels = categories.map(c => c.category);
     const values = categories.map(c => c.total);
 
-    // Epple Architectural Category Palette
+    // Editorial Fintech Curated Palette: Forest, Emerald, Sage, Amber, Burgundy, Spruce
     const palette = [
-        "#eb4d28", "#121316", "#5a5c63", "#0d9488",
-        "#d97706", "#2563eb", "#15803d", "#7c3aed", "#b45309"
+        "#0f2d23", "#15623e", "#3d7a63", "#9e7a2b",
+        "#9e2a2b", "#2a3b34", "#4b6b5e", "#b88628", "#1e3b2e"
     ];
+
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    const textMuted = isDark ? "#97a69f" : "#717d77";
+    const borderColor = isDark ? "#121815" : "#ffffff";
 
     state.charts.category = new Chart(ctx, {
         type: "doughnut",
@@ -484,7 +492,7 @@ function renderCategoryChart(categories) {
                 data: values.length ? values : [1],
                 backgroundColor: palette.slice(0, Math.max(labels.length, 1)),
                 borderWidth: 2,
-                borderColor: "#18191d"
+                borderColor: borderColor
             }]
         },
         options: {
@@ -493,7 +501,7 @@ function renderCategoryChart(categories) {
             plugins: {
                 legend: {
                     position: "right",
-                    labels: { color: "#8b8d96", font: { family: "Inter Tight", size: 11, weight: "500" } }
+                    labels: { color: textMuted, font: { family: "Inter", size: 11, weight: "500" } }
                 },
                 tooltip: {
                     callbacks: {
@@ -501,7 +509,7 @@ function renderCategoryChart(categories) {
                     }
                 }
             },
-            cutout: "66%"
+            cutout: "68%"
         }
     });
 }

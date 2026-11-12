@@ -215,15 +215,15 @@
 
             <!-- ================= VIEW 1: DASHBOARD ================= -->
             <section id="view-dashboard" class="app-view active">
-                <!-- Epple Manifesto Headline -->
+                <!-- Editorial Manifesto Headline -->
                 <div class="dashboard-manifesto">
                     <div>
-                        <span class="editorial-tag">Overview — <span id="dash-current-month">October 2026</span> • Hello, <span id="dash-greeting-name">Alex</span></span>
-                        <h2 class="manifesto-title">Precision Finance. <span>Systematically tracked</span> and intelligently forecasted.</h2>
+                        <span class="editorial-tag">Portfolio Overview — <span id="dash-current-month">November 2026</span> • Account: <span id="dash-greeting-name">Alex</span></span>
+                        <h2 class="manifesto-title font-editorial">Precision Wealth Architecture. <span>Systematically audited</span> & intelligently forecasted.</h2>
                     </div>
                     <div class="banner-quick-actions">
-                        <button class="btn btn-emerald btn-sm" onclick="openAddTransactionModal('income')">+ Income</button>
-                        <button class="btn btn-rose btn-sm" onclick="openAddTransactionModal('expense')">- Expense</button>
+                        <button class="btn btn-emerald btn-sm" onclick="openAddTransactionModal('income')">+ Record Inflow</button>
+                        <button class="btn btn-rose btn-sm" onclick="openAddTransactionModal('expense')">- Record Outflow</button>
                     </div>
                 </div>
 
@@ -232,11 +232,11 @@
                     <!-- Balance -->
                     <div class="kpi-card glass-panel">
                         <div class="kpi-header">
-                            <span class="kpi-title">Net Balance</span>
+                            <span class="kpi-title">Net Standing</span>
                             <span class="editorial-tag">01 / LIQUIDITY</span>
                         </div>
-                        <div class="kpi-value" id="kpi-balance">₹0.00</div>
-                        <div class="kpi-subtext" id="kpi-balance-sub">Current standing</div>
+                        <div class="kpi-value font-mono" id="kpi-balance">₹0.00</div>
+                        <div class="kpi-subtext" id="kpi-balance-sub">Current operating standing</div>
                     </div>
 
                     <!-- Total Income -->
@@ -245,8 +245,8 @@
                             <span class="kpi-title">Total Inflows</span>
                             <span class="editorial-tag">02 / CREDITS</span>
                         </div>
-                        <div class="kpi-value income-text" id="kpi-income">₹0.00</div>
-                        <div class="kpi-subtext" id="kpi-income-sub">Salary, Inflow & Transfers</div>
+                        <div class="kpi-value income-text font-mono" id="kpi-income">₹0.00</div>
+                        <div class="kpi-subtext" id="kpi-income-sub">Salary, allowances & transfers</div>
                     </div>
 
                     <!-- Total Expenses -->
@@ -255,8 +255,8 @@
                             <span class="kpi-title">Total Outflows</span>
                             <span class="editorial-tag">03 / DEBITS</span>
                         </div>
-                        <div class="kpi-value expense-text" id="kpi-expense">₹0.00</div>
-                        <div class="kpi-subtext" id="kpi-expense-sub">This month expenditure</div>
+                        <div class="kpi-value expense-text font-mono" id="kpi-expense">₹0.00</div>
+                        <div class="kpi-subtext" id="kpi-expense-sub">Expenditures this cycle</div>
                     </div>
 
                     <!-- AI Financial Health Score -->
@@ -266,7 +266,7 @@
                             <span class="editorial-tag">04 / SCORE</span>
                         </div>
                         <div class="health-score-container">
-                            <div class="health-score-number" id="kpi-health-score">--</div>
+                            <div class="health-score-number font-mono" id="kpi-health-score">--</div>
                             <div class="health-score-badge" id="kpi-health-badge">Calculating...</div>
                         </div>
                         <div class="health-progress-bar">
@@ -275,97 +275,105 @@
                     </div>
                 </div>
 
-                <!-- EPPLE MODULAR CATEGORY CARDS WITH HIGH-RES PHOTOGRAPHY -->
+                <!-- EDITORIAL CATEGORY SPENDING CARDS (TYPOGRAPHIC & CLEAN) -->
                 <div class="category-systems-section">
                     <div class="section-title-wrap">
                         <div>
-                            <span class="editorial-tag">Spending Categories</span>
-                            <h3>Categories & Systems</h3>
+                            <span class="editorial-tag">Spending Distributions</span>
+                            <h3>Major Expense Categories</h3>
                         </div>
                         <button class="btn btn-sm btn-ghost" onclick="switchView('transactions')">View Ledger →</button>
                     </div>
 
                     <div class="category-photo-grid">
                         <!-- Card 1: Food & Dining -->
-                        <div class="cat-photo-card" onclick="filterByCategory('Food & Dining')">
-                            <div class="cat-photo-thumb">
-                                <img src="/static/images/food.jpg" alt="Food & Dining" class="cat-photo-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80';">
+                        <div class="cat-editorial-card glass-panel" onclick="filterByCategory('Food & Dining')">
+                            <div class="cat-card-header">
+                                <div class="cat-card-glyph">🍽️</div>
+                                <span class="cat-card-tag">Daily</span>
                             </div>
-                            <div class="cat-photo-content">
-                                <div class="cat-photo-header">
-                                    <span class="cat-photo-name">Food & Dining</span>
-                                    <span class="cat-photo-tag">Daily</span>
-                                </div>
-                                <div class="cat-photo-spend" id="cat-spend-food">₹8,490</div>
-                                <div class="cat-photo-sub">Canteen, groceries & coffee</div>
+                            <div class="cat-card-body">
+                                <div class="cat-card-name">Food & Dining</div>
+                                <div class="cat-card-spend font-mono" id="cat-spend-food">₹0.00</div>
+                                <div class="cat-card-sub">Canteen, dining & groceries</div>
+                            </div>
+                            <div class="cat-card-footer">
+                                <span>Filter ledger</span>
+                                <span class="cat-arrow">→</span>
                             </div>
                         </div>
 
                         <!-- Card 2: Education -->
-                        <div class="cat-photo-card" onclick="filterByCategory('Education')">
-                            <div class="cat-photo-thumb">
-                                <img src="/static/images/education.jpg" alt="Education & Learning" class="cat-photo-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=800&q=80';">
+                        <div class="cat-editorial-card glass-panel" onclick="filterByCategory('Education')">
+                            <div class="cat-card-header">
+                                <div class="cat-card-glyph">📚</div>
+                                <span class="cat-card-tag">Academic</span>
                             </div>
-                            <div class="cat-photo-content">
-                                <div class="cat-photo-header">
-                                    <span class="cat-photo-name">Education</span>
-                                    <span class="cat-photo-tag">Academic</span>
-                                </div>
-                                <div class="cat-photo-spend" id="cat-spend-edu">₹6,850</div>
-                                <div class="cat-photo-sub">Books, exam fees & courses</div>
+                            <div class="cat-card-body">
+                                <div class="cat-card-name">Education</div>
+                                <div class="cat-card-spend font-mono" id="cat-spend-edu">₹0.00</div>
+                                <div class="cat-card-sub">Tuition, books & courses</div>
+                            </div>
+                            <div class="cat-card-footer">
+                                <span>Filter ledger</span>
+                                <span class="cat-arrow">→</span>
                             </div>
                         </div>
 
                         <!-- Card 3: Transportation -->
-                        <div class="cat-photo-card" onclick="filterByCategory('Transportation')">
-                            <div class="cat-photo-thumb">
-                                <img src="/static/images/transportation.jpg" alt="Transportation & Commute" class="cat-photo-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1506388398822-866b2889530f?auto=format&fit=crop&w=800&q=80';">
+                        <div class="cat-editorial-card glass-panel" onclick="filterByCategory('Transportation')">
+                            <div class="cat-card-header">
+                                <div class="cat-card-glyph">🚇</div>
+                                <span class="cat-card-tag">Mobility</span>
                             </div>
-                            <div class="cat-photo-content">
-                                <div class="cat-photo-header">
-                                    <span class="cat-photo-name">Transportation</span>
-                                    <span class="cat-photo-tag">Mobility</span>
-                                </div>
-                                <div class="cat-photo-spend" id="cat-spend-transit">₹1,170</div>
-                                <div class="cat-photo-sub">Metro recharge, bus & cabs</div>
+                            <div class="cat-card-body">
+                                <div class="cat-card-name">Transportation</div>
+                                <div class="cat-card-spend font-mono" id="cat-spend-transit">₹0.00</div>
+                                <div class="cat-card-sub">Metro recharge & transit</div>
+                            </div>
+                            <div class="cat-card-footer">
+                                <span>Filter ledger</span>
+                                <span class="cat-arrow">→</span>
                             </div>
                         </div>
 
                         <!-- Card 4: Housing & Utilities -->
-                        <div class="cat-photo-card" onclick="filterByCategory('Housing & Utilities')">
-                            <div class="cat-photo-thumb">
-                                <img src="/static/images/housing.jpg" alt="Housing & Living" class="cat-photo-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80';">
+                        <div class="cat-editorial-card glass-panel" onclick="filterByCategory('Housing & Utilities')">
+                            <div class="cat-card-header">
+                                <div class="cat-card-glyph">🏠</div>
+                                <span class="cat-card-tag">Fixed</span>
                             </div>
-                            <div class="cat-photo-content">
-                                <div class="cat-photo-header">
-                                    <span class="cat-photo-name">Housing & Utilities</span>
-                                    <span class="cat-photo-tag">Fixed</span>
-                                </div>
-                                <div class="cat-photo-spend" id="cat-spend-housing">₹9,898</div>
-                                <div class="cat-photo-sub">Hostel rent, wifi & power</div>
+                            <div class="cat-card-body">
+                                <div class="cat-card-name">Housing & Utilities</div>
+                                <div class="cat-card-spend font-mono" id="cat-spend-housing">₹0.00</div>
+                                <div class="cat-card-sub">Rent, power & utilities</div>
+                            </div>
+                            <div class="cat-card-footer">
+                                <span>Filter ledger</span>
+                                <span class="cat-arrow">→</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Forecast Banner (Epple Precision Orange) -->
+                <!-- PREDICTIVE SPENDING FORECAST (EDITORIAL INTELLIGENCE) -->
                 <div class="forecast-banner glass-panel" id="dashboard-forecast-card">
                     <div class="forecast-icon-box">
                         <span>⚡</span>
                     </div>
                     <div class="forecast-content">
-                        <div class="forecast-tag">Predictive Spending Forecast</div>
-                        <div class="forecast-message" id="forecast-status-msg">Analyzing burn-rate velocity...</div>
+                        <div class="forecast-tag">Predictive Intelligence — OLS Regression & Burn Velocity</div>
+                        <div class="forecast-message font-editorial" id="forecast-status-msg">Analyzing burn-rate velocity...</div>
                         <div class="forecast-stats">
-                            <span>Daily Burn: <strong id="forecast-burn-rate">₹0/day</strong></span>
+                            <span>Daily Burn: <strong id="forecast-burn-rate" class="font-mono">₹0/day</strong></span>
                             <span>•</span>
-                            <span>Projected Total: <strong id="forecast-projected-total">₹0</strong></span>
+                            <span>Projected Total: <strong id="forecast-projected-total" class="font-mono">₹0</strong></span>
                             <span>•</span>
-                            <span>Allocated Budget: <strong id="forecast-total-budget">₹0</strong></span>
+                            <span>Allocated Budget: <strong id="forecast-total-budget" class="font-mono">₹0</strong></span>
                         </div>
                     </div>
                     <div class="forecast-action">
-                        <button class="btn btn-sm btn-ghost" onclick="switchView('ml-lab')">Inspect ML Engine →</button>
+                        <button class="btn btn-sm btn-ghost" onclick="switchView('ml-lab')">Inspect Regression Model →</button>
                     </div>
                 </div>
 
