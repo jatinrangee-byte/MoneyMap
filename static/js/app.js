@@ -280,8 +280,29 @@ function showMainApp() {
 // NAVIGATION & VIEWS
 // ==========================================================================
 
+function toggleSidebar(forceState) {
+    const sidebar = document.getElementById("app-sidebar");
+    const backdrop = document.getElementById("sidebar-backdrop");
+    if (!sidebar) return;
+    const shouldOpen = typeof forceState === "boolean" ? forceState : !sidebar.classList.contains("sidebar-open");
+    if (shouldOpen) {
+        sidebar.classList.add("sidebar-open");
+        if (backdrop) backdrop.classList.add("active");
+    } else {
+        sidebar.classList.remove("sidebar-open");
+        if (backdrop) backdrop.classList.remove("active");
+    }
+}
+
+function closeSidebarOnMobile() {
+    if (window.innerWidth <= 1024) {
+        toggleSidebar(false);
+    }
+}
+
 function switchView(viewName) {
     state.currentView = viewName;
+    closeSidebarOnMobile();
     document.querySelectorAll(".app-view").forEach(v => v.classList.remove("active"));
     document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
 

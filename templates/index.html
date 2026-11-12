@@ -129,9 +129,12 @@
 
     <!-- MAIN APP WRAPPER -->
     <div id="main-app" class="main-app hidden">
-        <!-- EPPLE TOP NAVBAR -->
-        <header class="navbar">
-            <div class="nav-brand">
+        <!-- Responsive Backdrop for Mobile & Tablet Drawer -->
+        <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
+
+        <!-- EDITORIAL FINTECH SIDEBAR (~250px) -->
+        <aside id="app-sidebar" class="app-sidebar">
+            <div class="sidebar-brand">
                 <div class="app-logo">
                     <span class="logo-icon">🗺️</span>
                     <span class="logo-text">Money<strong>Map</strong></span>
@@ -139,31 +142,37 @@
                 <span class="nav-badge">Pro v2.0</span>
             </div>
 
-            <nav class="nav-links">
-                <button class="nav-item active" onclick="switchView('dashboard')">
-                    <span>Overview</span>
-                </button>
-                <button class="nav-item" onclick="switchView('transactions')">
-                    <span>Transactions</span>
-                </button>
-                <button class="nav-item" onclick="switchView('budgets')">
-                    <span>Budgets</span>
-                </button>
-                <button class="nav-item" onclick="switchView('ml-lab')">
-                    <span>Intelligence Lab</span>
-                </button>
-            </nav>
+            <div class="sidebar-nav-section">
+                <span class="sidebar-section-label">Navigation</span>
+                <nav class="sidebar-nav">
+                    <button class="nav-item active" onclick="switchView('dashboard')">
+                        <span class="nav-icon">📊</span>
+                        <span>Overview</span>
+                    </button>
+                    <button class="nav-item" onclick="switchView('transactions')">
+                        <span class="nav-icon">📋</span>
+                        <span>Transactions</span>
+                    </button>
+                    <button class="nav-item" onclick="switchView('budgets')">
+                        <span class="nav-icon">🎯</span>
+                        <span>Budgets</span>
+                    </button>
+                    <button class="nav-item" onclick="switchView('ml-lab')">
+                        <span class="nav-icon">🔬</span>
+                        <span>Intelligence Lab</span>
+                    </button>
+                </nav>
+            </div>
 
-            <div class="nav-actions">
-                <button class="btn btn-sm btn-ghost" onclick="triggerSeedData()" title="Reload sample demonstration transactions">
-                    Reset Demo
-                </button>
-                <button class="btn btn-sm btn-primary" onclick="openAddTransactionModal()">
-                    + Add Transaction
-                </button>
-                <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-                    🌙
-                </button>
+            <div class="sidebar-meta-card">
+                <div class="sidebar-meta-header">
+                    <span class="meta-dot"></span>
+                    <span class="meta-title">ML Engine Active</span>
+                </div>
+                <p class="meta-desc">Online Bayesian learning & velocity forecasting enabled.</p>
+            </div>
+
+            <div class="sidebar-footer">
                 <div class="user-menu">
                     <div class="user-avatar" id="nav-user-initials">AS</div>
                     <div class="user-info">
@@ -172,10 +181,37 @@
                     </div>
                 </div>
             </div>
-        </header>
+        </aside>
 
-        <!-- MAIN CONTENT CONTAINER -->
-        <main class="content-container">
+        <!-- MAIN WORKSPACE & TOP UTILITY BAR -->
+        <div class="app-body">
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <button id="sidebar-toggle-btn" class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle Navigation Menu" aria-label="Toggle Navigation Menu">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                    <div class="top-bar-title font-editorial">
+                        <span>Personal Finance Intelligence</span>
+                    </div>
+                </div>
+
+                <div class="nav-actions">
+                    <button class="btn btn-sm btn-ghost" onclick="triggerSeedData()" title="Reload sample demonstration transactions">
+                        Reset Demo
+                    </button>
+                    <button class="btn btn-sm btn-primary" onclick="openAddTransactionModal()">
+                        + Add Transaction
+                    </button>
+                    <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+                        🌙
+                    </button>
+                </div>
+            </header>
+
+            <!-- MAIN CONTENT CONTAINER -->
+            <main class="content-container">
 
             <!-- ================= VIEW 1: DASHBOARD ================= -->
             <section id="view-dashboard" class="app-view active">
@@ -617,6 +653,7 @@
                 </div>
             </section>
         </main>
+        </div>
     </div>
 
     <!-- MODAL: ADD / EDIT TRANSACTION -->
