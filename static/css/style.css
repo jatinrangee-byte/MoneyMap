@@ -1,73 +1,110 @@
 /* ==========================================================================
-   MoneyMap - Epple Editorial Design System (Awwwards Inspired)
-   German Industrial Precision, Architectural Warmth & Editorial Typography
+   MoneyMap — Editorial Fintech Design System
+   Heritage Forest Green, Warm White / Museum Cream, Refined Typography
+   Typography: Inter (UI), Newsreader (Editorial Serif), JetBrains Mono (Finance)
    ========================================================================== */
 
 :root {
-    /* Epple Warm Gallery Palette (Light Mode Default) */
-    --bg-canvas: #f6f6f4;              /* Architectural warm ivory */
-    --bg-surface: #ffffff;             /* Crisp white card surface */
-    --bg-surface-inset: #ededeb;       /* Inset container / table headers */
-    --bg-elevated: #ffffff;            /* Modal & popovers */
+    /* Heritage Forest Green Palette */
+    --forest-950: #071510;             /* Ultra-deep obsidian green */
+    --forest-900: #0a1f18;             /* Deepest forest green */
+    --forest-800: #0f2d23;             /* Primary signature brand green */
+    --forest-700: #143d30;             /* Primary interactive hover */
+    --forest-600: #1a4f3f;             /* Active states & focused outlines */
+    --forest-500: #226752;             /* Medium accent green */
+    --forest-100: #eaf1ed;             /* Soft forest green wash */
+    --forest-50:  #f4f7f5;             /* Subtle card fill */
 
-    --border-hairline: #e3e3df;        /* Ultra-fine hairline border */
-    --border-strong: #222222;
+    /* Editorial Warm White Surfaces (Museum / Archival Gallery) */
+    --bg-canvas: #fbfbf9;              /* Warm archival paper / cream canvas */
+    --bg-surface: #ffffff;             /* Pure alabaster crisp card surface */
+    --bg-surface-inset: #f3f4ee;       /* Inset data wells, table headers */
+    --bg-elevated: #ffffff;            /* Elevated dropdowns & modals */
 
-    --text-primary: #121316;           /* Authoritative charcoal black */
-    --text-secondary: #5a5c63;         /* Balanced editorial slate */
-    --text-muted: #8b8d96;
+    /* Hairline Architecture */
+    --border-hairline: #e3e6df;         /* Crisp 1px hairline divider */
+    --border-strong: #ced4ca;          /* Defined input/card border */
+    --border-focus: #0f2d23;           /* Focused element border */
 
-    /* Epple Precision Signature Accent */
-    --accent-orange: #eb4d28;          /* Epple precision vermilion */
-    --accent-orange-hover: #d43b18;
-    --accent-orange-dim: rgba(235, 77, 40, 0.08);
+    /* Accessible Editorial Typography Spectrum */
+    --text-primary: #111714;           /* Deep ink black (15.5:1 on white - AAA) */
+    --text-secondary: #4a544f;         /* Spruce slate (7.2:1 on white - AAA) */
+    --text-muted: #717d77;             /* Accessible caption grey (4.6:1 on white - AA) */
 
-    --color-income: #15803d;           /* Deep Forest Green */
-    --color-income-dim: rgba(21, 128, 61, 0.08);
-    --color-expense: #eb4d28;          /* Epple Vermilion for debits */
-    --color-expense-dim: rgba(235, 77, 40, 0.08);
+    /* Editorial Accent & Signatures */
+    --accent-forest: #0f2d23;
+    --accent-forest-hover: #143d30;
+    --accent-forest-dim: rgba(15, 45, 35, 0.08);
+    --accent-gold: #9e7a2b;            /* Warm muted gold accent */
+    --accent-gold-soft: rgba(158, 122, 43, 0.12);
 
-    /* Typography */
-    --font-heading: 'Inter Tight', system-ui, -apple-system, sans-serif;
-    --font-body: 'Inter Tight', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    /* Backwards-compatible aliases for existing selectors */
+    --accent-orange: #0f2d23;          /* Re-mapped to Forest Green */
+    --accent-orange-hover: #143d30;
+    --accent-orange-dim: rgba(15, 45, 35, 0.08);
 
-    /* Radii (Epple Pill vs Sharp Precision) */
-    --radius-pill: 72px;
-    --radius-card: 14px;
-    --radius-sm: 8px;
+    /* High-Contrast Financial Indicators */
+    --color-income: #15623e;           /* Deep hunter emerald (credits - AAA) */
+    --color-income-dim: #edf6f1;
+    --color-expense: #9e2a2b;          /* Refined editorial burgundy (debits - AAA) */
+    --color-expense-dim: #fbf0f0;
+    --color-warning: #875709;          /* Warm amber (budget alert - AAA) */
+    --color-warning-dim: #fdf8ee;
 
-    --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.04);
-    --shadow-elevated: 0 10px 30px rgba(0, 0, 0, 0.08);
+    /* Typography Families */
+    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-serif: 'Newsreader', Georgia, Cambria, 'Times New Roman', serif;
+    --font-mono: 'JetBrains Mono', Menlo, Monaco, Consolas, monospace;
+    --font-heading: var(--font-sans);
+    --font-editorial: var(--font-serif);
+    --font-body: var(--font-sans);
 
-    --transition: 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Radii & Elevation (Minimal, Structured, Architectural) */
+    --radius-sm: 4px;                  /* Razor button & input radius */
+    --radius-card: 10px;               /* Structured card radius */
+    --radius-pill: 9999px;             /* Badges & pill controls */
+
+    --shadow-subtle: 0 1px 3px rgba(10, 31, 24, 0.04), 0 4px 12px rgba(10, 31, 24, 0.02);
+    --shadow-elevated: 0 16px 36px -8px rgba(10, 31, 24, 0.14);
+
+    --transition: 0.18s ease;          /* Clean, non-excessive feedback */
 }
 
 [data-theme="dark"] {
-    /* Epple Dark / Carbon Mode */
-    --bg-canvas: #111215;
-    --bg-surface: #18191d;
-    --bg-surface-inset: #202227;
-    --bg-elevated: #24262c;
+    /* Velvet Obsidian Dark Mode */
+    --bg-canvas: #0c100e;              /* Deep forest obsidian canvas */
+    --bg-surface: #121815;             /* Dark velvet card surface */
+    --bg-surface-inset: #18221d;       /* Inset wells & table headers */
+    --bg-elevated: #1a2620;
 
     --border-hairline: rgba(255, 255, 255, 0.08);
-    --border-strong: #ffffff;
+    --border-strong: rgba(255, 255, 255, 0.18);
+    --border-focus: #34d399;
 
-    --text-primary: #f6f6f4;
-    --text-secondary: #a3a5ad;
-    --text-muted: #6c6e76;
+    --text-primary: #f2f5f3;           /* Crisp alabaster text */
+    --text-secondary: #97a69f;         /* Muted sage secondary text */
+    --text-muted: #64736b;
 
-    --accent-orange: #ff542e;
-    --accent-orange-hover: #ff6845;
-    --accent-orange-dim: rgba(255, 84, 46, 0.12);
+    --accent-forest: #226752;
+    --accent-forest-hover: #2b7d64;
+    --accent-forest-dim: rgba(34, 103, 82, 0.25);
+    --accent-gold: #d4a745;
+    --accent-gold-soft: rgba(212, 167, 69, 0.15);
 
-    --color-income: #22c55e;
-    --color-income-dim: rgba(34, 197, 94, 0.12);
-    --color-expense: #ff542e;
-    --color-expense-dim: rgba(255, 84, 46, 0.12);
+    /* Re-mapped aliases for dark mode */
+    --accent-orange: #226752;
+    --accent-orange-hover: #2b7d64;
+    --accent-orange-dim: rgba(34, 103, 82, 0.25);
 
-    --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-elevated: 0 10px 30px rgba(0, 0, 0, 0.4);
+    --color-income: #34d399;           /* Bright emerald in dark mode */
+    --color-income-dim: rgba(52, 211, 153, 0.12);
+    --color-expense: #f87171;          /* Soft coral-burgundy in dark mode */
+    --color-expense-dim: rgba(248, 113, 113, 0.12);
+    --color-warning: #fbbf24;
+    --color-warning-dim: rgba(251, 191, 36, 0.12);
+
+    --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.35);
+    --shadow-elevated: 0 16px 36px -8px rgba(0, 0, 0, 0.55);
 }
 
 /* Base Styles */
@@ -89,7 +126,7 @@ body {
     transition: background-color var(--transition), color var(--transition);
 }
 
-/* Epple Architectural Card */
+/* Architectural Card */
 .glass-panel {
     background: var(--bg-surface);
     border: 1px solid var(--border-hairline);
@@ -99,7 +136,22 @@ body {
 }
 
 .glass-panel:hover {
-    border-color: rgba(235, 77, 40, 0.3);
+    border-color: var(--border-strong);
+}
+
+/* Editorial Typography Helpers */
+.font-editorial {
+    font-family: var(--font-editorial) !important;
+    font-weight: 500;
+}
+
+.font-sans {
+    font-family: var(--font-sans) !important;
+}
+
+.font-mono {
+    font-family: var(--font-mono) !important;
+    font-variant-numeric: tabular-nums;
 }
 
 /* Typography Scale */
@@ -107,8 +159,8 @@ h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     color: var(--text-primary);
     font-weight: 600;
-    line-height: 1.2;
-    letter-spacing: -0.03em;
+    line-height: 1.25;
+    letter-spacing: -0.025em;
 }
 
 .editorial-tag {
@@ -116,7 +168,7 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--accent-orange);
+    color: var(--accent-forest);
     display: inline-block;
     margin-bottom: 6px;
 }
@@ -125,15 +177,21 @@ h1, h2, h3, h4, h5, h6 {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 14px;
-    font-size: 0.75rem;
+    padding: 5px 12px;
+    font-size: 0.74rem;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     border-radius: var(--radius-pill);
-    background: var(--accent-orange-dim);
-    color: var(--accent-orange);
-    border: 1px solid rgba(235, 77, 40, 0.25);
+    background: var(--forest-100);
+    color: var(--forest-800);
+    border: 1px solid rgba(15, 45, 35, 0.15);
+}
+
+[data-theme="dark"] .brand-badge {
+    background: var(--accent-forest-dim);
+    color: var(--color-income);
+    border-color: rgba(52, 211, 153, 0.25);
 }
 
 /* ==========================================================================
