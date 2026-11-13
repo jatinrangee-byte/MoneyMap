@@ -31,13 +31,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Theme Management
 function initTheme() {
-    const savedTheme = localStorage.getItem("moneymap_theme") || localStorage.getItem("expenseai_theme") || "dark";
+    const savedTheme = localStorage.getItem("moneymap_theme") || localStorage.getItem("expenseai_theme") || "light";
     document.documentElement.setAttribute("data-theme", savedTheme);
     updateThemeIcon(savedTheme);
 }
 
 function toggleTheme() {
-    const current = document.documentElement.getAttribute("data-theme") || "dark";
+    const current = document.documentElement.getAttribute("data-theme") || "light";
     const next = current === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
     localStorage.setItem("moneymap_theme", next);
@@ -114,6 +114,18 @@ function initAuthListeners() {
 }
 
 async function checkAuth() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenParam = urlParams.get("token");
+    if (tokenParam) {
+        state.token = tokenParam;
+        localStorage.setItem("moneymap_token", tokenParam);
+    }
+    const themeParam = urlParams.get("theme");
+    if (themeParam) {
+        document.documentElement.setAttribute("data-theme", themeParam);
+        localStorage.setItem("moneymap_theme", themeParam);
+    }
+
     if (!state.token) {
         showAuthScreen();
         return;
@@ -124,6 +136,9 @@ async function checkAuth() {
         state.currency = data.user.currency || "₹";
         showMainApp();
         initAppDashboard();
+        if (urlParams.get("chat") === "1") {
+            setTimeout(toggleAIChat, 100);
+        }
     } catch (e) {
         showAuthScreen();
     }
@@ -302,6 +317,9 @@ function closeSidebarOnMobile() {
 
 function switchView(viewName) {
     state.currentView = viewName;
+    if (window.location.hash !== `#${viewName}`) {
+        history.replaceState(null, "", `#${viewName}`);
+    }
     closeSidebarOnMobile();
     document.querySelectorAll(".app-view").forEach(v => v.classList.remove("active"));
     document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
@@ -324,8 +342,15 @@ function switchView(viewName) {
 function initAppDashboard() {
     const now = new Date();
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    document.getElementById("dash-current-month").textContent = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
-    loadDashboardData();
+    const monthEl = document.getElementById("dash-current-month");
+    if (monthEl) monthEl.textContent = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+    
+    const hash = window.location.hash.replace("#", "");
+    if (["transactions", "budgets", "ml-lab"].includes(hash)) {
+        switchView(hash);
+    } else {
+        loadDashboardData();
+    }
 }
 
 function filterByCategory(category) {
@@ -879,37 +904,94 @@ async function loadMLLabData() {
         const ml = await apiRequest("/api/ml/insights");
 
         const f = ml.forecast;
-        document.getElementById("lab-curr-spend").textContent = `${state.currency}${f.current_spent.toLocaleString('en-IN')}`;
-        document.getElementById("lab-days-elapsed").textContent = `Day ${f.days_elapsed} of ${f.days_in_month}`;
-        document.getElementById("lab-burn-rate").textContent = `${state.currency}${Math.round(f.daily_burn_rate)} / day`;
-        document.getElementById("lab-projected-spend").textContent = `${state.currency}${Math.round(f.projected_total).toLocaleString('en-IN')}`;
-        document.getElementById("lab-budget-target").textContent = `Target: ${state.currency}${Math.round(ml.total_budget).toLocaleString('en-IN')}`;
-        document.getElementById("lab-slope").textContent = `+${state.currency}${f.spending_slope.toFixed(2)}`;
+        const currSpendEl = document.getElementById("lab-curr-spend");
+        if (currSpendEl) currSpendEl.textContent = `${state.currency}${f.current_spent.toLocaleString('en-IN')}`;
+        
+        const daysEl = document.getElementById("lab-days-elapsed");
+        if (daysEl) daysEl.textContent = `Day ${f.days_elapsed} of ${f.days_in_month}`;
+        
+        const burnEl = document.getElementById("lab-burn-rate");
+        if (burnEl) burnEl.textContent = `${state.currency}${Math.round(f.daily_burn_rate)} / day`;
+        
+        const projEl = document.getElementById("lab-projected-spend");
+        if (projEl) {
+            projEl.textContent = `${state.currency}${Math.round(f.projected_total).toLocaleString('en-IN')}`;
+            if (f.projected_total > ml.total_budget && ml.total_budget > 0) {
+                projEl.className = "f-val font-mono expense-text";
+            } else {
+                projEl.className = "f-val font-mono income-text";
+            }
+        }
+        
+        const targetEl = document.getElementById("lab-budget-target");
+        if (targetEl) targetEl.textContent = `Target: ${state.currency}${Math.round(ml.total_budget).toLocaleString('en-IN')}`;
+        
+        const slopeEl = document.getElementById("lab-slope");
+        if (slopeEl) {
+            const prefix = f.spending_slope >= 0 ? "+" : "";
+            slopeEl.textContent = `${prefix}${state.currency}${f.spending_slope.toFixed(2)}`;
+        }
 
         const alertBox = document.getElementById("lab-forecast-alert");
-        alertBox.innerHTML = `<strong>Pacing:</strong> ${f.status_message}`;
+        if (alertBox) {
+            const isExceeded = f.projected_total > ml.total_budget && ml.total_budget > 0;
+            alertBox.className = `forecast-status-box ${isExceeded ? 'alert-warning' : 'alert-normal'}`;
+            alertBox.innerHTML = `
+                <span class="forecast-status-icon">${isExceeded ? '⚠️' : '✓'}</span>
+                <div>
+                    <strong>Velocity Status:</strong> ${escapeHtml(f.status_message)}
+                </div>
+            `;
+        }
 
         // Anomalies List
         const anomalyContainer = document.getElementById("lab-anomalies-container");
-        if (ml.anomalies.length === 0) {
-            anomalyContainer.innerHTML = `<div class="rec-item">All recorded transactions fall within normal statistical bounds.</div>`;
-        } else {
-            anomalyContainer.innerHTML = ml.anomalies.map(a => `
-                <div class="anomaly-item">
-                    <div class="anomaly-desc">
-                        <strong>${escapeHtml(a.description || 'Expense')} • ${a.category}</strong>
-                        <span>Date: ${a.date} | Deviation: Statistical Outlier (Z-score ≥ +2.5σ)</span>
+        if (anomalyContainer) {
+            if (!ml.anomalies || ml.anomalies.length === 0) {
+                anomalyContainer.innerHTML = `
+                    <div class="empty-state-notice">
+                        <span class="notice-icon">✓</span>
+                        <div>
+                            <strong>No Statistical Outliers Detected</strong>
+                            <p>All recorded transactions fall within expected category distribution limits (Z-score &lt; +2.5σ and 1.5× IQR).</p>
+                        </div>
                     </div>
-                    <div class="anomaly-amount">${state.currency}${a.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
-                </div>
-            `).join("");
+                `;
+            } else {
+                anomalyContainer.innerHTML = ml.anomalies.map(a => `
+                    <div class="anomaly-item">
+                        <div class="anomaly-desc">
+                            <strong>${escapeHtml(a.description || 'Expense')} • <span class="cat-pill">${a.category}</span></strong>
+                            <span class="anomaly-meta font-mono">Date: ${a.date} | Statistical Outlier (Z-score ≥ +2.5σ)</span>
+                        </div>
+                        <div class="anomaly-amount font-mono expense-text">${state.currency}${a.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
+                    </div>
+                `).join("");
+            }
         }
 
         // Recommendations List
         const recContainer = document.getElementById("lab-recommendations-list");
-        recContainer.innerHTML = ml.health.recommendations.map(r => `
-            <div class="rec-item">${r}</div>
-        `).join("");
+        if (recContainer) {
+            if (!ml.health || !ml.health.recommendations || ml.health.recommendations.length === 0) {
+                recContainer.innerHTML = `
+                    <div class="empty-state-notice">
+                        <span class="notice-icon">ℹ️</span>
+                        <div>
+                            <strong>No Recommendations Yet</strong>
+                            <p>Record additional transactions and set monthly budgets to unlock tailored fiscal guidance.</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                recContainer.innerHTML = ml.health.recommendations.map(r => `
+                    <div class="rec-item">
+                        <span class="rec-bullet">◆</span>
+                        <div class="rec-text">${escapeHtml(r)}</div>
+                    </div>
+                `).join("");
+            }
+        }
 
         handleMLSandboxInput();
     } catch (err) {
@@ -930,8 +1012,10 @@ async function handleMLSandboxInput() {
         });
         const data = await res.json();
 
-        document.getElementById("sandbox-predicted-cat").textContent = data.category;
-        document.getElementById("sandbox-predicted-conf").textContent = `${data.confidence}% Confidence`;
+        const catEl = document.getElementById("sandbox-predicted-cat");
+        if (catEl) catEl.textContent = data.category;
+        const confEl = document.getElementById("sandbox-predicted-conf");
+        if (confEl) confEl.textContent = `${data.confidence}% Confidence`;
 
         const barsContainer = document.getElementById("sandbox-prob-bars");
         if (barsContainer && data.probabilities) {
@@ -941,7 +1025,7 @@ async function handleMLSandboxInput() {
                     <div class="prob-bar-container">
                         <div class="prob-bar-fill" style="width: ${Math.max(p.confidence, 4)}%;"></div>
                     </div>
-                    <span class="prob-pct-val">${p.confidence}%</span>
+                    <span class="prob-pct-val font-mono">${p.confidence}%</span>
                 </div>
             `).join("");
         }

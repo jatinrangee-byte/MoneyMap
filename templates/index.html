@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,8 +21,8 @@
             <!-- Left Branding Showcase with High-Res Photography -->
             <div class="auth-hero">
                 <div>
-                    <div class="brand-badge">
-                        Intelligent Wealth Management • v2.0
+                    <div class="brand-badge mb-2">
+                        Intelligent Wealth Management • Editorial Fintech
                     </div>
                 </div>
 
@@ -30,8 +30,8 @@
                 <div class="auth-hero-image-wrap">
                     <img src="/static/images/hero.jpg" alt="Modern workspace and wealth analytics" class="auth-hero-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80';">
                     <div class="auth-hero-overlay">
-                        <h2>Precision Personal Finance.</h2>
-                        <p>Precision personal finance powered by machine-learning forecasting and automated Bayesian categorization.</p>
+                        <h2 class="font-editorial">Precision Personal Finance.</h2>
+                        <p>Architected for wealth preservation, predictive velocity forecasting, and active Bayesian intelligence.</p>
                     </div>
                 </div>
 
@@ -614,23 +614,27 @@
 
                     <div class="ml-forecast-grid">
                         <div class="forecast-metric-box">
+                            <div class="metric-classification-tag empirical">Empirical Data</div>
                             <span class="f-label">Current Spend</span>
-                            <span class="f-val" id="lab-curr-spend">₹0</span>
+                            <span class="f-val font-mono" id="lab-curr-spend">₹0</span>
                             <span class="f-sub" id="lab-days-elapsed">Day 0 of month</span>
                         </div>
                         <div class="forecast-metric-box">
+                            <div class="metric-classification-tag empirical">Calculated Velocity</div>
                             <span class="f-label">Daily Burn Rate</span>
-                            <span class="f-val" id="lab-burn-rate">₹0 / day</span>
+                            <span class="f-val font-mono" id="lab-burn-rate">₹0 / day</span>
                             <span class="f-sub">Blended historical + 7-day rate</span>
                         </div>
                         <div class="forecast-metric-box">
+                            <div class="metric-classification-tag prediction">ML Prediction</div>
                             <span class="f-label">Projected Month-End</span>
-                            <span class="f-val" style="color: var(--accent-orange);" id="lab-projected-spend">₹0</span>
+                            <span class="f-val font-mono" id="lab-projected-spend">₹0</span>
                             <span class="f-sub" id="lab-budget-target">Target: ₹0</span>
                         </div>
                         <div class="forecast-metric-box">
+                            <div class="metric-classification-tag prediction">Regression Model</div>
                             <span class="f-label">Spending Slope (m)</span>
-                            <span class="f-val" id="lab-slope">+₹0.00</span>
+                            <span class="f-val font-mono" id="lab-slope">+₹0.00</span>
                             <span class="f-sub">Velocity slope y = mx + c</span>
                         </div>
                     </div>
