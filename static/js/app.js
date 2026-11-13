@@ -577,25 +577,25 @@ function renderFullTransactions(transactions) {
     if (!tbody) return;
 
     if (!transactions.length) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4">No matching transactions found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4" style="color: var(--text-muted); font-size: 0.9rem;">No matching transactions found. Try adjusting your search query or filters.</td></tr>`;
         return;
     }
 
     tbody.innerHTML = transactions.map(t => `
         <tr>
-            <td>${t.date}</td>
-            <td><span class="type-pill ${t.type}">${t.type === 'income' ? 'Income' : 'Expense'}</span></td>
+            <td class="font-mono" style="font-size: 0.85rem; color: var(--text-muted);">${t.date}</td>
+            <td><span class="type-pill ${t.type}">${t.type === 'income' ? '+ Income' : '- Expense'}</span></td>
             <td><span class="cat-pill">${t.category}</span></td>
-            <td><strong>${escapeHtml(t.description || '-')}</strong></td>
-            <td class="amount-cell ${t.type === 'income' ? 'income-text' : 'expense-text'}">
+            <td><strong style="font-weight: 600; color: var(--text-primary);">${escapeHtml(t.description || '-')}</strong></td>
+            <td class="amount-cell ${t.type === 'income' ? 'income-text' : 'expense-text'} font-mono">
                 ${t.type === 'income' ? '+' : '-'}${state.currency}${t.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </td>
             <td>
-                ${t.is_anomaly ? '<span class="anomaly-badge" title="Statistical outlier: Amount significantly higher than normal">Outlier</span>' : '<span class="anomaly-badge normal">Normal</span>'}
+                ${t.is_anomaly ? '<span class="anomaly-badge" title="Statistical outlier: Amount significantly deviates from category distribution">Outlier (+2.5σ)</span>' : '<span class="anomaly-badge normal">Normal</span>'}
             </td>
             <td class="text-right">
-                <button class="table-action-btn" onclick="openEditTransactionModal(${t.id})" title="Edit">Edit</button>
-                <button class="table-action-btn delete-btn" onclick="deleteTransaction(${t.id})" title="Delete">Delete</button>
+                <button class="table-action-btn" onclick="openEditTransactionModal(${t.id})" title="Edit transaction">Edit</button>
+                <button class="table-action-btn delete-btn" onclick="deleteTransaction(${t.id})" title="Delete transaction">Delete</button>
             </td>
         </tr>
     `).join("");
@@ -785,8 +785,11 @@ function renderBudgetCards(budgets) {
 
     if (!budgets.length) {
         container.innerHTML = `
-            <div class="glass-panel text-center py-4" style="grid-column: 1 / -1;">
-                <p>No category budgets defined yet. Click "+ Set Budget Limit" to configure.</p>
+            <div class="glass-panel text-center" style="grid-column: 1 / -1; padding: 48px 24px;">
+                <div style="font-size: 2.2rem; margin-bottom: 12px;">🎯</div>
+                <h4 style="font-size: 1.15rem; font-weight: 600; margin-bottom: 6px; color: var(--text-primary);">No Category Budgets Configured</h4>
+                <p style="color: var(--text-muted); font-size: 0.88rem; max-width: 440px; margin: 0 auto 18px auto; line-height: 1.5;">Establish monthly spending thresholds per functional category to track velocity, maintain cash flow buffers, and prevent deficits.</p>
+                <button class="btn btn-primary btn-sm" onclick="openBudgetModal()">+ Set Budget Limit</button>
             </div>
         `;
         return;
@@ -795,25 +798,32 @@ function renderBudgetCards(budgets) {
     container.innerHTML = budgets.map(b => {
         const pct = Math.min(b.percentage, 100);
         let barClass = "normal";
-        if (b.percentage >= 100) barClass = "exceeded";
-        else if (b.percentage >= 80) barClass = "warning";
+        let statusBadge = '<span class="budget-status-pill normal">On Track</span>';
+
+        if (b.percentage >= 100) {
+            barClass = "exceeded";
+            statusBadge = '<span class="budget-status-pill exceeded">Exceeded</span>';
+        } else if (b.percentage >= 80) {
+            barClass = "warning";
+            statusBadge = '<span class="budget-status-pill warning">Near Limit</span>';
+        }
 
         return `
             <div class="budget-card glass-panel">
                 <div class="budget-card-header">
-                    <div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
                         <span class="budget-cat-name">${b.category}</span>
-                        ${b.is_exceeded ? '<span class="anomaly-badge" style="margin-left: 8px;">Exceeded</span>' : ''}
+                        ${statusBadge}
                     </div>
-                    <button class="budget-del-btn" onclick="deleteBudget(${b.id})" title="Delete Budget">✕</button>
+                    <button class="budget-del-btn" onclick="deleteBudget(${b.id})" title="Delete Budget" aria-label="Delete Budget">✕</button>
                 </div>
 
                 <div class="budget-amounts">
                     <div>
-                        Spent: <span class="budget-spent-strong">${state.currency}${b.spent.toLocaleString('en-IN')}</span>
+                        Spent: <span class="budget-spent-strong font-mono">${state.currency}${b.spent.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                     </div>
                     <div>
-                        Limit: <strong>${state.currency}${b.monthly_limit.toLocaleString('en-IN')}</strong>
+                        Limit: <strong class="font-mono">${state.currency}${b.monthly_limit.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong>
                     </div>
                 </div>
 
@@ -822,8 +832,8 @@ function renderBudgetCards(budgets) {
                 </div>
 
                 <div class="budget-card-footer">
-                    <span>${b.percentage}% utilized</span>
-                    <span>Remaining: ${state.currency}${b.remaining.toLocaleString('en-IN')}</span>
+                    <span class="font-mono">${b.percentage}% utilized</span>
+                    <span>Cushion: <strong class="font-mono ${b.is_exceeded ? 'expense-text' : 'income-text'}">${state.currency}${b.remaining.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong></span>
                 </div>
             </div>
         `;
