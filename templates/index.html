@@ -14,9 +14,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Canvas Confetti for Celebratory UX -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <!-- Material Symbols Outlined (UniMap Design System) -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body class="editorial-body">
+<body class="editorial-body blueprint-grid">
     <div id="toast-container" class="toast-container"></div>
 
     <!-- ==========================================================================
@@ -32,20 +34,46 @@
             <div class="ambient-blob blob-forest blob-pos-4"></div>
         </div>
 
-        <!-- Site Header Navigation -->
-        <header class="nyc-site-header">
-            <a href="#top" class="brand" aria-label="MoneyMap Home">
-                <span class="brand-glyph">🗺️</span>
-                <span class="brand-text">Money<br>Map.</span>
-            </a>
-            <div class="nav-quick" aria-label="Quick links">
-                <a href="#showcase" class="nav-link">Showcase</a>
-                <a href="#simulator" class="nav-link">Simulator</a>
-                <a href="#pillars" class="nav-link">Intelligence</a>
-                <a href="#method" class="nav-link">The Method</a>
-                <button type="button" class="nav-link-btn" onclick="openAuthModal('login')">Sign In</button>
-                <button type="button" class="register-pill-btn" onclick="openAuthModal('register')">Get Started</button>
-                <button id="landing-theme-toggle" class="theme-toggle-pill" onclick="toggleTheme()" title="Toggle Theme">🌙</button>
+        <!-- Floating Glass Capsule Header (UniMap Technical Architecture) -->
+        <header class="unimap-capsule-header" aria-label="Site Navigation">
+            <div class="unimap-capsule-inner glass-capsule">
+                <a href="#top" class="unimap-brand" aria-label="MoneyMap Home">
+                    <div class="unimap-brand-badge">
+                        <span class="material-symbols-outlined unimap-icon">explore</span>
+                    </div>
+                    <span class="unimap-brand-name">Money<strong>Map</strong></span>
+                    <span class="unimap-live-dot" title="Real-time Capital Routing Active"></span>
+                </a>
+
+                <nav class="unimap-nav-links" aria-label="Quick links">
+                    <a href="#showcase" class="unimap-nav-pill">
+                        <span class="material-symbols-outlined nav-glyph">route</span>
+                        <span>Routing</span>
+                    </a>
+                    <a href="#capital-map" class="unimap-nav-pill">
+                        <span class="material-symbols-outlined nav-glyph">map</span>
+                        <span>Capital Map</span>
+                    </a>
+                    <a href="#simulator" class="unimap-nav-pill">
+                        <span class="material-symbols-outlined nav-glyph">calculate</span>
+                        <span>Simulator</span>
+                    </a>
+                    <a href="#pillars" class="unimap-nav-pill">
+                        <span class="material-symbols-outlined nav-glyph">neurology</span>
+                        <span>Intelligence</span>
+                    </a>
+                </nav>
+
+                <div class="unimap-nav-actions">
+                    <button type="button" class="unimap-btn-ghost" onclick="openAuthModal('login')">Sign In</button>
+                    <button type="button" class="unimap-btn-coral" onclick="openAuthModal('register')">
+                        <span class="material-symbols-outlined btn-glyph">near_me</span>
+                        <span>Start Navigating</span>
+                    </button>
+                    <button id="landing-theme-toggle" class="unimap-theme-btn" onclick="toggleTheme()" title="Toggle Theme">
+                        <span class="material-symbols-outlined theme-icon">dark_mode</span>
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -54,29 +82,27 @@
             <!-- HERO SECTION -->
             <section class="builder-hero">
                 <div class="builder-intro">
-                    <p class="builder-kicker">Intelligent Wealth Architecture • Real-Time ML Engine</p>
+                    <p class="builder-kicker">
+                        <span class="material-symbols-outlined kicker-glyph">explore</span>
+                        <span>Graph-Based Capital Navigation • Precision Wealth Architecture</span>
+                    </p>
                     <h1 class="builder-title">
                         <span class="builder-title-fill">
-                            <span class="builder-title-line">Wealth is preserved in</span>
-                            <span class="builder-title-line"><em>decisions, not spreadsheets.</em></span>
+                            <span class="builder-title-line">Navigate your capital</span>
+                            <span class="builder-title-line"><em class="unimap-coral-text">like an interactive map.</em></span>
                         </span>
                     </h1>
                     <p class="builder-description">
-                        Systematically audited, intelligently forecasted. MoneyMap uses Bayesian text categorization, outlier Z-scores, and velocity regression to give you true command over your capital.
+                        Graph-based personal capital routing, Bayesian categorization, and velocity regression. Discover every spending leak, forecast month-end buffers, and reach complete financial clarity.
                     </p>
                     <div class="builder-actions">
-                        <button type="button" class="builder-primary" onclick="openAuthModal('register')">
-                            <svg class="builder-call-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                            </svg>
-                            Start Building Wealth
+                        <button type="button" class="unimap-btn-coral-lg" onclick="openAuthModal('register')">
+                            <span class="material-symbols-outlined btn-glyph">near_me</span>
+                            <span>Start Navigating</span>
                         </button>
-                        <a class="builder-secondary" href="#simulator">
-                            Try Wealth Simulator
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M7 7h10v10"></path>
-                                <path d="M7 17 17 7"></path>
-                            </svg>
+                        <a class="unimap-btn-outline-lg" href="#capital-map">
+                            <span class="material-symbols-outlined btn-glyph">navigation</span>
+                            <span>Inspect Capital Map</span>
                         </a>
                     </div>
                 </div>
@@ -249,6 +275,136 @@
                                 <i style="--n:11;--bar:78%"></i>
                             </div>
                             <small class="font-mono">Linear slope velocity projection</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PIXEL DIVIDER -->
+            <div class="pixel-divider" aria-hidden="true"></div>
+
+            <!-- INTERACTIVE CAPITAL MAP & ROUTE NAVIGATOR (Inspired by UniMap MITS Map) -->
+            <section id="capital-map" class="unimap-map-section">
+                <div class="feature-heading text-center">
+                    <p class="eyebrow">
+                        <span class="material-symbols-outlined kicker-glyph">near_me</span>
+                        <span>Indoor Capital Navigation</span>
+                    </p>
+                    <h2>Multi-Floor Capital Routing. <em>Step by step.</em></h2>
+                    <p class="section-desc-subtle">Just like UniMap guides you through campus blocks and classrooms, MoneyMap charts the precise route of your money from origin to compounding vault.</p>
+                </div>
+
+                <div class="unimap-route-card border-glow-card">
+                    <!-- Top Navigation Indicator Pill -->
+                    <div class="route-header-dock">
+                        <div class="route-point-badge">
+                            <span class="route-pulse-dot"></span>
+                            <span class="font-mono text-xs">GPS // Active Route 01</span>
+                        </div>
+                        <div class="route-stats-chips">
+                            <span class="route-chip"><span class="material-symbols-outlined chip-icon">stairs</span> 3 Floors</span>
+                            <span class="route-chip"><span class="material-symbols-outlined chip-icon">speed</span> +2.5σ Safe</span>
+                            <span class="route-chip highlight-chip"><span class="material-symbols-outlined chip-icon">flag</span> Target: Vault L2</span>
+                        </div>
+                    </div>
+
+                    <div class="unimap-router-grid">
+                        <!-- Left Column: Waypoints / Routing Nodes -->
+                        <div class="router-waypoints-col">
+                            <div class="waypoint-item active-origin">
+                                <div class="waypoint-node origin-node">
+                                    <span class="material-symbols-outlined">payments</span>
+                                </div>
+                                <div class="waypoint-details">
+                                    <div class="flex-items-center justify-between">
+                                        <h4 class="waypoint-title">Source: Monthly Inflows</h4>
+                                        <span class="waypoint-distance font-mono">0m • Origin</span>
+                                    </div>
+                                    <p class="waypoint-sub">Gross earnings, salary credits, transfers</p>
+                                </div>
+                            </div>
+
+                            <div class="waypoint-connector">
+                                <span class="connector-line"></span>
+                            </div>
+
+                            <div class="waypoint-item">
+                                <div class="waypoint-node node-cyan">
+                                    <span class="material-symbols-outlined">home_work</span>
+                                </div>
+                                <div class="waypoint-details">
+                                    <div class="flex-items-center justify-between">
+                                        <h4 class="waypoint-title">Floor L0: Fixed Needs Baseline</h4>
+                                        <span class="waypoint-distance font-mono">120m • 50% Cap</span>
+                                    </div>
+                                    <p class="waypoint-sub">Rent, electricity, provisions, transit pass</p>
+                                </div>
+                            </div>
+
+                            <div class="waypoint-connector">
+                                <span class="connector-line"></span>
+                            </div>
+
+                            <div class="waypoint-item">
+                                <div class="waypoint-node node-purple">
+                                    <span class="material-symbols-outlined">local_cafe</span>
+                                </div>
+                                <div class="waypoint-details">
+                                    <div class="flex-items-center justify-between">
+                                        <h4 class="waypoint-title">Floor L1: Discretionary Corridor</h4>
+                                        <span class="waypoint-distance font-mono">80m • 30% Cap</span>
+                                    </div>
+                                    <p class="waypoint-sub">Dining, entertainment, personal leisure</p>
+                                </div>
+                            </div>
+
+                            <div class="waypoint-connector">
+                                <span class="connector-line"></span>
+                            </div>
+
+                            <div class="waypoint-item active-target">
+                                <div class="waypoint-node target-node">
+                                    <span class="material-symbols-outlined">lock</span>
+                                </div>
+                                <div class="waypoint-details">
+                                    <div class="flex-items-center justify-between">
+                                        <h4 class="waypoint-title">Floor L2: Compounding Wealth Vault</h4>
+                                        <span class="waypoint-distance text-coral font-mono font-bold">340m • 20% Net</span>
+                                    </div>
+                                    <p class="waypoint-sub">Target: Automated reserve &amp; emergency wealth cushion</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Interactive Turn-by-Turn Guidance -->
+                        <div class="router-guidance-col">
+                            <div class="guidance-banner">
+                                <div class="guidance-icon-circle">
+                                    <span class="material-symbols-outlined guidance-glyph">turn_slight_right</span>
+                                </div>
+                                <div>
+                                    <span class="guidance-step-label font-mono">TURN-BY-TURN GUIDANCE</span>
+                                    <h3 class="guidance-instruction">Maintain velocity under ₹1,600 / day to clear Waypoint L1 without deficit.</h3>
+                                </div>
+                            </div>
+
+                            <div class="guidance-metrics-bento">
+                                <div class="guidance-metric-card">
+                                    <span class="metric-label">Route Status</span>
+                                    <span class="metric-value font-mono text-emerald">Optimal 🟢</span>
+                                    <span class="metric-footnote">0 Deviation Alerts</span>
+                                </div>
+                                <div class="guidance-metric-card">
+                                    <span class="metric-label">Efficiency</span>
+                                    <span class="metric-value font-mono text-cyan">98.4%</span>
+                                    <span class="metric-footnote">Optimal Path</span>
+                                </div>
+                            </div>
+
+                            <button type="button" class="unimap-route-btn" onclick="triggerSimulatorCelebration()">
+                                <span class="material-symbols-outlined">directions_walk</span>
+                                <span>Simulate Capital Journey</span>
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -15,10 +15,17 @@
     --forest-100: #eaf1ed;             /* Soft forest green wash */
     --forest-50:  #f4f7f5;             /* Subtle card fill */
 
-    /* Editorial Warm White Surfaces (Museum / Archival Gallery) */
-    --bg-canvas: #fbfbf9;              /* Warm archival paper / cream canvas */
-    --bg-surface: #ffffff;             /* Pure alabaster crisp card surface */
-    --bg-surface-inset: #f3f4ee;       /* Inset data wells, table headers */
+    /* UniMap Architectural Palette Tokens */
+    --unimap-coral: #ff602e;
+    --unimap-coral-hover: #ff7b52;
+    --unimap-cyan: #06b6d4;
+    --unimap-cyan-dim: rgba(6, 182, 212, 0.12);
+    --unimap-dark: #0A1931;
+
+    /* Technical Blueprint Canvas Surfaces (UniMap #fcfaf6) */
+    --bg-canvas: #fcfaf6;              /* Technical warm alabaster blueprint paper */
+    --bg-surface: #ffffff;             /* Crisp pure card surface */
+    --bg-surface-inset: #f5f3ed;       /* Inset data wells, table headers */
     --bg-elevated: #ffffff;            /* Elevated dropdowns & modals */
 
     /* Hairline Architecture */
@@ -71,11 +78,16 @@
 }
 
 [data-theme="dark"] {
-    /* Velvet Obsidian Dark Mode */
-    --bg-canvas: #0c100e;              /* Deep forest obsidian canvas */
-    --bg-surface: #121815;             /* Dark velvet card surface */
-    --bg-surface-inset: #18221d;       /* Inset wells & table headers */
-    --bg-elevated: #1a2620;
+    /* UniMap Blueprint Obsidian Dark Mode (#050505) */
+    --bg-canvas: #050505;              /* Ultra-deep technical obsidian canvas */
+    --bg-surface: #0e1215;             /* Precision dark card surface */
+    --bg-surface-inset: #141a1f;       /* Inset wells & table headers */
+    --bg-elevated: #182026;
+
+    --unimap-coral: #ff602e;
+    --unimap-coral-hover: #ff7b52;
+    --unimap-cyan: #22d3ee;
+    --unimap-cyan-dim: rgba(34, 211, 238, 0.15);
 
     --border-hairline: rgba(255, 255, 255, 0.08);
     --border-strong: rgba(255, 255, 255, 0.18);
@@ -4620,5 +4632,591 @@ h1, h2, h3, h4, h5, h6 {
     animation: auraBreath 3.5s infinite ease-in-out;
     pointer-events: none;
 }
+
+/* ==========================================================================
+   UNIMAP TECHNICAL BLUEPRINT DESIGN SYSTEM (https://unimap.dotrwt.in/)
+   Geometric Blueprint Grid, Glass Capsule Navigation, Multi-Floor Waypoints
+   ========================================================================== */
+
+/* 1. Blueprint Engineering Grid Background */
+.blueprint-grid {
+    background-color: #fcfaf6;
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-attachment: fixed;
+}
+
+[data-theme="dark"].blueprint-grid,
+[data-theme="dark"] .blueprint-grid {
+    background-color: #050505;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-attachment: fixed;
+}
+
+/* Text Accent Colors */
+.unimap-coral-text {
+    color: var(--unimap-coral);
+    font-style: italic;
+}
+
+.text-coral { color: var(--unimap-coral) !important; }
+.text-cyan { color: var(--unimap-cyan) !important; }
+
+/* 2. Floating Glass Capsule Header (UniMap Capsule Dock) */
+.unimap-capsule-header {
+    position: sticky;
+    top: 16px;
+    z-index: 100;
+    width: 100%;
+    padding: 0 16px;
+    margin-bottom: 24px;
+}
+
+.unimap-capsule-inner {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 8px 14px 8px 18px;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.glass-capsule {
+    background: rgba(252, 250, 246, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .glass-capsule {
+    background: rgba(10, 10, 10, 0.86);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.6);
+}
+
+.unimap-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+.unimap-brand-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--unimap-coral);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(255, 96, 46, 0.4);
+}
+
+.unimap-icon {
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.unimap-brand-name {
+    font-size: 0.98rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.unimap-live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 6px #10b981;
+    animation: radarPingEffect 2s infinite ease-out;
+}
+
+.unimap-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.unimap-nav-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.unimap-nav-pill:hover {
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .unimap-nav-pill:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-glyph {
+    font-size: 0.95rem;
+    opacity: 0.75;
+}
+
+.unimap-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.unimap-btn-ghost {
+    background: transparent;
+    border: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.unimap-btn-ghost:hover {
+    color: var(--text-primary);
+}
+
+.unimap-btn-coral {
+    background: var(--unimap-coral);
+    color: #ffffff;
+    border: none;
+    padding: 7px 16px;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(255, 96, 46, 0.35);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.unimap-btn-coral:hover {
+    background: var(--unimap-coral-hover);
+    transform: translateY(-1px);
+}
+
+.unimap-theme-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--border-hairline);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.theme-icon {
+    font-size: 1.1rem;
+}
+
+/* 3. Hero Buttons (UniMap Coral & Pill Outlines) */
+.unimap-btn-coral-lg {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--unimap-coral);
+    color: #ffffff;
+    border: none;
+    padding: 13px 26px;
+    border-radius: 9999px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 24px -4px rgba(255, 96, 46, 0.45);
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+}
+
+.unimap-btn-coral-lg:hover {
+    background: var(--unimap-coral-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px -4px rgba(255, 96, 46, 0.55);
+}
+
+.unimap-btn-outline-lg {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-strong);
+    padding: 13px 24px;
+    border-radius: 9999px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.unimap-btn-outline-lg:hover {
+    background: var(--bg-surface-inset);
+    border-color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+.btn-glyph {
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.kicker-glyph {
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--unimap-coral);
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+/* 4. UniMap Capital Flow Router & Multi-Floor Waypoints (`#capital-map`) */
+.unimap-map-section {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 64px 24px;
+    position: relative;
+    z-index: 2;
+}
+
+.border-glow-card {
+    border-radius: 28px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-hairline);
+    box-shadow: 0 18px 48px -12px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+[data-theme="dark"] .border-glow-card {
+    background: #0c0f13;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 18px 48px -12px rgba(0, 0, 0, 0.65);
+}
+
+.border-glow-card:hover {
+    border-color: rgba(255, 96, 46, 0.35);
+}
+
+.unimap-route-card {
+    padding: 32px;
+}
+
+.route-header-dock {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--border-hairline);
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.route-point-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    background: var(--bg-surface-inset);
+    border: 1px solid var(--border-hairline);
+    font-weight: 700;
+}
+
+.route-pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--unimap-coral);
+    box-shadow: 0 0 8px var(--unimap-coral);
+}
+
+.route-stats-chips {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.route-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 11px;
+    border-radius: 9999px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    background: var(--bg-surface-inset);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-hairline);
+}
+
+.route-chip.highlight-chip {
+    background: rgba(255, 96, 46, 0.1);
+    color: var(--unimap-coral);
+    border-color: rgba(255, 96, 46, 0.3);
+}
+
+.chip-icon {
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+.unimap-router-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 36px;
+    align-items: center;
+}
+
+/* Waypoints Column */
+.router-waypoints-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.waypoint-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: var(--bg-surface-inset);
+    border: 1px solid var(--border-hairline);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.waypoint-item:hover {
+    transform: translateX(4px);
+    border-color: var(--border-strong);
+}
+
+.waypoint-item.active-origin {
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.waypoint-item.active-target {
+    border-color: rgba(255, 96, 46, 0.4);
+    background: linear-gradient(135deg, rgba(255, 96, 46, 0.05), transparent);
+}
+
+.waypoint-node {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.15rem;
+}
+
+.origin-node {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+}
+
+.node-cyan {
+    background: rgba(6, 182, 212, 0.15);
+    color: #06b6d4;
+}
+
+.node-purple {
+    background: rgba(168, 85, 247, 0.15);
+    color: #a855f7;
+}
+
+.target-node {
+    background: rgba(255, 96, 46, 0.15);
+    color: var(--unimap-coral);
+    box-shadow: 0 0 14px rgba(255, 96, 46, 0.3);
+}
+
+.waypoint-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.waypoint-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.waypoint-distance {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.waypoint-sub {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.waypoint-connector {
+    padding-left: 32px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+}
+
+.connector-line {
+    width: 2px;
+    height: 100%;
+    background: dashed;
+    border-left: 2px dashed var(--border-strong);
+}
+
+/* Guidance Column */
+.router-guidance-col {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.guidance-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 16px;
+    background: var(--bg-surface-inset);
+    border: 1px solid var(--border-hairline);
+}
+
+.guidance-icon-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--unimap-coral);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.guidance-glyph {
+    font-size: 1.4rem;
+}
+
+.guidance-step-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--unimap-coral);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.guidance-instruction {
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--text-primary);
+}
+
+.guidance-metrics-bento {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.guidance-metric-card {
+    padding: 16px;
+    border-radius: 14px;
+    background: var(--bg-surface-inset);
+    border: 1px solid var(--border-hairline);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metric-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.metric-value {
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.metric-footnote {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.unimap-route-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--unimap-coral);
+    color: #ffffff;
+    border: none;
+    padding: 13px;
+    border-radius: 14px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 20px -4px rgba(255, 96, 46, 0.4);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.unimap-route-btn:hover {
+    background: var(--unimap-coral-hover);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 860px) {
+    .unimap-capsule-header {
+        padding: 0 8px;
+    }
+    .unimap-nav-links {
+        display: none;
+    }
+    .unimap-router-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    .unimap-route-card {
+        padding: 20px;
+    }
+}
+
 
 
