@@ -7,6 +7,11 @@ import os
 from typing import Optional, Dict, Any
 from dotenv import load_dotenv
 
+try:
+    import jwt as pyjwt
+except ImportError:
+    pyjwt = None
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 if not os.environ.get("TESTING"):
     load_dotenv(os.path.join(BASE_DIR, ".env"))
@@ -93,6 +98,8 @@ def verify_supabase_token(jwt_token: str) -> Optional[Dict[str, Any]]:
 
     # 2. Resilient JWT fallback (validates claims and unexpired exp)
     try:
+        if not pyjwt:
+            return None
         payload = pyjwt.decode(jwt_token, options={"verify_signature": False})
         if payload and "sub" in payload:
             exp = payload.get("exp", 0)

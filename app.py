@@ -37,6 +37,28 @@ app.config["SECRET_KEY"] = _secret
 database.init_db()
 
 
+# ---------------- GLOBAL ERROR HANDLERS ----------------
+
+@app.errorhandler(500)
+def internal_error(e):
+    import traceback
+    traceback.print_exc()
+    return jsonify({"error": "Internal server error. Please try again."}), 500
+
+@app.errorhandler(404)
+def not_found(e):
+    # For API routes return JSON; for other routes return index (SPA fallback)
+    if request.path.startswith("/api/"):
+        return jsonify({"error": "Endpoint not found."}), 404
+    return render_template("index.html")
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    import traceback
+    traceback.print_exc()
+    return jsonify({"error": str(e)}), 500
+
+
 # ---------------- AUTHENTICATION DECORATOR ----------------
 
 def require_auth(f):

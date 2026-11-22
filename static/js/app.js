@@ -403,72 +403,69 @@ function filterByCategory(category) {
 // ==========================================================================
 
 async function loadDashboardData() {
-    try {
-        const [sumRes, mlRes, txRes] = await Promise.all([
-            apiRequest("/api/summary"),
-            apiRequest("/api/ml/insights"),
-            apiRequest("/api/transactions?limit=6")
-        ]);
+    // Use allSettled so a single failing endpoint never crashes the whole dashboard
+    const [sumResult, mlResult, txResult] = await Promise.allSettled([
+        apiRequest("/api/summary", { silent: true }),
+        apiRequest("/api/ml/insights", { silent: true }),
+        apiRequest("/api/transactions?limit=6", { silent: true })
+    ]);
 
-        const summary = sumRes.summary;
-        const ml = mlRes;
+    // --- Summary / KPI block ---
+    if (sumResult.status === "fulfilled") {
+        const summary = sumResult.value.summary;
 
-        // KPI Updates
         document.getElementById("kpi-balance").textContent = `${state.currency}${summary.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
         document.getElementById("kpi-income").textContent = `${state.currency}${summary.total_income.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
         document.getElementById("kpi-expense").textContent = `${state.currency}${summary.total_expenses.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
 
-        // Health Score
-        const healthScore = ml.health.score;
+        // Update Category Photo Grid spends
+        const catMap = {};
+        (summary.category_breakdown || []).forEach(c => catMap[c.category] = c.total);
+        if (document.getElementById("cat-spend-food")) document.getElementById("cat-spend-food").textContent = `${state.currency}${(catMap["Food & Dining"] || 0).toLocaleString('en-IN')}`;
+        if (document.getElementById("cat-spend-edu")) document.getElementById("cat-spend-edu").textContent = `${state.currency}${(catMap["Education"] || 0).toLocaleString('en-IN')}`;
+        if (document.getElementById("cat-spend-transit")) document.getElementById("cat-spend-transit").textContent = `${state.currency}${(catMap["Transportation"] || 0).toLocaleString('en-IN')}`;
+        if (document.getElementById("cat-spend-housing")) document.getElementById("cat-spend-housing").textContent = `${state.currency}${(catMap["Housing & Utilities"] || 0).toLocaleString('en-IN')}`;
+
+        renderCashflowChart(summary.daily_timeline || []);
+        renderCategoryChart(summary.category_breakdown || []);
+    } else {
+        console.error("Summary load failed:", sumResult.reason);
+    }
+
+    // --- ML Insights / Health Score / Forecast block ---
+    if (mlResult.status === "fulfilled") {
+        const ml = mlResult.value;
+        const healthScore = ml.health ? ml.health.score : 0;
         const scoreEl = document.getElementById("kpi-health-score");
         if (scoreEl) scoreEl.textContent = `${healthScore}`;
         const healthBadge = document.getElementById("kpi-health-badge");
-        if (healthBadge) {
-            healthBadge.textContent = ml.health.grade;
-            healthBadge.className = `health-score-badge`;
-        }
+        if (healthBadge) { healthBadge.textContent = ml.health ? ml.health.grade : "--"; healthBadge.className = "health-score-badge"; }
         const healthFill = document.getElementById("kpi-health-fill");
         if (healthFill) {
             if (healthFill.tagName && healthFill.tagName.toLowerCase() === "circle") {
                 const circumference = 251.2;
-                const offset = circumference * (1 - (healthScore / 100));
-                healthFill.style.strokeDashoffset = offset;
+                healthFill.style.strokeDashoffset = circumference * (1 - (healthScore / 100));
             } else {
                 healthFill.style.width = `${healthScore}%`;
             }
         }
+        const forecast = ml.forecast || {};
+        const fMsg = document.getElementById("forecast-status-msg"); if (fMsg) fMsg.textContent = forecast.status_message || "";
+        const fBurn = document.getElementById("forecast-burn-rate"); if (fBurn) fBurn.textContent = `${state.currency}${Math.round(forecast.daily_burn_rate || 0)}/day`;
+        const fProj = document.getElementById("forecast-projected-total"); if (fProj) fProj.textContent = `${state.currency}${Math.round(forecast.projected_total || 0).toLocaleString('en-IN')}`;
+        const fBudg = document.getElementById("forecast-total-budget"); if (fBudg) fBudg.textContent = `${state.currency}${Math.round(ml.total_budget || 0).toLocaleString('en-IN')}`;
+    } else {
+        console.error("ML insights load failed:", mlResult.reason);
+        const scoreEl = document.getElementById("kpi-health-score"); if (scoreEl) scoreEl.textContent = "--";
+        const healthBadge = document.getElementById("kpi-health-badge"); if (healthBadge) healthBadge.textContent = "N/A";
+    }
 
-        // Update Category Photo Grid spends
-        const catMap = {};
-        summary.category_breakdown.forEach(c => catMap[c.category] = c.total);
-        if (document.getElementById("cat-spend-food")) {
-            document.getElementById("cat-spend-food").textContent = `${state.currency}${(catMap["Food & Dining"] || 0).toLocaleString('en-IN')}`;
-        }
-        if (document.getElementById("cat-spend-edu")) {
-            document.getElementById("cat-spend-edu").textContent = `${state.currency}${(catMap["Education"] || 0).toLocaleString('en-IN')}`;
-        }
-        if (document.getElementById("cat-spend-transit")) {
-            document.getElementById("cat-spend-transit").textContent = `${state.currency}${(catMap["Transportation"] || 0).toLocaleString('en-IN')}`;
-        }
-        if (document.getElementById("cat-spend-housing")) {
-            document.getElementById("cat-spend-housing").textContent = `${state.currency}${(catMap["Housing & Utilities"] || 0).toLocaleString('en-IN')}`;
-        }
-
-        // Forecast Card
-        const forecast = ml.forecast;
-        document.getElementById("forecast-status-msg").textContent = forecast.status_message;
-        document.getElementById("forecast-burn-rate").textContent = `${state.currency}${Math.round(forecast.daily_burn_rate)}/day`;
-        document.getElementById("forecast-projected-total").textContent = `${state.currency}${Math.round(forecast.projected_total).toLocaleString('en-IN')}`;
-        document.getElementById("forecast-total-budget").textContent = `${state.currency}${Math.round(ml.total_budget).toLocaleString('en-IN')}`;
-
-        // Render Charts with Epple Palette
-        renderCashflowChart(summary.daily_timeline);
-        renderCategoryChart(summary.category_breakdown);
-
-        // Render Recent Transactions
-        renderRecentTransactions(txRes.transactions);
-    } catch (err) {
-        console.error("Dashboard load failed", err);
+    // --- Recent Transactions block ---
+    if (txResult.status === "fulfilled") {
+        renderRecentTransactions(txResult.value.transactions || []);
+    } else {
+        console.error("Transactions load failed:", txResult.reason);
+        renderRecentTransactions([]);
     }
 }
 
