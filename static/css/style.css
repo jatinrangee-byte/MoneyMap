@@ -400,28 +400,44 @@ h1, h2, h3, h4, h5, h6 {
     display: none !important;
 }
 
-/* --- NYC Header (notyourcollege.com Signature Dark Forest Bar) --- */
+/* --- NYC Header (Floating Round Bar / Capsule Dock) --- */
 .nyc-site-header {
     position: sticky;
-    top: 0;
+    top: 16px;
     z-index: 1000;
     width: 100%;
-    height: 76px;
-    background: #173f32;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color var(--transition);
+    background: transparent;
+    border: none;
+    pointer-events: none;
+    margin-bottom: 16px;
 }
 
 .nyc-header-inner {
+    pointer-events: auto;
     width: 100%;
-    max-width: 1320px;
-    padding: 0 32px;
+    max-width: 1220px;
+    height: 66px;
+    padding: 0 16px 0 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: #173f32;
+    border-radius: 9999px; /* Fully Rounded Bar */
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.35), 0 4px 16px rgba(23, 63, 50, 0.3);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: all 0.25s ease;
+}
+
+[data-theme="dark"] .nyc-header-inner {
+    background: rgba(14, 45, 35, 0.92);
+    border-color: rgba(209, 228, 134, 0.25);
+    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.6);
 }
 
 .nyc-brand {
@@ -433,13 +449,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nyc-brand-glyph {
-    font-size: 1.5rem;
+    font-size: 1.45rem;
     line-height: 1;
 }
 
 .nyc-brand-text {
     font-family: var(--font-sans);
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 700;
     letter-spacing: -0.02em;
     color: #faf8f1;
@@ -453,78 +469,98 @@ h1, h2, h3, h4, h5, h6 {
 .nyc-nav-links {
     display: flex;
     align-items: center;
-    gap: 28px;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.16);
+    padding: 4px 8px;
+    border-radius: 9999px; /* Round Bar Track */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .nyc-nav-links {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .nyc-nav-link {
-    font-size: 0.8rem;
+    font-size: 0.76rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: #faf8f1;
     text-decoration: none;
-    transition: color 0.2s ease;
+    padding: 7px 15px;
+    border-radius: 9999px; /* Round Pill Hover */
+    transition: all 0.2s ease;
 }
 
 .nyc-nav-link:hover {
-    color: #d1e486;
+    color: #173f32;
+    background: #d1e486;
+}
+
+[data-theme="dark"] .nyc-nav-link:hover {
+    color: #0b1f18;
+    background: #d1e486;
 }
 
 .nyc-header-actions {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
 }
 
 .nyc-btn-ghost {
     background: transparent;
     border: none;
-    font-size: 0.86rem;
-    font-weight: 600;
+    font-size: 0.82rem;
+    font-weight: 700;
     color: #faf8f1;
     cursor: pointer;
-    padding: 8px 14px;
-    transition: color 0.2s ease;
+    padding: 8px 16px;
+    border-radius: 9999px; /* Round Pill Button */
+    transition: all 0.2s ease;
 }
 
 .nyc-btn-ghost:hover {
     color: #d1e486;
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .nyc-btn-register {
     background: #faf8f1;
     color: #173f32;
     border: none;
-    border-radius: 4px;
-    font-size: 0.82rem;
+    border-radius: 9999px; /* Round Pill Button */
+    font-size: 0.8rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    padding: 10px 20px;
+    padding: 9px 20px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
 }
 
 .nyc-btn-register:hover {
     background: #d1e486;
     color: #173f32;
     transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 18px rgba(209, 228, 134, 0.4);
 }
 
 .nyc-btn-arrow {
-    font-size: 1.05rem;
+    font-size: 1rem;
     line-height: 1;
 }
 
 .nyc-theme-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%; /* Round Circular */
+    border: 1px solid rgba(255, 255, 255, 0.22);
     background: rgba(255, 255, 255, 0.08);
     color: #faf8f1;
     display: flex;
@@ -535,7 +571,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nyc-theme-btn:hover {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.2);
     color: #d1e486;
 }
 
@@ -581,7 +617,7 @@ h1, h2, h3, h4, h5, h6 {
     background: rgba(23, 63, 50, 0.08);
     border: 1px solid rgba(23, 63, 50, 0.22);
     padding: 6px 18px;
-    border-radius: 4px;
+    border-radius: 9999px;
     margin-bottom: 24px;
 }
 
@@ -649,7 +685,7 @@ h1, h2, h3, h4, h5, h6 {
     text-transform: uppercase;
     letter-spacing: 0.06em;
     padding: 14px 28px;
-    border-radius: 4px;
+    border-radius: 9999px; /* Round Bar */
     border: none;
     cursor: pointer;
     text-decoration: none;
@@ -683,7 +719,7 @@ h1, h2, h3, h4, h5, h6 {
     text-transform: uppercase;
     letter-spacing: 0.06em;
     padding: 13px 26px;
-    border-radius: 4px;
+    border-radius: 9999px; /* Round Bar */
     border: 1.5px solid #173f32;
     text-decoration: none;
     cursor: pointer;
@@ -1665,12 +1701,31 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
+@media (max-width: 900px) {
+    .nyc-nav-links {
+        display: none;
+    }
+}
+
 @media (max-width: 768px) {
     .nyc-site-header {
-        padding: 14px 20px;
+        top: 10px;
+        padding: 0 12px;
     }
-    .nav-quick .nav-link {
-        display: none;
+    .nyc-header-inner {
+        height: 56px;
+        padding: 0 12px 0 16px;
+    }
+    .nyc-brand-text {
+        font-size: 1rem;
+    }
+    .nyc-btn-register {
+        padding: 7px 14px;
+        font-size: 0.74rem;
+    }
+    .nyc-btn-ghost {
+        padding: 6px 10px;
+        font-size: 0.78rem;
     }
     .builder-hero {
         padding: 44px 16px 24px;
