@@ -605,3 +605,85 @@ function mmAnimateCounter(el, target, duration = 1200, prefix = '', suffix = '')
     });
   });
 })();
+
+
+/* ================================================================
+   12. DOTRWT.IN HERO WORD CYCLER
+   ================================================================ */
+(function initDotrwtWordCycler() {
+  const words = [
+    'real-time cash audit',
+    'bayesian ml intelligence',
+    'statistical outlier sentry',
+    'velocity spend forecaster'
+  ];
+  let idx = 0;
+  const el = document.getElementById('hero-cycling-word');
+  if (!el) return;
+
+  setInterval(() => {
+    idx = (idx + 1) % words.length;
+    el.style.animation = 'none';
+    void el.offsetWidth; // trigger reflow
+    el.textContent = words[idx];
+    el.style.animation = 'heroSlideFadeCycle 2.2s ease-in-out forwards';
+  }, 2300);
+})();
+
+
+/* ================================================================
+   13. DOTRWT.IN DYNAMIC BORDER-GLOW TRACKER
+   Calculates mouse proximity and angle to cast iridescent edge light
+   ================================================================ */
+(function initBorderGlowTracker() {
+  function getCenter(el) {
+    const rect = el.getBoundingClientRect();
+    return [rect.width / 2, rect.height / 2];
+  }
+
+  function getProximity(el, x, y) {
+    const [cx, cy] = getCenter(el);
+    const dx = x - cx;
+    const dy = y - cy;
+    let vx = Infinity, vy = Infinity;
+    if (dx !== 0) vx = cx / Math.abs(dx);
+    if (dy !== 0) vy = cy / Math.abs(dy);
+    return Math.min(Math.max(1 / Math.min(vx, vy), 0), 1);
+  }
+
+  function getAngle(el, x, y) {
+    const [cx, cy] = getCenter(el);
+    const dx = x - cx;
+    const dy = y - cy;
+    if (dx === 0 && dy === 0) return 0;
+    let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+    if (angle < 0) angle += 360;
+    return angle;
+  }
+
+  function attachGlow(card) {
+    card.addEventListener('pointermove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const prox = getProximity(card, x, y);
+      const angle = getAngle(card, x, y);
+      card.style.setProperty('--edge-proximity', (prox * 100).toFixed(2));
+      card.style.setProperty('--cursor-angle', angle.toFixed(2) + 'deg');
+    });
+    card.addEventListener('pointerleave', () => {
+      card.style.setProperty('--edge-proximity', '0');
+    });
+  }
+
+  document.querySelectorAll('.border-glow-card').forEach(attachGlow);
+
+  // Observer for dynamically added cards
+  const obs = new MutationObserver(() => {
+    document.querySelectorAll('.border-glow-card:not([data-glow-attached])').forEach(card => {
+      card.setAttribute('data-glow-attached', '1');
+      attachGlow(card);
+    });
+  });
+  obs.observe(document.body, { childList: true, subtree: true });
+})();
