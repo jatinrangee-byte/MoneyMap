@@ -210,6 +210,20 @@ def logout():
 def get_current_user():
     user = database.get_user_by_id(request.user_id)
     if not user:
+        if hasattr(request, "user") and request.user:
+            user = request.user
+            try:
+                if supabase_client.is_supabase_enabled() and hasattr(request, "user_token"):
+                    c = supabase_client.get_supabase_client(request.user_token)
+                    c.table("profiles").upsert({
+                        "id": str(user["id"]),
+                        "name": user.get("name", "User"),
+                        "email": user.get("email", ""),
+                        "currency": user.get("currency", "₹")
+                    }).execute()
+            except Exception:
+                pass
+            return jsonify({"user": user})
         return jsonify({"error": "User not found"}), 404
     return jsonify({"user": user})
 
