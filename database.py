@@ -189,12 +189,25 @@ def add_transaction(user_id, type_, amount, category, date, description="", is_a
             "category": category.strip(),
             "date": str(date),
             "description": (description or "").strip(),
-            "note": (description or "").strip(),
-            "is_anomaly": int(is_anomaly)
         }
-        res = client.table("transactions").insert(payload).execute()
-        if res.data:
-            return res.data[0].get("id")
+        # Attempt to include optional columns; fall back gracefully if they don't exist yet
+        try:
+            full_payload = {**payload, "note": (description or "").strip(), "is_anomaly": int(is_anomaly)}
+            res = client.table("transactions").insert(full_payload).execute()
+            if res.data:
+                return res.data[0].get("id")
+        except Exception as e:
+            err_str = str(e)
+            # PGRST204: column not found in schema cache — retry without optional cols
+            if "PGRST204" in err_str or "is_anomaly" in err_str or "note" in err_str:
+                try:
+                    res = client.table("transactions").insert(payload).execute()
+                    if res.data:
+                        return res.data[0].get("id")
+                except Exception:
+                    pass
+            else:
+                raise
 
     # SQLite fallback
     conn = get_db_connection(db_path)
@@ -299,17 +312,23 @@ def update_transaction(transaction_id, user_id, type_, amount, category, date, d
     token = _get_current_jwt(jwt)
     if supabase_client.is_supabase_enabled() and token:
         client = supabase_client.get_supabase_client(token)
-        payload = {
+        base_payload = {
             "type": type_,
             "amount": float(amount),
             "category": category.strip(),
             "date": str(date),
             "description": (description or "").strip(),
-            "note": (description or "").strip(),
-            "is_anomaly": int(is_anomaly)
         }
-        res = client.table("transactions").update(payload).eq("id", transaction_id).eq("user_id", str(user_id)).execute()
-        return bool(res.data)
+        try:
+            full_payload = {**base_payload, "note": (description or "").strip(), "is_anomaly": int(is_anomaly)}
+            res = client.table("transactions").update(full_payload).eq("id", transaction_id).eq("user_id", str(user_id)).execute()
+            return bool(res.data)
+        except Exception as e:
+            err_str = str(e)
+            if "PGRST204" in err_str or "is_anomaly" in err_str or "note" in err_str:
+                res = client.table("transactions").update(base_payload).eq("id", transaction_id).eq("user_id", str(user_id)).execute()
+                return bool(res.data)
+            raise
 
     # SQLite fallback
     conn = get_db_connection(db_path)
