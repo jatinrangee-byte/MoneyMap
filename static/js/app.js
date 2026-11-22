@@ -63,6 +63,8 @@ async function loginWithOAuth(provider) {
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
     initAuthListeners();
+    initWealthSimulator();
+    initKeyboardShortcuts();
     checkAuth();
 });
 
@@ -796,6 +798,9 @@ async function handleTransactionSubmit(e) {
             } else {
                 showToast("Transaction recorded", "success");
             }
+            if (type === "income") {
+                triggerCelebrationConfetti();
+            }
         }
 
         closeModal("transaction-modal");
@@ -926,6 +931,7 @@ async function handleBudgetSubmit(e) {
             body: { category, monthly_limit }
         });
         showToast(`Budget for ${category} saved`, "success");
+        triggerCelebrationConfetti();
         closeModal("budget-modal");
         loadBudgets();
     } catch (err) {}
@@ -1285,4 +1291,155 @@ function formatChatMarkdown(text) {
     }).join("");
 
     return html;
+}
+
+// ==========================================================================
+// CELEBRATION CONFETTI & UX ENHANCEMENTS
+// ==========================================================================
+
+function triggerCelebrationConfetti() {
+    if (typeof window.confetti === "function") {
+        window.confetti({
+            particleCount: 80,
+            spread: 70,
+            origin: { y: 0.65 },
+            colors: ['#15623e', '#0d9488', '#9e7a2b', '#7c3aed', '#34d399']
+        });
+    }
+}
+
+// Transaction Modal Quick Chips
+function addTxQuickAmount(val) {
+    const el = document.getElementById("tx-amount");
+    if (!el) return;
+    const current = parseFloat(el.value) || 0;
+    el.value = (current + val).toFixed(2);
+}
+
+function setTxQuickDate(preset) {
+    const el = document.getElementById("tx-date");
+    if (!el) return;
+    const now = new Date();
+    if (preset === "today") {
+        el.value = now.toISOString().split("T")[0];
+    } else if (preset === "yesterday") {
+        const y = new Date(now);
+        y.setDate(y.getDate() - 1);
+        el.value = y.toISOString().split("T")[0];
+    } else if (preset === "first") {
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, "0");
+        el.value = `${y}-${m}-01`;
+    }
+}
+
+// ==========================================================================
+// INTERACTIVE 50/30/20 WEALTH & SAFE SPEND SIMULATOR
+// ==========================================================================
+
+function initWealthSimulator() {
+    const input = document.getElementById("sim-income-input");
+    const slider = document.getElementById("sim-income-slider");
+    if (input && slider) {
+        recalcWealthSimulator(parseFloat(input.value) || 60000);
+    }
+}
+
+function handleSimInputChange(e) {
+    let val = parseFloat(e.target.value) || 0;
+    val = Math.max(0, val);
+    const slider = document.getElementById("sim-income-slider");
+    if (slider) slider.value = Math.min(val, 500000);
+    recalcWealthSimulator(val);
+}
+
+function handleSimSliderChange(e) {
+    const val = parseFloat(e.target.value) || 0;
+    const input = document.getElementById("sim-income-input");
+    if (input) input.value = val;
+    recalcWealthSimulator(val);
+}
+
+function recalcWealthSimulator(income) {
+    const label = document.getElementById("sim-slider-val-label");
+    if (label) label.textContent = `₹${Math.round(income).toLocaleString('en-IN')} / month`;
+
+    const needs = income * 0.50;
+    const wants = income * 0.30;
+    const savings = income * 0.20;
+    const safeDailyBurn = (needs + wants) / 30;
+
+    const needsEl = document.getElementById("sim-needs-amt");
+    if (needsEl) needsEl.textContent = `₹${Math.round(needs).toLocaleString('en-IN')}`;
+
+    const wantsEl = document.getElementById("sim-wants-amt");
+    if (wantsEl) wantsEl.textContent = `₹${Math.round(wants).toLocaleString('en-IN')}`;
+
+    const savingsEl = document.getElementById("sim-savings-amt");
+    if (savingsEl) savingsEl.textContent = `₹${Math.round(savings).toLocaleString('en-IN')}`;
+
+    const burnEl = document.getElementById("sim-daily-burn");
+    if (burnEl) burnEl.textContent = `₹${Math.round(safeDailyBurn).toLocaleString('en-IN')} / day`;
+}
+
+function triggerSimulatorCelebration() {
+    triggerCelebrationConfetti();
+    showToast("50/30/20 Safe Cushion Calculated! ₹12,000+ compounding monthly.", "success");
+}
+
+// ==========================================================================
+// KEYBOARD SHORTCUTS & MODAL (UX)
+// ==========================================================================
+
+function toggleShortcutsModal() {
+    const modal = document.getElementById("shortcuts-modal");
+    if (!modal) return;
+    if (modal.classList.contains("hidden")) {
+        modal.classList.remove("hidden");
+    } else {
+        modal.classList.add("hidden");
+    }
+}
+
+function initKeyboardShortcuts() {
+    window.addEventListener("keydown", (e) => {
+        // If typing in form input / textarea / select, ignore single key shortcuts
+        const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
+        const isEditing = tag === "input" || tag === "textarea" || tag === "select" || e.target.isContentEditable;
+
+        if (e.key === "Escape") {
+            // Close open modals
+            const openModals = document.querySelectorAll(".modal-overlay:not(.hidden), .auth-modal-backdrop:not(.hidden)");
+            openModals.forEach(m => m.classList.add("hidden"));
+            return;
+        }
+
+        if (isEditing) return;
+
+        if (e.key === "?" || (e.shiftKey && e.key === "/")) {
+            e.preventDefault();
+            toggleShortcutsModal();
+        } else if (e.key === "n" || e.key === "N") {
+            e.preventDefault();
+            if (state.token) openAddTransactionModal();
+        } else if (e.key === "b" || e.key === "B") {
+            e.preventDefault();
+            if (state.token) openBudgetModal();
+        } else if (e.key === "d" || e.key === "D") {
+            e.preventDefault();
+            if (state.token) switchView("dashboard");
+        } else if (e.key === "t" || e.key === "T") {
+            e.preventDefault();
+            if (state.token) switchView("transactions");
+        } else if (e.key === "l" || e.key === "L") {
+            e.preventDefault();
+            if (state.token) switchView("ml-lab");
+        } else if (e.key === "a" || e.key === "A") {
+            e.preventDefault();
+            if (state.token) toggleAIChat();
+        } else if (e.key === "m" || e.key === "M") {
+            e.preventDefault();
+            toggleTheme();
+        }
+    });
 }

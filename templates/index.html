@@ -12,6 +12,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <!-- Supabase JS Client for OAuth and Session Management -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Canvas Confetti for Celebratory UX -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body class="editorial-body">
@@ -22,6 +24,14 @@
          Inspired by notyourcollege.com aesthetic, typography, and bento layout
          ========================================================================== -->
     <div id="auth-screen" class="landing-experience">
+        <!-- Ambient Glowing Background Blobs (Inspired by Smart Attendance Analyzer) -->
+        <div class="ambient-blobs-container" aria-hidden="true">
+            <div class="ambient-blob blob-emerald blob-pos-1"></div>
+            <div class="ambient-blob blob-gold blob-pos-2"></div>
+            <div class="ambient-blob blob-teal blob-pos-3"></div>
+            <div class="ambient-blob blob-forest blob-pos-4"></div>
+        </div>
+
         <!-- Site Header Navigation -->
         <header class="nyc-site-header">
             <a href="#top" class="brand" aria-label="MoneyMap Home">
@@ -30,6 +40,7 @@
             </a>
             <div class="nav-quick" aria-label="Quick links">
                 <a href="#showcase" class="nav-link">Showcase</a>
+                <a href="#simulator" class="nav-link">Simulator</a>
                 <a href="#pillars" class="nav-link">Intelligence</a>
                 <a href="#method" class="nav-link">The Method</a>
                 <button type="button" class="nav-link-btn" onclick="openAuthModal('login')">Sign In</button>
@@ -60,13 +71,76 @@
                             </svg>
                             Start Building Wealth
                         </button>
-                        <a class="builder-secondary" href="#showcase">
-                            Explore Showcase
+                        <a class="builder-secondary" href="#simulator">
+                            Try Wealth Simulator
                             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M7 7h10v10"></path>
                                 <path d="M7 17 17 7"></path>
                             </svg>
                         </a>
+                    </div>
+                </div>
+
+                <!-- 3 FLOATING GLASS PREVIEW CARDS (Inspired by Smart Attendance Analyzer) -->
+                <div class="hero-floating-cards-row" aria-label="Key Capabilities Preview">
+                    <!-- Floating Card 1: 50/30/20 Safe Cushion Shield -->
+                    <div class="floating-glass-card animate-float-slow">
+                        <div class="flex-items-center gap-3">
+                            <div class="floating-icon-box bg-emerald-dim text-emerald">
+                                <span class="floating-glyph">🛡️</span>
+                            </div>
+                            <div>
+                                <div class="flex-items-center gap-2">
+                                    <h4 class="floating-card-title">50/30/20 Wealth Shield</h4>
+                                    <span class="floating-status-pill status-emerald">Active</span>
+                                </div>
+                                <p class="floating-card-desc">Automatic liquidity cushion &amp; safe burn boundaries</p>
+                            </div>
+                        </div>
+                        <div class="floating-card-stat">
+                            <span class="stat-number text-emerald font-mono">100.0%</span>
+                            <span class="stat-label">Buffer Intact</span>
+                        </div>
+                    </div>
+
+                    <!-- Floating Card 2: Bayesian Online Categorizer -->
+                    <div class="floating-glass-card animate-float-reverse floating-card-offset">
+                        <div class="flex-items-center gap-3">
+                            <div class="floating-icon-box bg-purple-dim text-purple">
+                                <span class="floating-glyph">🧠</span>
+                            </div>
+                            <div>
+                                <div class="flex-items-center gap-2">
+                                    <h4 class="floating-card-title">Bayesian ML Classifier</h4>
+                                    <span class="floating-status-pill status-purple">Online</span>
+                                </div>
+                                <p class="floating-card-desc">Real-time posterior prediction with Laplace smoothing</p>
+                            </div>
+                        </div>
+                        <div class="floating-card-stat">
+                            <span class="stat-number text-purple font-mono">98.2%</span>
+                            <span class="stat-label">Model Precision</span>
+                        </div>
+                    </div>
+
+                    <!-- Floating Card 3: Aura AI Financial Sentry -->
+                    <div class="floating-glass-card animate-float-subtle">
+                        <div class="flex-items-center gap-3">
+                            <div class="floating-icon-box aura-avatar-glow text-white">
+                                <span class="floating-glyph">⚡</span>
+                            </div>
+                            <div>
+                                <div class="flex-items-center gap-2">
+                                    <h4 class="floating-card-title">Aura AI Anomaly Guard</h4>
+                                    <span class="floating-status-pill status-indigo">Active 2.5σ</span>
+                                </div>
+                                <p class="floating-card-desc">Instant outlier auditing &amp; leak elimination</p>
+                            </div>
+                        </div>
+                        <div class="floating-card-stat">
+                            <span class="stat-number text-emerald font-mono">0 Leaks</span>
+                            <span class="stat-label">Audited Status</span>
+                        </div>
                     </div>
                 </div>
 
@@ -175,6 +249,102 @@
                                 <i style="--n:11;--bar:78%"></i>
                             </div>
                             <small class="font-mono">Linear slope velocity projection</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PIXEL DIVIDER -->
+            <div class="pixel-divider" aria-hidden="true"></div>
+
+            <!-- INTERACTIVE 50/30/20 WEALTH & SAFE SPEND SIMULATOR (NEW UX FEATURE) -->
+            <section id="simulator" class="wealth-simulator-section">
+                <div class="feature-heading text-center">
+                    <p class="eyebrow">Interactive Wealth Simulator</p>
+                    <h2>Test Your 50/30/20 Capital Allocation. <em>In Real Time.</em></h2>
+                    <p class="section-desc-subtle">Drag the slider or enter your net monthly inflow to view your mathematically optimal liquidity boundaries.</p>
+                </div>
+
+                <div class="wealth-simulator-card glass-panel">
+                    <div class="simulator-controls-row">
+                        <div class="sim-input-group">
+                            <label for="sim-income-input" class="sim-label">
+                                <span>Monthly Net Inflow (Income)</span>
+                                <span class="sim-badge">Live Math</span>
+                            </label>
+                            <div class="sim-input-wrap">
+                                <span class="sim-currency-prefix">₹</span>
+                                <input type="number" id="sim-income-input" class="sim-number-input font-mono" value="60000" min="5000" max="1000000" step="1000" oninput="handleSimInputChange(event)">
+                            </div>
+                        </div>
+
+                        <div class="sim-slider-group">
+                            <div class="flex-items-center justify-between text-xs mb-1">
+                                <span class="font-mono text-muted">₹5,000</span>
+                                <span id="sim-slider-val-label" class="font-mono font-bold text-forest">₹60,000 / month</span>
+                                <span class="font-mono text-muted">₹5,00,000</span>
+                            </div>
+                            <input type="range" id="sim-income-slider" class="sim-range-slider" min="5000" max="500000" step="1000" value="60000" oninput="handleSimSliderChange(event)">
+                        </div>
+                    </div>
+
+                    <!-- 3 Dynamic Allocation Cards -->
+                    <div class="simulator-grid">
+                        <!-- Needs (50%) -->
+                        <div class="sim-kpi-card">
+                            <div class="sim-kpi-header">
+                                <span class="sim-kpi-tag status-emerald">Needs 50%</span>
+                                <span class="sim-kpi-glyph">🏠</span>
+                            </div>
+                            <div class="sim-kpi-amount font-mono" id="sim-needs-amt">₹30,000</div>
+                            <p class="sim-kpi-desc">Rent, groceries, utilities &amp; transit baseline</p>
+                            <div class="sim-bar-track">
+                                <div class="sim-bar-fill fill-emerald" style="width: 50%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Wants (30%) -->
+                        <div class="sim-kpi-card">
+                            <div class="sim-kpi-header">
+                                <span class="sim-kpi-tag status-purple">Wants 30%</span>
+                                <span class="sim-kpi-glyph">🎯</span>
+                            </div>
+                            <div class="sim-kpi-amount font-mono" id="sim-wants-amt">₹18,000</div>
+                            <p class="sim-kpi-desc">Dining out, entertainment &amp; discretionary splurges</p>
+                            <div class="sim-bar-track">
+                                <div class="sim-bar-fill fill-purple" style="width: 30%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Wealth Accumulation (20%) -->
+                        <div class="sim-kpi-card highlight-card">
+                            <div class="sim-kpi-header">
+                                <span class="sim-kpi-tag status-gold">Wealth Buffer 20%</span>
+                                <span class="sim-kpi-glyph">💎</span>
+                            </div>
+                            <div class="sim-kpi-amount font-mono text-gold" id="sim-savings-amt">₹12,000</div>
+                            <p class="sim-kpi-desc">Compounding investments &amp; emergency reserves</p>
+                            <div class="sim-bar-track">
+                                <div class="sim-bar-fill fill-gold" style="width: 20%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Daily Safe Burn Banner -->
+                    <div class="sim-banner-row">
+                        <div class="flex-items-center gap-3">
+                            <div class="sim-badge-glow">
+                                <span>⚡</span>
+                            </div>
+                            <div>
+                                <h4 class="sim-banner-title">Max Safe Daily Burn Rate: <span class="font-mono text-emerald" id="sim-daily-burn">₹1,600 / day</span></h4>
+                                <p class="sim-banner-sub">Spend at or below this ceiling across all categories to guarantee your 20% savings buffer.</p>
+                            </div>
+                        </div>
+                        <div class="sim-banner-actions">
+                            <button type="button" class="btn btn-sm btn-primary" onclick="triggerSimulatorCelebration()">
+                                <span>🎉 Celebrate Cushion</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -452,6 +622,12 @@
 
         <!-- MAIN WORKSPACE & TOP UTILITY BAR -->
         <div class="app-body">
+            <!-- Subtle Atmospheric Blobs for Authenticated Workspace -->
+            <div class="ambient-blobs-container" aria-hidden="true">
+                <div class="ambient-blob blob-emerald blob-dash-1"></div>
+                <div class="ambient-blob blob-gold blob-dash-2"></div>
+            </div>
+
             <header class="top-bar">
                 <div class="top-bar-left">
                     <button id="sidebar-toggle-btn" class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle Navigation Menu" aria-label="Toggle Navigation Menu">
@@ -465,6 +641,9 @@
                 </div>
 
                 <div class="nav-actions">
+                    <button class="btn btn-sm btn-ghost shortcuts-pill-btn" onclick="toggleShortcutsModal()" title="Keyboard Shortcuts [?]">
+                        <span>⌨️ Shortcuts</span>
+                    </button>
                     <button class="btn btn-sm btn-primary" onclick="openAddTransactionModal()">
                         + Add Transaction
                     </button>
@@ -970,10 +1149,21 @@
                     <div class="form-group flex-1">
                         <label for="tx-amount">Amount (<span class="currency-label">₹</span>)</label>
                         <input type="number" id="tx-amount" class="form-input" placeholder="0.00" step="0.01" min="0.01" required>
+                        <div class="quick-chips-row">
+                            <button type="button" class="quick-chip" onclick="addTxQuickAmount(100)">+100</button>
+                            <button type="button" class="quick-chip" onclick="addTxQuickAmount(500)">+500</button>
+                            <button type="button" class="quick-chip" onclick="addTxQuickAmount(1000)">+1k</button>
+                            <button type="button" class="quick-chip" onclick="addTxQuickAmount(5000)">+5k</button>
+                        </div>
                     </div>
                     <div class="form-group flex-1">
                         <label for="tx-date">Date</label>
                         <input type="date" id="tx-date" class="form-input" required>
+                        <div class="quick-chips-row">
+                            <button type="button" class="quick-chip" onclick="setTxQuickDate('today')">Today</button>
+                            <button type="button" class="quick-chip" onclick="setTxQuickDate('yesterday')">Yesterday</button>
+                            <button type="button" class="quick-chip" onclick="setTxQuickDate('first')">1st of Mo</button>
+                        </div>
                     </div>
                 </div>
 
@@ -1080,6 +1270,58 @@
                 <span>➤</span>
             </button>
         </form>
+    </div>
+
+    <!-- ================= MODAL: KEYBOARD SHORTCUTS GUIDE ================= -->
+    <div id="shortcuts-modal" class="modal-overlay hidden" onclick="handleModalBackdropClick(event, 'shortcuts-modal')">
+        <div class="modal-card shortcuts-card">
+            <div class="modal-header">
+                <div class="flex-items-center gap-2">
+                    <span class="shortcuts-header-icon">⌨️</span>
+                    <h3 class="font-serif">Keyboard Shortcuts</h3>
+                </div>
+                <button class="modal-close" onclick="toggleShortcutsModal()">✕</button>
+            </div>
+            <p class="shortcuts-subtitle">Navigate and execute actions with precision without lifting your hands from the keyboard.</p>
+            <div class="shortcuts-list">
+                <div class="shortcut-row">
+                    <span class="shortcut-desc">Record New Transaction</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-kbd">N</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-desc">Configure Category Budget</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-kbd">B</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-desc">Switch to Dashboard Overview</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-kbd">D</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-desc">Switch to Transactions Ledger</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-kbd">T</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-desc">Switch to Intelligence Lab</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-kbd">L</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-desc">Toggle AI Financial Advisor</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-kbd">A</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-desc">Toggle Dark / Light Mode</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-kbd">M</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-desc">Toggle This Help Modal</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-kbd">?</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-desc">Close Active Modal</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-kbd">Esc</kbd></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="/static/js/app.js"></script>
