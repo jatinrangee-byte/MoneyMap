@@ -560,6 +560,67 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-muted);
 }
 
+/* OAuth Social Buttons */
+.oauth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 18px;
+    margin-bottom: 16px;
+}
+
+.btn-oauth {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: var(--font-body);
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-medium);
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.btn-oauth:hover {
+    background: var(--bg-surface-inset);
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-oauth svg {
+    flex-shrink: 0;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 16px 0 20px 0;
+    color: var(--text-muted);
+    font-size: 0.74rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-hairline);
+}
+
+.auth-divider span {
+    padding: 0 12px;
+}
+
 /* ==========================================================================
    MAIN APPLICATION SHELL: SIDEBAR (~250px) & TOP BAR
    Editorial Fintech Architecture (Desktop Fixed, Tablet/Mobile Drawer)

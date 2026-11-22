@@ -20,6 +20,43 @@ const state = {
 };
 
 // ==========================================================================
+// SUPABASE CLIENT & OAUTH AUTHENTICATION
+// ==========================================================================
+
+const SUPABASE_PROJECT_URL = "https://rtpifrbffaefmzzggsnh.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_6JWmjU8aUPljwNqP_WB1ww_JmO74rVb";
+let _supabaseClient = null;
+
+function getSupabaseClient() {
+    if (!_supabaseClient && window.supabase && SUPABASE_PROJECT_URL && SUPABASE_ANON_KEY) {
+        try {
+            _supabaseClient = window.supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_KEY);
+        } catch (e) {
+            console.error("Failed to initialize Supabase client", e);
+        }
+    }
+    return _supabaseClient;
+}
+
+async function loginWithOAuth(provider) {
+    const client = getSupabaseClient();
+    if (!client) {
+        showToast("Supabase client is not loaded. Please try again.", "error");
+        return;
+    }
+    showToast(`Redirecting to ${provider.toUpperCase()}...`, "info");
+    const { data, error } = await client.auth.signInWithOAuth({
+        provider: provider,
+        options: {
+            redirectTo: window.location.origin
+        }
+    });
+    if (error) {
+        showToast(error.message, "error");
+    }
+}
+
+// ==========================================================================
 // INITIALIZATION
 // ==========================================================================
 
@@ -111,12 +148,25 @@ function initAuthListeners() {
 }
 
 async function checkAuth() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tokenParam = urlParams.get("token");
-    if (tokenParam) {
-        state.token = tokenParam;
-        localStorage.setItem("moneymap_token", tokenParam);
+    // 1. Check for Supabase OAuth session (from redirect)
+    const client = getSupabaseClient();
+    if (client) {
+        try {
+            const { data: { session } } = await client.auth.getSession();
+            if (session && session.access_token) {
+                state.token = session.access_token;
+                localStorage.setItem("moneymap_token", session.access_token);
+                // Clean URL hash if returned from OAuth redirect
+                if (window.location.hash && window.location.hash.includes("access_token")) {
+                    history.replaceState(null, "", window.location.pathname + window.location.search);
+                }
+            }
+        } catch (err) {
+            console.warn("Supabase OAuth check:", err);
+        }
     }
+
+    const urlParams = new URLSearchParams(window.location.search);
     const themeParam = urlParams.get("theme");
     if (themeParam) {
         document.documentElement.setAttribute("data-theme", themeParam);
