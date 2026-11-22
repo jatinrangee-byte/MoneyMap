@@ -129,7 +129,12 @@
     --shadow-elevated: 0 16px 36px -8px rgba(0, 0, 0, 0.55);
 }
 
-/* Base Styles */
+
+/* Performance hints */
+.builder-hero, .floating-glass-card {
+  will-change: transform;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;

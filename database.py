@@ -47,6 +47,17 @@ def get_db_path() -> str:
 
 
 def get_db_connection(db_path: Optional[str] = None) -> sqlite3.Connection:
+    """Returns a connection to the SQLite database with Row factory enabled and performance pragmas."""
+    path = db_path or get_db_path()
+    conn = sqlite3.connect(path)
+    conn.row_factory = sqlite3.Row
+    # Performance tweaks for local dev / serverless environments
+    conn.execute('PRAGMA journal_mode=WAL;')
+    conn.execute('PRAGMA synchronous=OFF;')
+    conn.execute('PRAGMA cache_size=100000;')
+    conn.execute('PRAGMA temp_store=MEMORY;')
+    conn.execute('PRAGMA foreign_keys = ON;')
+    return conn
     """Returns a connection to the SQLite database with Row factory enabled."""
     path = db_path or get_db_path()
     conn = sqlite3.connect(path)

@@ -310,7 +310,220 @@
 /* ================================================================
    7. PARALLAX — subtle Y-shift for hero and floating cards
    ================================================================ */
-(function initParallax() {
+(function initScrollParallax() {
+  if (REDUCED) return;
+
+  /* ---- Register elements with [data-parallax] attrs ---- */
+  // We'll set attrs from JS so we don't modify HTML
+  const registry = [];
+
+  function reg(selector, opts) {
+    document.querySelectorAll(selector).forEach((el, i) => {
+      registry.push({ el, i, ...opts });
+    });
+  }
+
+  // Hero canvas drifts up slowly as you scroll away
+  reg('.builder-hero', { type: 'yUp', speed: 0.22, start: 0, end: 0.6 });
+
+  // Blobs drift in opposite directions
+  reg('.blob-emerald', { type: 'yUp', speed: -0.18 });
+  reg('.blob-gold',    { type: 'yDown', speed: 0.14 });
+  reg('.blob-teal',    { type: 'xRight', speed: 0.1 });
+  reg('.blob-forest',  { type: 'xLeft',  speed: 0.12 });
+
+  // Floating glass cards fan apart as hero scrolls
+  reg('.floating-glass-card', { type: 'fanCards', speed: 0.09 });
+
+  // Kicker badge pops up slightly
+  reg('.builder-kicker', { type: 'yUp', speed: 0.06 });
+
+  // Title lines each move at slightly different rates
+  reg('.builder-title-line', { type: 'titleLines', speed: 0.07 });
+
+  // Bento panels slide in from alternating sides
+  reg('.build-panel', { type: 'panelSlide', speed: 1 });
+
+  // Feature headings zoom in gently
+  reg('.feature-heading', { type: 'zoomIn', speed: 0.5 });
+
+  // Section h2 elements drift up
+  reg('.unimap-map-section h2', { type: 'yUp', speed: 0.08 });
+  reg('.wealth-simulator-section h2', { type: 'yUp', speed: 0.08 });
+  reg('.support-section h2', { type: 'yUp', speed: 0.08 });
+
+  // Route steps slide from left
+  reg('.route-step', { type: 'slideFromLeft', speed: 1 });
+
+  // Simulator cards rotate in
+  reg('.wealth-sim-card, .sim-output-card', { type: 'rotateIn', speed: 1 });
+
+  // Support features rise with stagger
+  reg('.support-feature, .pillars-grid > *', { type: 'staggerRise', speed: 1 });
+
+  // The pixel divider stretches on scroll
+  reg('.pixel-divider', { type: 'scaleX', speed: 0.5 });
+
+  // Eyebrow labels slide from left
+  reg('.eyebrow', { type: 'slideFromLeft', speed: 0.8 });
+
+  // Showcase badge pulses scale
+  reg('.showcase-status-badge', { type: 'scalePulse', speed: 1 });
+
+  /* ---- RAF loop ---- */
+  let currentScrollY = 0;
+  let targetScrollY = 0;
+
+  window.addEventListener('scroll', () => { targetScrollY = window.scrollY; }, { passive: true });
+
+  function tick() {
+    // Smooth scroll tracking
+    currentScrollY = lerp(currentScrollY, targetScrollY, 0.1);
+    const sy = currentScrollY;
+
+    registry.forEach(({ el, i, type, speed }) => {
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const progress = getScrollProgress(el);
+
+      // Skip if not near viewport
+      if (rect.bottom < -vh || rect.top > vh * 2.5) return;
+
+      switch (type) {
+
+        case 'yUp': {
+          const y = -(progress * vh * speed * 0.5);
+          el.style.transform = `translateY(${y}px)`;
+          break;
+        }
+
+        case 'yDown': {
+          const y = progress * vh * speed * 0.5;
+          el.style.transform = `translateY(${y}px)`;
+          break;
+        }
+
+        case 'xRight': {
+          const x = progress * vh * speed * 0.6;
+          el.style.transform = `translateX(${x}px)`;
+          break;
+        }
+
+        case 'xLeft': {
+          const x = -(progress * vh * speed * 0.6);
+          el.style.transform = `translateX(${x}px)`;
+          break;
+        }
+
+        case 'fanCards': {
+          const heroProgress = clamp(sy / (vh * 0.8), 0, 1);
+          const offset = (i - 1) * heroProgress * 32;
+          const rot = (i - 1) * heroProgress * 3;
+          const scale = 1 - heroProgress * 0.04;
+          el.style.transform = `translateX(${offset}px) rotate(${rot}deg) scale(${scale})`;
+          break;
+        }
+
+        case 'titleLines': {
+          const p = getScrollProgress(el, 0, 0.7);
+          const y = -(p * 60 * speed * (i + 1));
+          el.style.transform = `translateY(${y}px)`;
+          break;
+        }
+
+        case 'panelSlide': {
+          const p = getScrollProgress(el, 0.05, 0.6);
+          const eased = 1 - Math.pow(1 - p, 3);
+          const fromX = i % 2 === 0 ? -60 : 60;
+          const x = fromX * (1 - eased);
+          const opacity = eased;
+          el.style.transform = `translateX(${x}px)`;
+          el.style.opacity = opacity;
+          break;
+        }
+
+        case 'zoomIn': {
+          const p = getScrollProgress(el, 0.1, 0.65);
+          const eased = 1 - Math.pow(1 - p, 2);
+          const scale = 0.88 + eased * 0.12;
+          const opacity = 0.2 + eased * 0.8;
+          el.style.transform = `scale(${scale})`;
+          el.style.opacity = opacity;
+          break;
+        }
+
+        case 'slideFromLeft': {
+          const p = getScrollProgress(el, 0.1, 0.65);
+          const eased = 1 - Math.pow(1 - p, 3);
+          const x = -80 * (1 - eased) * (1 + i * 0.3);
+          el.style.transform = `translateX(${x}px)`;
+          el.style.opacity = eased;
+          break;
+        }
+
+        case 'rotateIn': {
+          const p = getScrollProgress(el, 0.1, 0.7);
+          const eased = 1 - Math.pow(1 - p, 3);
+          const rot = (1 - eased) * (i % 2 === 0 ? -6 : 6);
+          const y = (1 - eased) * 50;
+          const opacity = 0.1 + eased * 0.9;
+          el.style.transform = `translateY(${y}px) rotate(${rot}deg)`;
+          el.style.opacity = opacity;
+          break;
+        }
+
+        case 'staggerRise': {
+          const delay = i * 0.08;
+          const p = clamp(getScrollProgress(el, 0.1 + delay, 0.7 + delay), 0, 1);
+          const eased = 1 - Math.pow(1 - p, 3);
+          const y = (1 - eased) * 70;
+          const opacity = eased;
+          el.style.transform = `translateY(${y}px)`;
+          el.style.opacity = opacity;
+          break;
+        }
+
+        case 'scaleX': {
+          const p = getScrollProgress(el, 0, 1);
+          el.style.transform = `scaleX(${p})`;
+          el.style.transformOrigin = 'left center';
+          break;
+        }
+
+        case 'scalePulse': {
+          const p = getScrollProgress(el, 0.3, 0.7);
+          const scale = 0.95 + Math.sin(p * Math.PI) * 0.08;
+          el.style.transform = `scale(${scale})`;
+          break;
+        }
+      }
+    });
+
+    requestAnimationFrame(tick);
+  }
+
+  tick();
+})();
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const hero = document.querySelector('.builder-hero');
+  const cards = document.querySelectorAll('.floating-glass-card');
+  let targetY = 0;
+  let currentY = 0;
+  window.addEventListener('scroll', () => { targetY = window.scrollY; }, { passive: true });
+  function tick() {
+    // Smooth interpolation to avoid sudden jumps
+    currentY = lerp(currentY, targetY, 0.1);
+    if (hero) {
+      hero.style.transform = `translateY(${currentY * 0.08}px)`;
+    }
+    cards.forEach((card, i) => {
+      const dir = i % 2 === 0 ? 1 : -1;
+      card.style.transform = `translateY(${currentY * 0.04 * dir}px)`;
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const hero = document.querySelector('.builder-hero');
