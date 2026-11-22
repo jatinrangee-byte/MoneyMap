@@ -393,7 +393,16 @@ def get_budgets(user_id, month_year=None, db_path: Optional[str] = None, jwt: Op
         client = supabase_client.get_supabase_client(token)
         b_res = client.table("budgets").select("*").eq("user_id", str(user_id)).eq("month_year", month_year).execute()
         # Expenses for this month
-        t_res = client.table("transactions").select("category, amount").eq("user_id", str(user_id)).eq("type", "expense").like("date", f"{month_year}%").execute()
+        t_query = client.table("transactions").select("category, amount").eq("user_id", str(user_id)).eq("type", "expense")
+        if month_year and len(month_year) == 7:
+            try:
+                import calendar
+                y, m = map(int, month_year.split("-"))
+                last_day = calendar.monthrange(y, m)[1]
+                t_query = t_query.gte("date", f"{month_year}-01").lte("date", f"{month_year}-{last_day:02d}")
+            except Exception:
+                pass
+        t_res = t_query.execute()
 
         spend_map = {}
         for row in (t_res.data or []):
@@ -471,8 +480,14 @@ def get_financial_summary(user_id, month_year=None, db_path: Optional[str] = Non
     if supabase_client.is_supabase_enabled() and token:
         client = supabase_client.get_supabase_client(token)
         q = client.table("transactions").select("*").eq("user_id", str(user_id))
-        if month_year:
-            q = q.like("date", f"{month_year}%")
+        if month_year and len(month_year) == 7:
+            try:
+                import calendar
+                y, m = map(int, month_year.split("-"))
+                last_day = calendar.monthrange(y, m)[1]
+                q = q.gte("date", f"{month_year}-01").lte("date", f"{month_year}-{last_day:02d}")
+            except Exception:
+                pass
         q = q.order("date", desc=False)
         res = q.execute()
         rows = res.data or []
