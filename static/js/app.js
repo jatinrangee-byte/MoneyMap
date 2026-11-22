@@ -724,6 +724,7 @@ function resetFilters() {
     if (document.getElementById("filter-start-date")) document.getElementById("filter-start-date").value = "";
     if (document.getElementById("filter-end-date")) document.getElementById("filter-end-date").value = "";
     fetchTransactions();
+    showToast("Filters cleared", "info");
 }
 
 // Modal Handlers
@@ -862,7 +863,9 @@ async function deleteTransaction(id) {
         showToast("Transaction removed", "success");
         fetchTransactions();
         if (state.currentView === "dashboard") loadDashboardData();
-    } catch (err) {}
+    } catch (err) {
+        showToast(err.message || "Failed to delete transaction", "error");
+    }
 }
 
 function exportCSV() {

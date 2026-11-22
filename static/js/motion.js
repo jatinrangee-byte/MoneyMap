@@ -504,42 +504,6 @@
 
   tick();
 })();
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const hero = document.querySelector('.builder-hero');
-  const cards = document.querySelectorAll('.floating-glass-card');
-  let targetY = 0;
-  let currentY = 0;
-  window.addEventListener('scroll', () => { targetY = window.scrollY; }, { passive: true });
-  function tick() {
-    // Smooth interpolation to avoid sudden jumps
-    currentY = lerp(currentY, targetY, 0.1);
-    if (hero) {
-      hero.style.transform = `translateY(${currentY * 0.08}px)`;
-    }
-    cards.forEach((card, i) => {
-      const dir = i % 2 === 0 ? 1 : -1;
-      card.style.transform = `translateY(${currentY * 0.04 * dir}px)`;
-    });
-    requestAnimationFrame(tick);
-  }
-  tick();
-})();
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  const hero = document.querySelector('.builder-hero');
-  const cards = document.querySelectorAll('.floating-glass-card');
-
-  window.addEventListener('scroll', () => {
-    const scrollY = window.scrollY;
-    if (hero) {
-      hero.style.transform = `translateY(${scrollY * 0.08}px)`;
-    }
-    cards.forEach((card, i) => {
-      const dir = i % 2 === 0 ? 1 : -1;
-      card.style.transform = `translateY(${scrollY * 0.04 * dir}px)`;
-    });
-  }, { passive: true });
-})();
 
 
 /* ================================================================

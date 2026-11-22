@@ -343,7 +343,7 @@ def create_transaction():
     }), 201
 
 
-@app.route("/api/transactions/<int:t_id>", methods=["GET"])
+@app.route("/api/transactions/<t_id>", methods=["GET"])
 @require_auth
 def get_transaction(t_id):
     t = database.get_transaction_by_id(t_id, request.user_id)
@@ -352,7 +352,7 @@ def get_transaction(t_id):
     return jsonify({"transaction": t})
 
 
-@app.route("/api/transactions/<int:t_id>", methods=["PUT"])
+@app.route("/api/transactions/<t_id>", methods=["PUT"])
 @require_auth
 def edit_transaction(t_id):
     data = request.get_json() or {}
@@ -398,7 +398,7 @@ def edit_transaction(t_id):
     return jsonify({"message": "Transaction updated successfully", "transaction": updated_t})
 
 
-@app.route("/api/transactions/<int:t_id>", methods=["DELETE"])
+@app.route("/api/transactions/<t_id>", methods=["DELETE"])
 @require_auth
 def remove_transaction(t_id):
     success = database.delete_transaction(t_id, request.user_id)
@@ -440,7 +440,7 @@ def save_budget():
     return jsonify({"message": "Budget saved successfully", "budget_id": b_id, "budgets": budgets})
 
 
-@app.route("/api/budgets/<int:b_id>", methods=["DELETE"])
+@app.route("/api/budgets/<b_id>", methods=["DELETE"])
 @require_auth
 def remove_budget(b_id):
     success = database.delete_budget(b_id, request.user_id)
