@@ -26,7 +26,7 @@
          Inspired by notyourcollege.com aesthetic, typography, and bento layout
          ========================================================================== -->
     <div id="auth-screen" class="landing-experience">
-        <!-- Ambient Glowing Background Blobs (Inspired by Smart Attendance Analyzer) -->
+        <!-- Ambient Glowing Background Blobs -->
         <div class="ambient-blobs-container" aria-hidden="true">
             <div class="ambient-blob blob-emerald blob-pos-1"></div>
             <div class="ambient-blob blob-gold blob-pos-2"></div>
@@ -34,43 +34,28 @@
             <div class="ambient-blob blob-forest blob-pos-4"></div>
         </div>
 
-        <!-- Floating Glass Capsule Header (UniMap Technical Architecture) -->
-        <header class="unimap-capsule-header" aria-label="Site Navigation">
-            <div class="unimap-capsule-inner glass-capsule">
-                <a href="#top" class="unimap-brand" aria-label="MoneyMap Home">
-                    <div class="unimap-brand-badge">
-                        <span class="material-symbols-outlined unimap-icon">explore</span>
-                    </div>
-                    <span class="unimap-brand-name">Money<strong>Map</strong></span>
-                    <span class="unimap-live-dot" title="Real-time Capital Routing Active"></span>
+        <!-- Fixed Editorial Header (Inspired by notyourcollege.com Header) -->
+        <header class="nyc-site-header" aria-label="Site Navigation">
+            <div class="nyc-header-inner">
+                <a href="#top" class="nyc-brand" aria-label="MoneyMap Home">
+                    <span class="nyc-brand-glyph">🗺️</span>
+                    <span class="nyc-brand-text">Money<strong>Map.</strong></span>
                 </a>
 
-                <nav class="unimap-nav-links" aria-label="Quick links">
-                    <a href="#showcase" class="unimap-nav-pill">
-                        <span class="material-symbols-outlined nav-glyph">route</span>
-                        <span>Routing</span>
-                    </a>
-                    <a href="#capital-map" class="unimap-nav-pill">
-                        <span class="material-symbols-outlined nav-glyph">map</span>
-                        <span>Capital Map</span>
-                    </a>
-                    <a href="#simulator" class="unimap-nav-pill">
-                        <span class="material-symbols-outlined nav-glyph">calculate</span>
-                        <span>Simulator</span>
-                    </a>
-                    <a href="#pillars" class="unimap-nav-pill">
-                        <span class="material-symbols-outlined nav-glyph">neurology</span>
-                        <span>Intelligence</span>
-                    </a>
+                <nav class="nyc-nav-links" aria-label="Quick links">
+                    <a href="#showcase" class="nyc-nav-link">Showcase</a>
+                    <a href="#capital-map" class="nyc-nav-link">Capital Route</a>
+                    <a href="#simulator" class="nyc-nav-link">50/30/20 Shield</a>
+                    <a href="#pillars" class="nyc-nav-link">ML Intelligence</a>
                 </nav>
 
-                <div class="unimap-nav-actions">
-                    <button type="button" class="unimap-btn-ghost" onclick="openAuthModal('login')">Sign In</button>
-                    <button type="button" class="unimap-btn-coral" onclick="openAuthModal('register')">
-                        <span class="material-symbols-outlined btn-glyph">near_me</span>
-                        <span>Start Navigating</span>
+                <div class="nyc-header-actions">
+                    <button type="button" class="nyc-btn-ghost" onclick="openAuthModal('login')">Sign In</button>
+                    <button type="button" class="nyc-btn-register" onclick="openAuthModal('register')">
+                        <span>Join MoneyMap</span>
+                        <span class="material-symbols-outlined nyc-btn-arrow">arrow_forward</span>
                     </button>
-                    <button id="landing-theme-toggle" class="unimap-theme-btn" onclick="toggleTheme()" title="Toggle Theme">
+                    <button id="landing-theme-toggle" class="nyc-theme-btn" onclick="toggleTheme()" title="Toggle Theme">
                         <span class="material-symbols-outlined theme-icon">dark_mode</span>
                     </button>
                 </div>
@@ -79,11 +64,11 @@
 
         <!-- Main Landing Content -->
         <main id="top" class="landing-main">
-            <!-- HERO SECTION -->
-            <section class="builder-hero">
+            <!-- HERO SECTION (NYC Dot Canvas & Editorial Typography) -->
+            <section class="builder-hero nyc-hero-canvas">
                 <div class="builder-intro">
                     <p class="builder-kicker">
-                        <span class="material-symbols-outlined kicker-glyph">insights</span>
+                        <span class="material-symbols-outlined kicker-glyph">auto_graph</span>
                         <span>Intelligent Wealth Architecture • Real-Time ML Engine</span>
                     </p>
                     <h1 class="builder-title">
@@ -96,13 +81,13 @@
                         Systematically audited, intelligently forecasted. MoneyMap uses Bayesian text categorization, outlier Z-scores, and velocity regression to give you true command over your capital.
                     </p>
                     <div class="builder-actions">
-                        <button type="button" class="unimap-btn-coral-lg" onclick="openAuthModal('register')">
-                            <span class="material-symbols-outlined btn-glyph">arrow_forward</span>
+                        <button type="button" class="builder-primary" onclick="openAuthModal('register')">
                             <span>Start Building Wealth</span>
+                            <span class="material-symbols-outlined btn-glyph">arrow_forward</span>
                         </button>
-                        <a class="unimap-btn-outline-lg" href="#showcase">
-                            <span class="material-symbols-outlined btn-glyph">explore</span>
+                        <a class="builder-secondary" href="#showcase">
                             <span>Explore Showcase</span>
+                            <span class="material-symbols-outlined btn-glyph">north_east</span>
                         </a>
                     </div>
                 </div>
@@ -275,6 +260,25 @@
                                 <i style="--n:11;--bar:78%"></i>
                             </div>
                             <small class="font-mono">Linear slope velocity projection</small>
+                        </div>
+
+                        <!-- Panel 5: Autonomous Vault Safeguard (NYC Bento 5th Key) -->
+                        <div class="build-panel build-vault">
+                            <div class="build-art-heading">
+                                <span>Autonomous Reserve Guard</span>
+                                <span>Pillar 05</span>
+                            </div>
+                            <div class="vault-meter-display">
+                                <div class="vault-amount-line">
+                                    <span class="vault-currency">₹</span>
+                                    <span class="vault-val font-mono">1,50,000</span>
+                                </div>
+                                <span class="vault-cushion-pill">6-Month Runway Shielded</span>
+                            </div>
+                            <div class="build-caption">
+                                <strong>Compound Vault Discipline</strong>
+                                <span>Zero leak policy • Real-time reserve insulation</span>
+                            </div>
                         </div>
                     </div>
                 </div>

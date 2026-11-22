@@ -15,17 +15,27 @@
     --forest-100: #eaf1ed;             /* Soft forest green wash */
     --forest-50:  #f4f7f5;             /* Subtle card fill */
 
-    /* UniMap Architectural Palette Tokens */
-    --unimap-coral: #ff602e;
-    --unimap-coral-hover: #ff7b52;
-    --unimap-cyan: #06b6d4;
-    --unimap-cyan-dim: rgba(6, 182, 212, 0.12);
-    --unimap-dark: #0A1931;
+    /* NYC Design System Tokens (notyourcollege.com) */
+    --nyc-green: #173f32;
+    --nyc-green-dark: #103e2e;
+    --nyc-paper: #f6f6ef;
+    --nyc-offwhite: #faf8f1;
+    --nyc-lime: #d1e486;
+    --nyc-chartreuse: #c9da60;
+    --nyc-sage: #d6e5c5;
+    --nyc-lilac: #ede6fa;
 
-    /* Technical Blueprint Canvas Surfaces (UniMap #fcfaf6) */
-    --bg-canvas: #fcfaf6;              /* Technical warm alabaster blueprint paper */
+    /* Architectural Palette Tokens Mapped to NYC Palette */
+    --unimap-coral: #173f32;
+    --unimap-coral-hover: #103e2e;
+    --unimap-cyan: #294b3e;
+    --unimap-cyan-dim: rgba(23, 63, 50, 0.1);
+    --unimap-dark: #173f32;
+
+    /* Technical Blueprint Canvas Surfaces (NYC Warm Paper #f6f6ef) */
+    --bg-canvas: #f6f6ef;              /* NYC signature warm paper */
     --bg-surface: #ffffff;             /* Crisp pure card surface */
-    --bg-surface-inset: #f5f3ed;       /* Inset data wells, table headers */
+    --bg-surface-inset: #f2f2eb;       /* Inset data wells, table headers */
     --bg-elevated: #ffffff;            /* Elevated dropdowns & modals */
 
     /* Hairline Architecture */
@@ -84,10 +94,10 @@
     --bg-surface-inset: #141a1f;       /* Inset wells & table headers */
     --bg-elevated: #182026;
 
-    --unimap-coral: #ff602e;
-    --unimap-coral-hover: #ff7b52;
-    --unimap-cyan: #22d3ee;
-    --unimap-cyan-dim: rgba(34, 211, 238, 0.15);
+    --unimap-coral: #d1e486;
+    --unimap-coral-hover: #c9da60;
+    --unimap-cyan: #34d399;
+    --unimap-cyan-dim: rgba(209, 228, 134, 0.15);
 
     --border-hairline: rgba(255, 255, 255, 0.08);
     --border-strong: rgba(255, 255, 255, 0.18);
@@ -390,177 +400,209 @@ h1, h2, h3, h4, h5, h6 {
     display: none !important;
 }
 
-/* --- NYC Header --- */
+/* --- NYC Header (notyourcollege.com Signature Dark Forest Bar) --- */
 .nyc-site-header {
     position: sticky;
     top: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 48px;
-    background: var(--bg-canvas);
-    backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--border-hairline);
-    transition: background-color var(--transition), border-color var(--transition);
-}
-
-.nyc-site-header .brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    color: var(--text-primary);
-}
-
-.nyc-site-header .brand-glyph {
-    font-size: 1.55rem;
-}
-
-.nyc-site-header .brand-text {
-    font-family: var(--font-sans);
-    font-weight: 700;
-    font-size: 1.05rem;
-    line-height: 1.08;
-    letter-spacing: -0.025em;
-    color: var(--text-primary);
-}
-
-.nav-quick {
-    display: flex;
-    align-items: center;
-    gap: 22px;
-}
-
-.nav-link {
-    font-size: 0.92rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: color var(--transition);
-}
-
-.nav-link:hover {
-    color: var(--forest-800);
-}
-
-[data-theme="dark"] .nav-link:hover {
-    color: var(--color-income);
-}
-
-.nav-link-btn {
-    background: transparent;
-    border: none;
-    font-size: 0.92rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    cursor: pointer;
-    padding: 8px 16px;
-    border-radius: var(--radius-pill);
-    transition: all var(--transition);
-}
-
-.nav-link-btn:hover {
-    background: var(--bg-surface-inset);
-    color: var(--forest-800);
-}
-
-[data-theme="dark"] .nav-link-btn:hover {
-    color: var(--color-income);
-}
-
-.register-pill-btn {
-    background: var(--forest-800);
-    color: #ffffff;
-    border: none;
-    font-size: 0.9rem;
-    font-weight: 600;
-    padding: 10px 22px;
-    border-radius: var(--radius-pill);
-    cursor: pointer;
-    transition: all var(--transition);
-    box-shadow: 0 2px 8px rgba(15, 45, 35, 0.16);
-}
-
-.register-pill-btn:hover {
-    background: var(--forest-700);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(15, 45, 35, 0.28);
-}
-
-[data-theme="dark"] .register-pill-btn {
-    background: var(--color-income);
-    color: #0b291a;
-}
-
-[data-theme="dark"] .register-pill-btn:hover {
-    background: #4ae4a8;
-}
-
-.theme-toggle-pill {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-hairline);
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    cursor: pointer;
+    z-index: 1000;
+    width: 100%;
+    height: 76px;
+    background: #173f32;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.95rem;
-    transition: all var(--transition);
+    transition: background-color var(--transition);
 }
 
-.theme-toggle-pill:hover {
-    border-color: var(--border-strong);
-    background: var(--bg-surface-inset);
+.nyc-header-inner {
+    width: 100%;
+    max-width: 1320px;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-/* --- Hero Section --- */
+.nyc-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #faf8f1;
+}
+
+.nyc-brand-glyph {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.nyc-brand-text {
+    font-family: var(--font-sans);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #faf8f1;
+}
+
+.nyc-brand-text strong {
+    font-weight: 800;
+    color: #faf8f1;
+}
+
+.nyc-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.nyc-nav-link {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #faf8f1;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.nyc-nav-link:hover {
+    color: #d1e486;
+}
+
+.nyc-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.nyc-btn-ghost {
+    background: transparent;
+    border: none;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #faf8f1;
+    cursor: pointer;
+    padding: 8px 14px;
+    transition: color 0.2s ease;
+}
+
+.nyc-btn-ghost:hover {
+    color: #d1e486;
+}
+
+.nyc-btn-register {
+    background: #faf8f1;
+    color: #173f32;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 10px 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.nyc-btn-register:hover {
+    background: #d1e486;
+    color: #173f32;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.nyc-btn-arrow {
+    font-size: 1.05rem;
+    line-height: 1;
+}
+
+.nyc-theme-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    color: #faf8f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.nyc-theme-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: #d1e486;
+}
+
+/* --- Hero Section (notyourcollege.com Dot Grid & Heritage Greens) --- */
 .landing-main {
     width: 100%;
 }
 
+.nyc-hero-canvas,
 .builder-hero {
-    max-width: 1240px;
+    width: 100%;
+    max-width: 1320px;
     margin: 0 auto;
-    padding: 72px 24px 32px;
+    padding: 72px 32px 48px;
+    background-color: #f6f6ef;
+    background-image: radial-gradient(#173f3222 .75px, transparent .85px);
+    background-size: 13px 13px;
+    border-radius: 8px;
+}
+
+[data-theme="dark"] .nyc-hero-canvas,
+[data-theme="dark"] .builder-hero {
+    background-color: #081a14;
+    background-image: radial-gradient(rgba(209, 228, 134, 0.15) .75px, transparent .85px);
+    background-size: 13px 13px;
 }
 
 .builder-intro {
-    max-width: 860px;
-    margin: 0 auto 56px;
+    max-width: 900px;
+    margin: 0 auto 52px;
     text-align: center;
 }
 
 .builder-kicker {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     font-size: 0.78rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.12em;
-    color: var(--forest-600);
-    background: var(--forest-50);
-    border: 1px solid rgba(15, 45, 35, 0.12);
-    padding: 5px 16px;
-    border-radius: var(--radius-pill);
-    margin-bottom: 22px;
+    color: #173f32;
+    background: rgba(23, 63, 50, 0.08);
+    border: 1px solid rgba(23, 63, 50, 0.22);
+    padding: 6px 18px;
+    border-radius: 4px;
+    margin-bottom: 24px;
 }
 
 [data-theme="dark"] .builder-kicker {
-    color: var(--color-income);
-    background: rgba(52, 211, 153, 0.08);
-    border-color: rgba(52, 211, 153, 0.2);
+    color: #d1e486;
+    background: rgba(209, 228, 134, 0.1);
+    border-color: rgba(209, 228, 134, 0.25);
 }
 
 .builder-title {
     font-family: var(--font-serif);
-    font-size: clamp(2.8rem, 6.2vw, 5.2rem);
-    line-height: 1.04;
+    font-size: clamp(3rem, 6.2vw, 5.4rem);
+    line-height: 1.02;
     letter-spacing: -0.025em;
     font-weight: 400;
     margin: 0 0 24px 0;
-    color: var(--text-primary);
+    color: #173f32;
+}
+
+[data-theme="dark"] .builder-title {
+    color: #faf8f1;
 }
 
 .builder-title-line {
@@ -569,19 +611,23 @@ h1, h2, h3, h4, h5, h6 {
 
 .builder-title-line em {
     font-style: italic;
-    color: var(--forest-800);
+    color: #173f32;
 }
 
 [data-theme="dark"] .builder-title-line em {
-    color: var(--color-income);
+    color: #d1e486;
 }
 
 .builder-description {
     font-size: 1.15rem;
-    color: var(--text-secondary);
+    color: #294b3e;
     line-height: 1.65;
-    max-width: 660px;
+    max-width: 680px;
     margin: 0 auto 36px;
+}
+
+[data-theme="dark"] .builder-description {
+    color: #b7c7be;
 }
 
 .builder-actions {
@@ -595,70 +641,82 @@ h1, h2, h3, h4, h5, h6 {
 .builder-primary {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    background: var(--forest-800);
-    color: #ffffff;
-    font-size: 0.96rem;
-    font-weight: 600;
-    padding: 13px 28px;
-    border-radius: var(--radius-pill);
+    gap: 8px;
+    background: #173f32;
+    color: #faf8f1;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 14px 28px;
+    border-radius: 4px;
     border: none;
     cursor: pointer;
     text-decoration: none;
-    transition: all var(--transition);
-    box-shadow: 0 4px 16px rgba(15, 45, 35, 0.2);
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(23, 63, 50, 0.25);
 }
 
 .builder-primary:hover {
-    background: var(--forest-700);
+    background: #0f2c23;
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(15, 45, 35, 0.28);
+    box-shadow: 0 8px 24px rgba(23, 63, 50, 0.35);
 }
 
 [data-theme="dark"] .builder-primary {
-    background: var(--color-income);
-    color: #0b291a;
+    background: #d1e486;
+    color: #103e2e;
 }
 
 [data-theme="dark"] .builder-primary:hover {
-    background: #4ae4a8;
-}
-
-.builder-call-icon {
-    width: 18px;
-    height: 18px;
+    background: #c9da60;
 }
 
 .builder-secondary {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: var(--bg-surface);
-    color: var(--text-primary);
-    font-size: 0.96rem;
-    font-weight: 600;
-    padding: 12px 24px;
-    border-radius: var(--radius-pill);
-    border: 1px solid var(--border-hairline);
+    background: transparent;
+    color: #173f32;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 13px 26px;
+    border-radius: 4px;
+    border: 1.5px solid #173f32;
     text-decoration: none;
     cursor: pointer;
-    transition: all var(--transition);
+    transition: all 0.2s ease;
 }
 
 .builder-secondary:hover {
-    border-color: var(--border-strong);
-    background: var(--bg-surface-inset);
+    background: rgba(23, 63, 50, 0.08);
     transform: translateY(-2px);
 }
 
-/* --- Bento Product Showcase --- */
+[data-theme="dark"] .builder-secondary {
+    color: #faf8f1;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] .builder-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* --- Bento Product Showcase (NYC 5-Panel Bento Layout & Rivets) --- */
 .builder-showcase {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-hairline);
-    border-radius: 18px;
-    padding: 24px;
-    box-shadow: var(--shadow-subtle);
-    margin-top: 12px;
+    background: #f6f6ef;
+    border: 1.5px solid #173f32;
+    border-radius: 8px;
+    padding: 28px;
+    box-shadow: 0 8px 28px rgba(23, 63, 50, 0.08);
+    margin-top: 36px;
+}
+
+[data-theme="dark"] .builder-showcase {
+    background: #0b1f18;
+    border-color: rgba(209, 228, 134, 0.3);
 }
 
 .builder-showcase-head {
@@ -666,35 +724,40 @@ h1, h2, h3, h4, h5, h6 {
     justify-content: space-between;
     align-items: center;
     padding-bottom: 16px;
-    margin-bottom: 20px;
-    border-bottom: 1px solid var(--border-hairline);
+    margin-bottom: 24px;
+    border-bottom: 1px solid rgba(23, 63, 50, 0.18);
 }
 
 .builder-showcase-head p {
     font-family: var(--font-mono);
     font-size: 0.78rem;
-    color: var(--text-muted);
+    color: #173f32;
+    font-weight: 700;
     margin: 0;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
 
+[data-theme="dark"] .builder-showcase-head p {
+    color: #d1e486;
+}
+
 .builder-showcase-head p span {
-    color: var(--forest-500);
+    color: #294b3e;
     padding: 0 6px;
 }
 
 .showcase-status-badge {
     font-size: 0.72rem;
-    font-weight: 700;
+    font-weight: 800;
     font-family: var(--font-mono);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-income);
-    background: var(--color-income-dim);
-    padding: 4px 12px;
-    border-radius: var(--radius-pill);
-    border: 1px solid rgba(21, 98, 62, 0.2);
+    letter-spacing: 0.06em;
+    color: #173f32;
+    background: #d6e5c5;
+    padding: 5px 14px;
+    border-radius: 3px;
+    border: 1px solid rgba(23, 63, 50, 0.25);
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -705,37 +768,74 @@ h1, h2, h3, h4, h5, h6 {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--color-income);
+    background: #173f32;
     animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.8); }
 }
 
 .builder-panels {
     display: grid;
-    grid-template-columns: 1.4fr 1fr;
+    grid-template-columns: 1.4fr 1fr 1fr;
     grid-template-rows: auto auto;
-    gap: 20px;
+    gap: 18px;
+}
+
+@media (max-width: 1024px) {
+    .builder-panels {
+        grid-template-columns: 1fr;
+    }
 }
 
 .build-panel {
-    background: var(--bg-surface-inset);
-    border: 1px solid var(--border-hairline);
-    border-radius: 12px;
+    position: relative;
+    border: 1.5px solid #173f32;
+    border-radius: 6px;
     padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    position: relative;
     overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.build-panel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(23, 63, 50, 0.12);
+}
+
+/* Signature Corner Rivets (NYC Screw-heads) */
+.build-panel::before,
+.build-panel::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #173f32;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1.5px rgba(246, 246, 239, 0.95);
+    z-index: 2;
+}
+
+.build-panel::before {
+    top: 7px;
+    left: 7px;
+}
+
+.build-panel::after {
+    bottom: 7px;
+    right: 7px;
+}
+
+[data-theme="dark"] .build-panel::before,
+[data-theme="dark"] .build-panel::after {
+    background: #d1e486;
+    box-shadow: 0 0 0 1.5px #081a14;
+}
+
+/* Panel 1: Soft Sage */
 .build-product {
     grid-row: span 2;
-    background: var(--bg-surface);
+    background: #d6e5c5;
+    color: #173f32;
 }
 
 .build-window {
@@ -744,15 +844,16 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     font-family: var(--font-mono);
     font-size: 0.74rem;
-    color: var(--text-muted);
+    font-weight: 700;
+    color: #173f32;
     padding-bottom: 12px;
-    border-bottom: 1px solid var(--border-hairline);
+    border-bottom: 1px solid rgba(23, 63, 50, 0.2);
     margin-bottom: 14px;
 }
 
 .traffic-lights {
     letter-spacing: 2px;
-    color: var(--text-muted);
+    color: #173f32;
 }
 
 .build-preview-table {
@@ -768,14 +869,17 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     font-size: 0.82rem;
     padding: 8px 10px;
-    border-radius: var(--radius-sm);
-    background: var(--bg-surface-inset);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(23, 63, 50, 0.1);
+    color: #173f32;
 }
 
 .preview-row.header-row {
     background: transparent;
-    font-weight: 600;
-    color: var(--text-muted);
+    border: none;
+    font-weight: 700;
+    color: #294b3e;
     font-size: 0.74rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -783,8 +887,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .preview-row.highlight {
-    background: rgba(158, 42, 43, 0.06);
-    border-left: 2px solid var(--color-expense);
+    background: rgba(255, 255, 255, 0.85);
+    border-left: 3px solid #173f32;
 }
 
 .preview-tag {
@@ -792,19 +896,191 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 0.68rem;
     font-weight: 700;
     padding: 2px 7px;
-    border-radius: var(--radius-pill);
-    background: var(--border-hairline);
-    color: var(--text-secondary);
+    border-radius: 3px;
+    background: rgba(23, 63, 50, 0.12);
+    color: #173f32;
     width: fit-content;
 }
 
 .preview-tag.income {
-    background: var(--color-income-dim);
-    color: var(--color-income);
+    background: #173f32;
+    color: #faf8f1;
 }
 
 .preview-tag.warning {
-    background: rgba(158, 42, 43, 0.12);
+    background: #ffeb85;
+    color: #173f32;
+    font-weight: 800;
+}
+
+.build-caption {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(23, 63, 50, 0.18);
+}
+
+.build-caption strong {
+    font-size: 0.86rem;
+    color: #173f32;
+}
+
+.build-caption span {
+    font-size: 0.74rem;
+    color: #294b3e;
+}
+
+/* Panel 2: Electric Chartreuse Lime */
+.build-code {
+    background: #c9da60;
+    color: #173f32;
+}
+
+.code-glyph {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #173f32;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.code-snippet {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 8px 0 16px;
+}
+
+.code-snippet small {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: #294b3e;
+    font-weight: 600;
+}
+
+.code-snippet code {
+    font-family: var(--font-mono);
+    font-size: 0.98rem;
+    color: #173f32;
+    font-weight: 800;
+    padding: 4px 0;
+}
+
+.code-foot span {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: #173f32;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* Panel 3: Deep Emerald Green */
+.build-art {
+    background: #103e2e;
+    color: #faf8f1;
+}
+
+.build-art .build-art-heading {
+    color: rgba(250, 248, 241, 0.75);
+}
+
+.build-art .ring-bg {
+    stroke: rgba(255, 255, 255, 0.15);
+}
+
+.build-art .ring-fill {
+    stroke: #d1e486;
+}
+
+.build-art .ring-num {
+    fill: #faf8f1;
+}
+
+.build-art .ring-sub {
+    fill: #d1e486;
+}
+
+.build-art .build-art-foot strong {
+    color: #faf8f1;
+}
+
+.build-art .build-art-foot span {
+    color: rgba(250, 248, 241, 0.8);
+}
+
+/* Panel 4: Pale Lilac */
+.build-signal {
+    background: #ede6fa;
+    color: #173f32;
+}
+
+.build-signal .build-bars i {
+    background: #173f32;
+}
+
+.build-signal span {
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #173f32;
+}
+
+.build-signal small {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: #294b3e;
+    font-weight: 600;
+}
+
+/* Panel 5: Vault Safeguard (Crisp Paper) */
+.build-vault {
+    background: #faf8f1;
+    color: #173f32;
+}
+
+.vault-meter-display {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 14px 0;
+}
+
+.vault-amount-line {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.vault-currency {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #173f32;
+}
+
+.vault-val {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #173f32;
+    letter-spacing: -0.02em;
+}
+
+.vault-cushion-pill {
+    display: inline-block;
+    width: fit-content;
+    font-size: 0.72rem;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    background: #d6e5c5;
+    color: #173f32;
+    padding: 3px 10px;
+    border-radius: 3px;
+    border: 1px solid rgba(23, 63, 50, 0.25);
+}
     color: var(--color-expense);
 }
 
