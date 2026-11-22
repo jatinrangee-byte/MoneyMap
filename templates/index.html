@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoneyMap — Precision Personal Finance & Intelligence</title>
-    <!-- Reference-Inspired Typography: Instrument Serif, Inter, JetBrains Mono -->
+    <!-- Reference-Inspired Typography: Instrument Serif, Inter, JetBrains Mono, Outfit, Great Vibes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=Great+Vibes&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <!-- Supabase JS Client for OAuth and Session Management -->
@@ -68,93 +68,127 @@
 
         <!-- Main Landing Content -->
         <main id="top" class="landing-main">
-            <!-- HERO SECTION (NYC Dot Canvas & Editorial Typography) -->
-            <section class="builder-hero nyc-hero-canvas">
-                <div class="builder-intro">
-                    <p class="builder-kicker">
-                        <span class="material-symbols-outlined kicker-glyph">auto_graph</span>
-                        <span>Intelligent Wealth Architecture • Real-Time ML Engine</span>
-                    </p>
-                    <h1 class="builder-title">
-                        <span class="builder-title-fill">
-                            <span class="builder-title-line">Wealth is preserved in</span>
-                            <span class="builder-title-line"><em>decisions, not spreadsheets.</em></span>
-                        </span>
-                    </h1>
-                    <p class="builder-description">
-                        Systematically audited, intelligently forecasted. MoneyMap uses Bayesian text categorization, outlier Z-scores, and velocity regression to give you true command over your capital.
-                    </p>
-                    <div class="builder-actions">
-                        <button type="button" class="builder-primary" onclick="openAuthModal('register')">
-                            <span>Start Building Wealth</span>
-                            <span class="material-symbols-outlined btn-glyph">arrow_forward</span>
-                        </button>
-                        <a class="builder-secondary" href="#showcase">
-                            <span>Explore Showcase</span>
-                            <span class="material-symbols-outlined btn-glyph">north_east</span>
-                        </a>
+            <!-- HERO SECTION (dotrwt.in 8-Column Architecture & Dynamic Motion) -->
+            <section class="builder-hero hero-section nyc-hero-canvas">
+                <div class="hero-grid">
+                    <!-- Top Status Row (dotrwt.in status beacon) -->
+                    <div class="hero-top-row">
+                        <div class="hero-intro">
+                            <span class="text-mono intro-text">moneymap // personal finance intelligence</span>
+                        </div>
+                        <div class="hero-status">
+                            <span class="status-dot"></span>
+                            <span class="text-mono status-text">bayesian engine active</span>
+                        </div>
+                    </div>
+
+                    <div class="hero-title-container builder-intro">
+                        <p class="builder-kicker">
+                            <span class="material-symbols-outlined kicker-glyph">auto_graph</span>
+                            <span>Intelligent Wealth Architecture • Real-Time ML Engine</span>
+                        </p>
+                        <h1 class="hero-title builder-title">
+                            <span class="hero-title-line">wealth is preserved in</span>
+                            <span class="hero-title-line"><em>decisions, not spreadsheets.</em></span>
+                            <span class="hero-title-line">
+                                <span class="hero-changing-word" id="hero-cycling-word">real-time cash audit</span>
+                            </span>
+                        </h1>
+                        <p class="builder-description">
+                            Systematically audited, intelligently forecasted. MoneyMap uses Bayesian text categorization, outlier Z-scores, and velocity regression to give you true command over your capital.
+                        </p>
+                        <div class="builder-actions">
+                            <button type="button" class="builder-primary dotrwt-btn" onclick="openAuthModal('register')">
+                                <span>Start Building Wealth</span>
+                                <span class="material-symbols-outlined btn-glyph">arrow_forward</span>
+                            </button>
+                            <a class="builder-secondary dotrwt-btn-secondary" href="#showcase">
+                                <span>Explore Showcase</span>
+                                <span class="material-symbols-outlined btn-glyph">north_east</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Rotating dotrwt.in Crosshair Vector -->
+                    <div class="hero-crosshair" aria-hidden="true">
+                        <div class="crosshair-symbol">
+                            <svg viewBox="0 0 100 100" class="crosshair-svg">
+                                <circle cx="50" cy="50" r="30" class="crosshair-circle-svg"></circle>
+                                <line x1="10" y1="50" x2="90" y2="50" class="crosshair-line-svg"></line>
+                                <line x1="50" y1="35" x2="50" y2="65" class="crosshair-line-svg"></line>
+                            </svg>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 3 FLOATING GLASS PREVIEW CARDS (Inspired by Smart Attendance Analyzer) -->
+                <!-- 3 FLOATING BORDER-GLOW PREVIEW CARDS (dotrwt.in Iridescent Glow) -->
                 <div class="hero-floating-cards-row" aria-label="Key Capabilities Preview">
                     <!-- Floating Card 1: 50/30/20 Safe Cushion Shield -->
-                    <div class="floating-glass-card animate-float-slow">
-                        <div class="flex-items-center gap-3">
-                            <div class="floating-icon-box bg-emerald-dim text-emerald">
-                                <span class="floating-glyph">🛡️</span>
-                            </div>
-                            <div>
-                                <div class="flex-items-center gap-2">
-                                    <h4 class="floating-card-title">50/30/20 Wealth Shield</h4>
-                                    <span class="floating-status-pill status-emerald">Active</span>
+                    <div class="border-glow-card floating-glass-card animate-float-slow">
+                        <span class="edge-light"></span>
+                        <div class="border-glow-inner">
+                            <div class="flex-items-center gap-3">
+                                <div class="floating-icon-box bg-emerald-dim text-emerald">
+                                    <span class="floating-glyph">🛡️</span>
                                 </div>
-                                <p class="floating-card-desc">Automatic liquidity cushion &amp; safe burn boundaries</p>
+                                <div>
+                                    <div class="flex-items-center gap-2">
+                                        <h4 class="floating-card-title">50/30/20 Wealth Shield</h4>
+                                        <span class="floating-status-pill status-emerald">Active</span>
+                                    </div>
+                                    <p class="floating-card-desc">Automatic liquidity cushion &amp; safe burn boundaries</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="floating-card-stat">
-                            <span class="stat-number text-emerald font-mono">100.0%</span>
-                            <span class="stat-label">Buffer Intact</span>
+                            <div class="floating-card-stat">
+                                <span class="stat-number text-emerald font-mono">100.0%</span>
+                                <span class="stat-label">Buffer Intact</span>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Floating Card 2: Bayesian Online Categorizer -->
-                    <div class="floating-glass-card animate-float-reverse floating-card-offset">
-                        <div class="flex-items-center gap-3">
-                            <div class="floating-icon-box bg-purple-dim text-purple">
-                                <span class="floating-glyph">🧠</span>
-                            </div>
-                            <div>
-                                <div class="flex-items-center gap-2">
-                                    <h4 class="floating-card-title">Bayesian ML Classifier</h4>
-                                    <span class="floating-status-pill status-purple">Online</span>
+                    <div class="border-glow-card floating-glass-card animate-float-reverse floating-card-offset">
+                        <span class="edge-light"></span>
+                        <div class="border-glow-inner">
+                            <div class="flex-items-center gap-3">
+                                <div class="floating-icon-box bg-purple-dim text-purple">
+                                    <span class="floating-glyph">🧠</span>
                                 </div>
-                                <p class="floating-card-desc">Real-time posterior prediction with Laplace smoothing</p>
+                                <div>
+                                    <div class="flex-items-center gap-2">
+                                        <h4 class="floating-card-title">Bayesian ML Classifier</h4>
+                                        <span class="floating-status-pill status-purple">Online</span>
+                                    </div>
+                                    <p class="floating-card-desc">Real-time posterior prediction with Laplace smoothing</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="floating-card-stat">
-                            <span class="stat-number text-purple font-mono">98.2%</span>
-                            <span class="stat-label">Model Precision</span>
+                            <div class="floating-card-stat">
+                                <span class="stat-number text-purple font-mono">98.2%</span>
+                                <span class="stat-label">Model Precision</span>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Floating Card 3: Aura AI Financial Sentry -->
-                    <div class="floating-glass-card animate-float-subtle">
-                        <div class="flex-items-center gap-3">
-                            <div class="floating-icon-box aura-avatar-glow text-white">
-                                <span class="floating-glyph">⚡</span>
-                            </div>
-                            <div>
-                                <div class="flex-items-center gap-2">
-                                    <h4 class="floating-card-title">Aura AI Anomaly Guard</h4>
-                                    <span class="floating-status-pill status-indigo">Active 2.5σ</span>
+                    <div class="border-glow-card floating-glass-card animate-float-subtle">
+                        <span class="edge-light"></span>
+                        <div class="border-glow-inner">
+                            <div class="flex-items-center gap-3">
+                                <div class="floating-icon-box aura-avatar-glow text-white">
+                                    <span class="floating-glyph">⚡</span>
                                 </div>
-                                <p class="floating-card-desc">Instant outlier auditing &amp; leak elimination</p>
+                                <div>
+                                    <div class="flex-items-center gap-2">
+                                        <h4 class="floating-card-title">Aura AI Anomaly Guard</h4>
+                                        <span class="floating-status-pill status-indigo">Active 2.5σ</span>
+                                    </div>
+                                    <p class="floating-card-desc">Instant outlier auditing &amp; leak elimination</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="floating-card-stat">
-                            <span class="stat-number text-emerald font-mono">0 Leaks</span>
-                            <span class="stat-label">Audited Status</span>
+                            <div class="floating-card-stat">
+                                <span class="stat-number text-emerald font-mono">0 Leaks</span>
+                                <span class="stat-label">Audited Status</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -775,9 +809,9 @@
 
             <div class="sidebar-footer">
                 <div class="user-menu">
-                    <div class="user-avatar" id="nav-user-initials">AS</div>
+                    <div class="user-avatar" id="nav-user-initials"></div>
                     <div class="user-info">
-                        <span class="user-name" id="nav-user-name">Alex Sharma</span>
+                        <span class="user-name" id="nav-user-name"></span>
                         <a href="javascript:void(0)" onclick="handleLogout()" class="logout-link">Sign Out</a>
                     </div>
                 </div>
