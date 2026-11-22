@@ -1,18 +1,40 @@
 """
 Database layer for Personal Expense Tracker.
-Handles SQLite schema creation, migrations, and CRUD operations.
+Supports both Supabase PostgreSQL (via PostgREST with Row Level Security)
+and SQLite (local development / testing fallback).
 """
 
 import os
 import shutil
 import sqlite3
 from datetime import datetime, timedelta
+from typing import Any, List, Optional, Dict
+
+import supabase_client
+
+try:
+    from flask import has_request_context, request
+except ImportError:
+    has_request_context = lambda: False
+    request = None
+
+
+def _get_current_jwt(explicit_jwt: Optional[str] = None) -> Optional[str]:
+    """Retrieves current authenticated user's JWT from explicit arg or Flask context."""
+    if explicit_jwt:
+        return explicit_jwt
+    if has_request_context() and request:
+        return getattr(request, "user_token", None)
+    return None
+
+
+# ---------------- SQLITE CONFIGURATION & HELPERS ----------------
 
 DEFAULT_DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tracker.db")
 
 
-def get_db_path():
-    """Returns database path, ensuring writable /tmp location in serverless (e.g. Vercel)."""
+def get_db_path() -> str:
+    """Returns database path, ensuring writable /tmp location in serverless environments."""
     if os.environ.get("VERCEL") or not os.access(os.path.dirname(os.path.abspath(__file__)), os.W_OK):
         tmp_db = os.environ.get("TRACKER_DB_PATH", "/tmp/tracker.db")
         if not os.path.exists(tmp_db) and os.path.exists(DEFAULT_DB_PATH):
@@ -24,10 +46,7 @@ def get_db_path():
     return os.environ.get("TRACKER_DB_PATH", DEFAULT_DB_PATH)
 
 
-DB_PATH = get_db_path()
-
-
-def get_db_connection(db_path=None):
+def get_db_connection(db_path: Optional[str] = None) -> sqlite3.Connection:
     """Returns a connection to the SQLite database with Row factory enabled."""
     path = db_path or get_db_path()
     conn = sqlite3.connect(path)
@@ -36,8 +55,8 @@ def get_db_connection(db_path=None):
     return conn
 
 
-def init_db(db_path=None):
-    """Initializes the database schema if tables do not exist."""
+def init_db(db_path: Optional[str] = None) -> None:
+    """Initializes the SQLite database schema if tables do not exist."""
     path = db_path or get_db_path()
     conn = get_db_connection(path)
     with conn:
@@ -79,31 +98,17 @@ def init_db(db_path=None):
                 UNIQUE(user_id, category, month_year)
             )
         """)
-        
         # Indexes for fast querying
         conn.execute("CREATE INDEX IF NOT EXISTS idx_trans_user_date ON transactions(user_id, date)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_trans_user_cat ON transactions(user_id, category)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_budgets_user ON budgets(user_id, month_year)")
-
-        # Ensure demo user exists
-        demo_user = conn.execute("SELECT id FROM users WHERE email = 'demo@moneymap.io'").fetchone()
-        demo_user_id = None
-        if not demo_user:
-            cursor = conn.execute(
-                "INSERT INTO users (name, email, password_hash, currency) VALUES (?, ?, ?, ?)",
-                ("Alex Sharma", "demo@moneymap.io", "f384560cf382b401d9591b701b68774b$52c60be35264ac3dcf603d6e18c6ea668d1e8959f909298a949123f895561ecf", "₹")
-            )
-            demo_user_id = cursor.lastrowid
     conn.close()
-
-    if demo_user_id:
-        seed_demo_data(demo_user_id, db_path=path)
 
 
 # ---------------- USER CRUD ----------------
 
-def create_user(name, email, password_hash, currency='₹', db_path=None):
-    """Inserts a new user and returns their user_id."""
+def create_user(name: str, email: str, password_hash: str, currency: str = '₹', db_path: Optional[str] = None):
+    """Inserts a new user in SQLite (local dev mode)."""
     conn = get_db_connection(db_path)
     try:
         with conn:
@@ -118,8 +123,8 @@ def create_user(name, email, password_hash, currency='₹', db_path=None):
         conn.close()
 
 
-def get_user_by_email(email, db_path=None):
-    """Retrieves a user record by email."""
+def get_user_by_email(email: str, db_path: Optional[str] = None):
+    """Retrieves a user record by email from SQLite."""
     conn = get_db_connection(db_path)
     user = conn.execute(
         "SELECT * FROM users WHERE email = ?",
@@ -129,8 +134,19 @@ def get_user_by_email(email, db_path=None):
     return dict(user) if user else None
 
 
-def get_user_by_id(user_id, db_path=None):
-    """Retrieves a user record by user_id."""
+def get_user_by_id(user_id, db_path: Optional[str] = None, jwt: Optional[str] = None):
+    """Retrieves user profile by ID (Supabase profiles or SQLite users)."""
+    token = _get_current_jwt(jwt)
+    if supabase_client.is_supabase_enabled() and token:
+        try:
+            client = supabase_client.get_supabase_client(token)
+            res = client.table("profiles").select("id, name, email, currency, created_at").eq("id", str(user_id)).execute()
+            if res.data:
+                return res.data[0]
+        except Exception:
+            pass
+
+    # SQLite fallback
     conn = get_db_connection(db_path)
     user = conn.execute(
         "SELECT id, name, email, currency, created_at FROM users WHERE id = ?",
@@ -140,18 +156,47 @@ def get_user_by_id(user_id, db_path=None):
     return dict(user) if user else None
 
 
-def update_user_currency(user_id, currency, db_path=None):
-    """Updates user's preferred currency symbol."""
+def update_user_currency(user_id, currency: str, db_path: Optional[str] = None, jwt: Optional[str] = None):
+    """Updates user preferred currency symbol."""
+    token = _get_current_jwt(jwt)
+    if supabase_client.is_supabase_enabled() and token:
+        try:
+            client = supabase_client.get_supabase_client(token)
+            client.table("profiles").update({"currency": currency}).eq("id", str(user_id)).execute()
+            return True
+        except Exception:
+            pass
+
+    # SQLite fallback
     conn = get_db_connection(db_path)
     with conn:
         conn.execute("UPDATE users SET currency = ? WHERE id = ?", (currency, user_id))
     conn.close()
+    return True
 
 
 # ---------------- TRANSACTION CRUD ----------------
 
-def add_transaction(user_id, type_, amount, category, date, description="", is_anomaly=0, db_path=None):
+def add_transaction(user_id, type_, amount, category, date, description="", is_anomaly=0, db_path: Optional[str] = None, jwt: Optional[str] = None):
     """Adds a new transaction record."""
+    token = _get_current_jwt(jwt)
+    if supabase_client.is_supabase_enabled() and token:
+        client = supabase_client.get_supabase_client(token)
+        payload = {
+            "user_id": str(user_id),
+            "type": type_,
+            "amount": float(amount),
+            "category": category.strip(),
+            "date": str(date),
+            "description": (description or "").strip(),
+            "note": (description or "").strip(),
+            "is_anomaly": int(is_anomaly)
+        }
+        res = client.table("transactions").insert(payload).execute()
+        if res.data:
+            return res.data[0].get("id")
+
+    # SQLite fallback
     conn = get_db_connection(db_path)
     with conn:
         cursor = conn.execute(
@@ -166,8 +211,32 @@ def add_transaction(user_id, type_, amount, category, date, description="", is_a
     return t_id
 
 
-def get_transactions(user_id, category=None, type_=None, start_date=None, end_date=None, search=None, limit=None, offset=None, db_path=None):
-    """Fetches transactions with optional filters."""
+def get_transactions(user_id, category=None, type_=None, start_date=None, end_date=None, search=None, limit=None, offset=None, db_path: Optional[str] = None, jwt: Optional[str] = None):
+    """Fetches transactions with optional filtering and pagination."""
+    token = _get_current_jwt(jwt)
+    if supabase_client.is_supabase_enabled() and token:
+        client = supabase_client.get_supabase_client(token)
+        q = client.table("transactions").select("*").eq("user_id", str(user_id))
+        if category and category != "all":
+            q = q.eq("category", category)
+        if type_ and type_ != "all":
+            q = q.eq("type", type_)
+        if start_date:
+            q = q.gte("date", start_date)
+        if end_date:
+            q = q.lte("date", end_date)
+        if search:
+            q = q.ilike("description", f"%{search.strip()}%")
+
+        q = q.order("date", desc=True).order("id", desc=True)
+        if limit is not None:
+            start = int(offset or 0)
+            end = start + int(limit) - 1
+            q = q.range(start, end)
+        res = q.execute()
+        return res.data or []
+
+    # SQLite fallback
     conn = get_db_connection(db_path)
     query = "SELECT * FROM transactions WHERE user_id = ?"
     params = [user_id]
@@ -207,8 +276,15 @@ def get_transactions(user_id, category=None, type_=None, start_date=None, end_da
     return [dict(r) for r in rows]
 
 
-def get_transaction_by_id(transaction_id, user_id, db_path=None):
+def get_transaction_by_id(transaction_id, user_id, db_path: Optional[str] = None, jwt: Optional[str] = None):
     """Gets a specific transaction by ID belonging to user_id."""
+    token = _get_current_jwt(jwt)
+    if supabase_client.is_supabase_enabled() and token:
+        client = supabase_client.get_supabase_client(token)
+        res = client.table("transactions").select("*").eq("id", transaction_id).eq("user_id", str(user_id)).execute()
+        return res.data[0] if res.data else None
+
+    # SQLite fallback
     conn = get_db_connection(db_path)
     row = conn.execute(
         "SELECT * FROM transactions WHERE id = ? AND user_id = ?",
@@ -218,8 +294,24 @@ def get_transaction_by_id(transaction_id, user_id, db_path=None):
     return dict(row) if row else None
 
 
-def update_transaction(transaction_id, user_id, type_, amount, category, date, description="", is_anomaly=0, db_path=None):
+def update_transaction(transaction_id, user_id, type_, amount, category, date, description="", is_anomaly=0, db_path: Optional[str] = None, jwt: Optional[str] = None):
     """Updates an existing transaction."""
+    token = _get_current_jwt(jwt)
+    if supabase_client.is_supabase_enabled() and token:
+        client = supabase_client.get_supabase_client(token)
+        payload = {
+            "type": type_,
+            "amount": float(amount),
+            "category": category.strip(),
+            "date": str(date),
+            "description": (description or "").strip(),
+            "note": (description or "").strip(),
+            "is_anomaly": int(is_anomaly)
+        }
+        res = client.table("transactions").update(payload).eq("id", transaction_id).eq("user_id", str(user_id)).execute()
+        return bool(res.data)
+
+    # SQLite fallback
     conn = get_db_connection(db_path)
     with conn:
         cursor = conn.execute(
@@ -235,8 +327,15 @@ def update_transaction(transaction_id, user_id, type_, amount, category, date, d
     return updated
 
 
-def delete_transaction(transaction_id, user_id, db_path=None):
+def delete_transaction(transaction_id, user_id, db_path: Optional[str] = None, jwt: Optional[str] = None):
     """Deletes a transaction."""
+    token = _get_current_jwt(jwt)
+    if supabase_client.is_supabase_enabled() and token:
+        client = supabase_client.get_supabase_client(token)
+        res = client.table("transactions").delete().eq("id", transaction_id).eq("user_id", str(user_id)).execute()
+        return bool(res.data)
+
+    # SQLite fallback
     conn = get_db_connection(db_path)
     with conn:
         cursor = conn.execute(
@@ -250,10 +349,24 @@ def delete_transaction(transaction_id, user_id, db_path=None):
 
 # ---------------- BUDGET CRUD ----------------
 
-def set_budget(user_id, category, monthly_limit, month_year=None, db_path=None):
+def set_budget(user_id, category, monthly_limit, month_year=None, db_path: Optional[str] = None, jwt: Optional[str] = None):
     """Sets or updates a monthly budget for a category."""
     if not month_year:
         month_year = datetime.now().strftime("%Y-%m")
+
+    token = _get_current_jwt(jwt)
+    if supabase_client.is_supabase_enabled() and token:
+        client = supabase_client.get_supabase_client(token)
+        payload = {
+            "user_id": str(user_id),
+            "category": category.strip(),
+            "monthly_limit": float(monthly_limit),
+            "month_year": month_year
+        }
+        res = client.table("budgets").upsert(payload, on_conflict="user_id,category,month_year").execute()
+        return res.data[0].get("id") if res.data else True
+
+    # SQLite fallback
     conn = get_db_connection(db_path)
     with conn:
         cursor = conn.execute(
@@ -270,20 +383,42 @@ def set_budget(user_id, category, monthly_limit, month_year=None, db_path=None):
     return budget_id
 
 
-def get_budgets(user_id, month_year=None, db_path=None):
+def get_budgets(user_id, month_year=None, db_path: Optional[str] = None, jwt: Optional[str] = None):
     """Gets all budgets for a user in a given month, with actual spend calculated."""
     if not month_year:
         month_year = datetime.now().strftime("%Y-%m")
 
+    token = _get_current_jwt(jwt)
+    if supabase_client.is_supabase_enabled() and token:
+        client = supabase_client.get_supabase_client(token)
+        b_res = client.table("budgets").select("*").eq("user_id", str(user_id)).eq("month_year", month_year).execute()
+        # Expenses for this month
+        t_res = client.table("transactions").select("category, amount").eq("user_id", str(user_id)).eq("type", "expense").like("date", f"{month_year}%").execute()
+
+        spend_map = {}
+        for row in (t_res.data or []):
+            cat = row["category"]
+            spend_map[cat] = spend_map.get(cat, 0.0) + float(row["amount"])
+
+        result = []
+        for b in (b_res.data or []):
+            cat = b["category"]
+            limit = float(b["monthly_limit"])
+            spent = spend_map.get(cat, 0.0)
+            b["spent"] = spent
+            b["remaining"] = max(0.0, limit - spent)
+            b["percentage"] = round((spent / limit * 100), 1) if limit > 0 else 0
+            b["is_exceeded"] = spent > limit
+            result.append(b)
+        return result
+
+    # SQLite fallback
     conn = get_db_connection(db_path)
-    
-    # Fetch budgets
     budget_rows = conn.execute(
         "SELECT * FROM budgets WHERE user_id = ? AND month_year = ?",
         (user_id, month_year)
     ).fetchall()
 
-    # Calculate actual spending per category for this month
     spend_rows = conn.execute(
         """
         SELECT category, SUM(amount) as total_spent
@@ -308,8 +443,15 @@ def get_budgets(user_id, month_year=None, db_path=None):
     return result
 
 
-def delete_budget(budget_id, user_id, db_path=None):
+def delete_budget(budget_id, user_id, db_path: Optional[str] = None, jwt: Optional[str] = None):
     """Deletes a budget entry."""
+    token = _get_current_jwt(jwt)
+    if supabase_client.is_supabase_enabled() and token:
+        client = supabase_client.get_supabase_client(token)
+        res = client.table("budgets").delete().eq("id", budget_id).eq("user_id", str(user_id)).execute()
+        return bool(res.data)
+
+    # SQLite fallback
     conn = get_db_connection(db_path)
     with conn:
         cursor = conn.execute(
@@ -323,14 +465,73 @@ def delete_budget(budget_id, user_id, db_path=None):
 
 # ---------------- AGGREGATION & SUMMARY ----------------
 
-def get_financial_summary(user_id, month_year=None, db_path=None):
+def get_financial_summary(user_id, month_year=None, db_path: Optional[str] = None, jwt: Optional[str] = None):
     """Calculates overall totals, category distribution, and cash flow."""
+    token = _get_current_jwt(jwt)
+    if supabase_client.is_supabase_enabled() and token:
+        client = supabase_client.get_supabase_client(token)
+        q = client.table("transactions").select("*").eq("user_id", str(user_id))
+        if month_year:
+            q = q.like("date", f"{month_year}%")
+        q = q.order("date", desc=False)
+        res = q.execute()
+        rows = res.data or []
+
+        total_income = 0.0
+        total_expenses = 0.0
+        cat_map = {}
+        daily_map = {}
+
+        for r in rows:
+            amt = float(r["amount"])
+            d = str(r["date"])
+            if d not in daily_map:
+                daily_map[d] = {"income": 0.0, "expense": 0.0}
+
+            if r["type"] == "income":
+                total_income += amt
+                daily_map[d]["income"] += amt
+            else:
+                total_expenses += amt
+                daily_map[d]["expense"] += amt
+                cat = r["category"]
+                if cat not in cat_map:
+                    cat_map[cat] = {"total": 0.0, "count": 0}
+                cat_map[cat]["total"] += amt
+                cat_map[cat]["count"] += 1
+
+        balance = total_income - total_expenses
+        savings_rate = round(((balance / total_income) * 100), 1) if total_income > 0 else 0.0
+
+        category_breakdown = [
+            {"category": k, "total": v["total"], "count": v["count"]}
+            for k, v in sorted(cat_map.items(), key=lambda item: item[1]["total"], reverse=True)
+        ]
+
+        daily_timeline = [
+            {"date": d, "income": v["income"], "expense": v["expense"]}
+            for d, v in sorted(daily_map.items(), key=lambda item: item[0])
+        ]
+
+        return {
+            "total_income": total_income,
+            "total_expenses": total_expenses,
+            "balance": balance,
+            "savings_rate": savings_rate,
+            "transaction_count": len(rows),
+            "category_breakdown": category_breakdown,
+            "daily_timeline": daily_timeline
+        }
+
+    # SQLite fallback
     conn = get_db_connection(db_path)
+    if month_year:
+        date_filter = "AND date LIKE ?"
+        date_params = (f"{month_year}%",)
+    else:
+        date_filter = ""
+        date_params = ()
 
-    # Date filter: default to current month if specified, or all-time if None
-    date_filter = f"AND date LIKE '{month_year}%'" if month_year else ""
-
-    # Totals
     totals = conn.execute(f"""
         SELECT
             COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) AS total_income,
@@ -338,28 +539,26 @@ def get_financial_summary(user_id, month_year=None, db_path=None):
             COUNT(*) AS transaction_count
         FROM transactions
         WHERE user_id = ? {date_filter}
-    """, (user_id,)).fetchone()
+    """, (user_id, *date_params)).fetchone()
 
     total_income = float(totals["total_income"])
     total_expenses = float(totals["total_expenses"])
     balance = total_income - total_expenses
     savings_rate = round(((balance / total_income) * 100), 1) if total_income > 0 else 0.0
 
-    # Expense by category
     category_rows = conn.execute(f"""
         SELECT category, SUM(amount) as total, COUNT(*) as count
         FROM transactions
         WHERE user_id = ? AND type = 'expense' {date_filter}
         GROUP BY category
         ORDER BY total DESC
-    """, (user_id,)).fetchall()
+    """, (user_id, *date_params)).fetchall()
 
     category_breakdown = [
         {"category": r["category"], "total": float(r["total"]), "count": r["count"]}
         for r in category_rows
     ]
 
-    # Daily breakdown for spending chart
     daily_rows = conn.execute(f"""
         SELECT date,
                COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) as income,
@@ -368,7 +567,7 @@ def get_financial_summary(user_id, month_year=None, db_path=None):
         WHERE user_id = ? {date_filter}
         GROUP BY date
         ORDER BY date ASC
-    """, (user_id,)).fetchall()
+    """, (user_id, *date_params)).fetchall()
 
     daily_timeline = [
         {"date": r["date"], "income": float(r["income"]), "expense": float(r["expense"])}
@@ -385,93 +584,3 @@ def get_financial_summary(user_id, month_year=None, db_path=None):
         "category_breakdown": category_breakdown,
         "daily_timeline": daily_timeline
     }
-
-
-# ---------------- SEED DEMO DATA ----------------
-
-def seed_demo_data(user_id, db_path=None):
-    """
-    Populates realistic sample transactions and category budgets.
-    Includes normal expenses + 1 or 2 anomalies for demonstration of ML models.
-    """
-    conn = get_db_connection(db_path)
-    now = datetime.now()
-
-    # Clear previous transactions for fresh demo
-    with conn:
-        conn.execute("DELETE FROM transactions WHERE user_id = ?", (user_id,))
-        conn.execute("DELETE FROM budgets WHERE user_id = ?", (user_id,))
-    conn.close()
-
-    current_month = now.strftime("%Y-%m")
-
-    # Sample demo transactions
-    demo_records = [
-        # Incomes
-        ("income", 25000.0, "Salary / Allowance", (now - timedelta(days=24)).strftime("%Y-%m-%d"), "Monthly income transfer", 0),
-        ("income", 8000.0, "Salary / Allowance", (now - timedelta(days=15)).strftime("%Y-%m-%d"), "Consulting & research honorarium", 0),
-        ("income", 3500.0, "Freelance / Projects", (now - timedelta(days=7)).strftime("%Y-%m-%d"), "Freelance Python web development task", 0),
-
-        # Education & Courses
-        ("expense", 4200.0, "Education", (now - timedelta(days=23)).strftime("%Y-%m-%d"), "Professional certification fee and course manual", 0),
-        ("expense", 1250.0, "Education", (now - timedelta(days=19)).strftime("%Y-%m-%d"), "Machine Learning reference textbook", 0),
-        ("expense", 450.0, "Education", (now - timedelta(days=12)).strftime("%Y-%m-%d"), "Notebook and stationary set", 0),
-        ("expense", 950.0, "Education", (now - timedelta(days=4)).strftime("%Y-%m-%d"), "Online Deep Learning subscription", 0),
-
-        # Food & Dining
-        ("expense", 280.0, "Food & Dining", (now - timedelta(days=22)).strftime("%Y-%m-%d"), "Lunch with teammates", 0),
-        ("expense", 650.0, "Food & Dining", (now - timedelta(days=20)).strftime("%Y-%m-%d"), "Dominos pizza study group meetup", 0),
-        ("expense", 180.0, "Food & Dining", (now - timedelta(days=18)).strftime("%Y-%m-%d"), "Starbucks cold brew coffee", 0),
-        ("expense", 120.0, "Food & Dining", (now - timedelta(days=16)).strftime("%Y-%m-%d"), "Cafeteria breakfast", 0),
-        ("expense", 420.0, "Food & Dining", (now - timedelta(days=14)).strftime("%Y-%m-%d"), "Swiggy dinner order", 0),
-        ("expense", 240.0, "Food & Dining", (now - timedelta(days=11)).strftime("%Y-%m-%d"), "Evening cafe snacks and juices", 0),
-        ("expense", 780.0, "Food & Dining", (now - timedelta(days=9)).strftime("%Y-%m-%d"), "Weekend team lunch after hackathon", 0),
-        ("expense", 150.0, "Food & Dining", (now - timedelta(days=6)).strftime("%Y-%m-%d"), "Chai and snacks break", 0),
-        ("expense", 510.0, "Food & Dining", (now - timedelta(days=3)).strftime("%Y-%m-%d"), "Zomato dinner delivery", 0),
-        ("expense", 320.0, "Food & Dining", (now - timedelta(days=1)).strftime("%Y-%m-%d"), "Grocery essentials and milk at mart", 0),
-        # Anomaly in Food: Outlier expense ($4,800 dining bill)
-        ("expense", 4800.0, "Food & Dining", (now - timedelta(days=5)).strftime("%Y-%m-%d"), "Fancy 5-star birthday treat for 8 friends", 1),
-
-        # Transportation
-        ("expense", 600.0, "Transportation", (now - timedelta(days=21)).strftime("%Y-%m-%d"), "Monthly metro card recharge", 0),
-        ("expense", 180.0, "Transportation", (now - timedelta(days=17)).strftime("%Y-%m-%d"), "Uber auto ride across city", 0),
-        ("expense", 240.0, "Transportation", (now - timedelta(days=10)).strftime("%Y-%m-%d"), "Ola cab ride back from project meetup", 0),
-        ("expense", 150.0, "Transportation", (now - timedelta(days=2)).strftime("%Y-%m-%d"), "Bus ticket to tech hub", 0),
-
-        # Housing & Utilities
-        ("expense", 8500.0, "Housing & Utilities", (now - timedelta(days=24)).strftime("%Y-%m-%d"), "Monthly apartment accommodation rent", 0),
-        ("expense", 999.0, "Housing & Utilities", (now - timedelta(days=15)).strftime("%Y-%m-%d"), "High speed Wi-Fi internet broadband", 0),
-        ("expense", 399.0, "Housing & Utilities", (now - timedelta(days=8)).strftime("%Y-%m-%d"), "Mobile recharge 5G data plan", 0),
-
-        # Entertainment
-        ("expense", 499.0, "Entertainment", (now - timedelta(days=20)).strftime("%Y-%m-%d"), "Netflix monthly subscription", 0),
-        ("expense", 350.0, "Entertainment", (now - timedelta(days=13)).strftime("%Y-%m-%d"), "IMAX Movie ticket with friends", 0),
-        ("expense", 199.0, "Entertainment", (now - timedelta(days=7)).strftime("%Y-%m-%d"), "Spotify Premium subscription", 0),
-
-        # Shopping
-        ("expense", 1499.0, "Shopping", (now - timedelta(days=18)).strftime("%Y-%m-%d"), "Casual sneakers on sale", 0),
-        ("expense", 899.0, "Shopping", (now - timedelta(days=6)).strftime("%Y-%m-%d"), "Ergonomic laptop stand for coding", 0),
-
-        # Healthcare
-        ("expense", 350.0, "Healthcare", (now - timedelta(days=16)).strftime("%Y-%m-%d"), "Vitamins and first aid medicine", 0),
-        ("expense", 600.0, "Healthcare", (now - timedelta(days=8)).strftime("%Y-%m-%d"), "Dental routine checkup", 0),
-    ]
-
-    for item in demo_records:
-        add_transaction(user_id, item[0], item[1], item[2], item[3], item[4], item[5], db_path=db_path)
-
-    # Budgets for demo
-    budgets = [
-        ("Food & Dining", 6000.0),
-        ("Education", 8000.0),
-        ("Housing & Utilities", 11000.0),
-        ("Transportation", 2000.0),
-        ("Entertainment", 1500.0),
-        ("Shopping", 3000.0),
-        ("Healthcare", 1500.0),
-    ]
-
-    for cat, lim in budgets:
-        set_budget(user_id, cat, lim, month_year=current_month, db_path=db_path)
-
-    return True

@@ -11,8 +11,15 @@ import time
 import base64
 import json
 
-SECRET_KEY = os.environ.get("TRACKER_SECRET_KEY", "moneymap-finance-secret-key-prod")
+SECRET_KEY = os.environ.get("TRACKER_SECRET_KEY", "")
+if not SECRET_KEY:
+    # auth.py is imported after app.py raises; this guard is a belt-and-suspenders fallback.
+    raise RuntimeError(
+        "SECURITY: TRACKER_SECRET_KEY environment variable is not set. "
+        "Cannot generate or verify session tokens."
+    )
 ITERATIONS = 100_000
+
 
 
 def hash_password(password: str) -> str:

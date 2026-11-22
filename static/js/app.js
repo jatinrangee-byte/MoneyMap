@@ -107,10 +107,7 @@ async function apiRequest(endpoint, options = {}) {
 // ==========================================================================
 
 function initAuthListeners() {
-    const quickDemoBtn = document.getElementById("quick-demo-btn");
-    if (quickDemoBtn) {
-        quickDemoBtn.addEventListener("click", quickDemoLogin);
-    }
+    // No additional auth listeners needed — login and register forms use onsubmit handlers.
 }
 
 async function checkAuth() {
@@ -199,56 +196,10 @@ async function handleRegister(e) {
         state.user = res.user;
         state.currency = res.user.currency || "₹";
         localStorage.setItem("moneymap_token", res.token);
-        showToast("Account created successfully with demo records", "success");
+        showToast(`Welcome, ${res.user.name}! Your account is ready.`, "success");
         showMainApp();
         initAppDashboard();
     } catch (err) {}
-}
-
-async function quickDemoLogin() {
-    try {
-        const res = await fetch("/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: "demo@moneymap.io", password: "demoPassword123" })
-        });
-        if (res.ok) {
-            const data = await res.json();
-            state.token = data.token;
-            state.user = data.user;
-            state.currency = data.user.currency || "₹";
-            localStorage.setItem("moneymap_token", data.token);
-            showToast("Demo session loaded", "success");
-            showMainApp();
-            initAppDashboard();
-            return;
-        }
-
-        const regRes = await fetch("/api/auth/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                name: "Alex Sharma",
-                email: "demo@moneymap.io",
-                password: "demoPassword123",
-                currency: "₹"
-            })
-        });
-        const regData = await regRes.json();
-        if (regRes.ok) {
-            state.token = regData.token;
-            state.user = regData.user;
-            state.currency = regData.user.currency || "₹";
-            localStorage.setItem("moneymap_token", regData.token);
-            showToast("Demo session initialized", "success");
-            showMainApp();
-            initAppDashboard();
-        } else {
-            showToast(regData.error || "Failed to initialize demo", "error");
-        }
-    } catch (err) {
-        showToast("Error connecting to server", "error");
-    }
 }
 
 function handleLogout(showToastMsg = true) {
@@ -1032,22 +983,6 @@ async function handleMLSandboxInput() {
     } catch (err) {
         console.error(err);
     }
-}
-
-// ==========================================================================
-// SEED DEMO DATA
-// ==========================================================================
-
-async function triggerSeedData() {
-    if (!confirm("Reload sample demonstration transactions and category budgets?")) return;
-    try {
-        await apiRequest("/api/demo/seed", { method: "POST" });
-        showToast("Demo data loaded", "success");
-        if (state.currentView === "dashboard") loadDashboardData();
-        if (state.currentView === "transactions") fetchTransactions();
-        if (state.currentView === "budgets") loadBudgets();
-        if (state.currentView === "ml-lab") loadMLLabData();
-    } catch (err) {}
 }
 
 // ==========================================================================

@@ -9,6 +9,9 @@ import tempfile
 import json
 import sqlite3
 
+# Set test secret key before app and auth import
+os.environ.setdefault("TRACKER_SECRET_KEY", "test-secret-key-moneymap-unit-tests-12345678")
+
 # Import application modules
 import database
 import auth

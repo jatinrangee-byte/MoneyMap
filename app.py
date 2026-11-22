@@ -4,6 +4,7 @@ Exposes RESTful APIs and serves the presentation UI.
 """
 
 import os
+import re
 import csv
 import io
 from datetime import datetime
@@ -15,6 +16,7 @@ import database
 import auth
 import ml_engine
 import ai_chat
+import supabase_client
 
 # Initialize Flask App
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -23,7 +25,13 @@ app = Flask(
     template_folder=os.path.join(BASE_DIR, "templates"),
     static_folder=os.path.join(BASE_DIR, "static")
 )
-app.config["SECRET_KEY"] = os.environ.get("TRACKER_SECRET_KEY", "moneymap-finance-secret-key-prod")
+_secret = os.environ.get("TRACKER_SECRET_KEY", "")
+if not _secret or _secret == "moneymap-finance-secret-key-prod":
+    raise RuntimeError(
+        "SECURITY: TRACKER_SECRET_KEY environment variable is not set or is using the "
+        "insecure default. Set a strong random secret before running the application."
+    )
+app.config["SECRET_KEY"] = _secret
 
 # Ensure database is initialized at startup
 database.init_db()
@@ -44,11 +52,20 @@ def require_auth(f):
         if not token:
             return jsonify({"error": "Unauthorized. Please log in."}), 401
 
-        user_id = auth.verify_session_token(token)
-        if not user_id:
-            return jsonify({"error": "Session expired or invalid. Please log in again."}), 401
+        if supabase_client.is_supabase_enabled():
+            user = supabase_client.verify_supabase_token(token)
+            if not user:
+                return jsonify({"error": "Session expired or invalid. Please log in again."}), 401
+            request.user_id = user["id"]
+            request.user_token = token
+            request.user = user
+        else:
+            user_id = auth.verify_session_token(token)
+            if not user_id:
+                return jsonify({"error": "Session expired or invalid. Please log in again."}), 401
+            request.user_id = user_id
+            request.user_token = token
 
-        request.user_id = user_id
         return f(*args, **kwargs)
     return decorated
 
@@ -73,9 +90,45 @@ def register():
     if not name or not email or not password:
         return jsonify({"error": "Name, email, and password are required."}), 400
 
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+        return jsonify({"error": "Please enter a valid email address."}), 400
+
     if len(password) < 6:
         return jsonify({"error": "Password must be at least 6 characters long."}), 400
 
+    is_secure = os.environ.get("VERCEL") is not None
+
+    if supabase_client.is_supabase_enabled():
+        try:
+            res = supabase_client.sign_up_user(email, password, name, currency)
+            user_obj = getattr(res, "user", None)
+            session = getattr(res, "session", None)
+            user_id = str(user_obj.id) if user_obj else None
+            token = session.access_token if session else None
+            user_data = {
+                "id": user_id,
+                "name": name,
+                "email": email,
+                "currency": currency
+            }
+            if token and user_id:
+                try:
+                    c = supabase_client.get_supabase_client(token)
+                    c.table("profiles").upsert(user_data).execute()
+                except Exception:
+                    pass
+            resp = jsonify({
+                "message": "Registration successful",
+                "user": user_data,
+                "token": token
+            })
+            if token:
+                resp.set_cookie("session_token", token, httponly=True, max_age=86400 * 7, samesite="Lax", secure=is_secure)
+            return resp, 201
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
+
+    # SQLite fallback
     existing = database.get_user_by_email(email)
     if existing:
         return jsonify({"error": "An account with this email already exists."}), 409
@@ -86,14 +139,11 @@ def register():
     if not user_id:
         return jsonify({"error": "Failed to create account. Please try again."}), 500
 
-    # Auto-seed initial demo transactions so the user immediately sees rich UI
-    database.seed_demo_data(user_id)
-
     token = auth.generate_session_token(user_id)
     user = database.get_user_by_id(user_id)
 
     resp = jsonify({"message": "Registration successful", "user": user, "token": token})
-    resp.set_cookie("session_token", token, httponly=True, max_age=86400 * 7, samesite="Lax")
+    resp.set_cookie("session_token", token, httponly=True, max_age=86400 * 7, samesite="Lax", secure=is_secure)
     return resp, 201
 
 
@@ -106,6 +156,35 @@ def login():
     if not email or not password:
         return jsonify({"error": "Email and password are required."}), 400
 
+    is_secure = os.environ.get("VERCEL") is not None
+
+    if supabase_client.is_supabase_enabled():
+        try:
+            res = supabase_client.sign_in_user(email, password)
+            token = res.session.access_token
+            user_obj = res.user
+            meta = getattr(user_obj, "user_metadata", {}) or {}
+            user_id = str(user_obj.id)
+            user_data = {
+                "id": user_id,
+                "name": meta.get("name") or email.split("@")[0],
+                "email": user_obj.email,
+                "currency": meta.get("currency", "₹")
+            }
+            try:
+                prof = database.get_user_by_id(user_id, jwt=token)
+                if prof:
+                    user_data["name"] = prof.get("name") or user_data["name"]
+                    user_data["currency"] = prof.get("currency") or user_data["currency"]
+            except Exception:
+                pass
+            resp = jsonify({"message": "Login successful", "user": user_data, "token": token})
+            resp.set_cookie("session_token", token, httponly=True, max_age=86400 * 7, samesite="Lax", secure=is_secure)
+            return resp, 200
+        except Exception as e:
+            return jsonify({"error": "Invalid email or password."}), 401
+
+    # SQLite fallback
     user_record = database.get_user_by_email(email)
     if not user_record or not auth.verify_password(user_record["password_hash"], password):
         return jsonify({"error": "Invalid email or password."}), 401
@@ -114,8 +193,9 @@ def login():
     user = database.get_user_by_id(user_record["id"])
 
     resp = jsonify({"message": "Login successful", "user": user, "token": token})
-    resp.set_cookie("session_token", token, httponly=True, max_age=86400 * 7, samesite="Lax")
+    resp.set_cookie("session_token", token, httponly=True, max_age=86400 * 7, samesite="Lax", secure=is_secure)
     return resp, 200
+
 
 
 @app.route("/api/auth/logout", methods=["POST"])
@@ -397,14 +477,6 @@ def ai_chat_endpoint():
     response = ai_chat.generate_advisor_response(request.user_id, message, history)
     return jsonify(response)
 
-
-# ---------------- SEED DEMO DATA API ----------------
-
-@app.route("/api/demo/seed", methods=["POST"])
-@require_auth
-def seed_demo():
-    database.seed_demo_data(request.user_id)
-    return jsonify({"message": "Demo data populated successfully with realistic financial records & ML anomalies!"})
 
 
 # ---------------- CSV EXPORT API ----------------
