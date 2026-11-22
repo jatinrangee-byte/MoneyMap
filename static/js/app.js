@@ -23,8 +23,8 @@ const state = {
 // SUPABASE CLIENT & OAUTH AUTHENTICATION
 // ==========================================================================
 
-const SUPABASE_PROJECT_URL = "https://rtpifrbffaefmzzggsnh.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_6JWmjU8aUPljwNqP_WB1ww_JmO74rVb";
+const SUPABASE_PROJECT_URL = "https://arhfznmlbjxevsqstkcp.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_EBri7mpKhoWGtj3Angz1og_mu70Oauh";
 let _supabaseClient = null;
 
 function getSupabaseClient() {
