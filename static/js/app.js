@@ -122,19 +122,32 @@ async function apiRequest(endpoint, options = {}) {
     try {
         const res = await fetch(endpoint, options);
         if (res.status === 401) {
-            const isAuthEndpoint = endpoint.includes("/api/auth/login") || endpoint.includes("/api/auth/register");
+            const isAuthEndpoint = endpoint.includes("/api/auth/login") || endpoint.includes("/api/auth/register") || endpoint.includes("/api/auth/me");
             if (!isAuthEndpoint) {
                 handleLogout(false);
                 throw new Error("Session expired. Please sign in again.");
             }
         }
-        const data = await res.json();
+        let data;
+        const contentType = res.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+            try {
+                data = await res.json();
+            } catch (_) {
+                data = { error: "Invalid response format from server" };
+            }
+        } else {
+            const text = await res.text();
+            data = { error: res.ok ? text : `Server error (${res.status})` };
+        }
         if (!res.ok) {
             throw new Error(data.error || "Request failed");
         }
         return data;
     } catch (err) {
-        showToast(err.message, "error");
+        if (!options.silent) {
+            showToast(err.message, "error");
+        }
         throw err;
     }
 }
@@ -178,7 +191,7 @@ async function checkAuth() {
         return;
     }
     try {
-        const data = await apiRequest("/api/auth/me");
+        const data = await apiRequest("/api/auth/me", { silent: true });
         state.user = data.user;
         state.currency = data.user.currency || "₹";
         showMainApp();
