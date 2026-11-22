@@ -17,8 +17,12 @@
     <!-- Material Symbols Outlined (UniMap Design System) -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Motion Engine CSS (dotrwt.in inspired) -->
+    <link rel="stylesheet" href="/static/css/motion.css">
+    <!-- Lenis Smooth Scroll -->
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/bundled/lenis.min.js"></script>
 </head>
-<body class="editorial-body blueprint-grid">
+<body class="editorial-body blueprint-grid mm-loading">
     <div id="toast-container" class="toast-container"></div>
 
     <!-- ==========================================================================
@@ -1485,5 +1489,28 @@
     </div>
 
     <script src="/static/js/app.js"></script>
+    <!-- Motion Engine (dotrwt.in smooth motion) -->
+    <script>
+      // Add mm-loading class body before DOMContentLoaded
+      document.body.classList.add('mm-loading');
+      // Scroll progress bar
+      (function() {
+        const bar = document.createElement('div');
+        bar.id = 'mm-scroll-bar';
+        document.body.appendChild(bar);
+        window.addEventListener('scroll', () => {
+          const max = document.documentElement.scrollHeight - window.innerHeight;
+          bar.style.width = (window.scrollY / max * 100) + '%';
+        }, { passive: true });
+      })();
+      // Transition mm-loading -> mm-loaded
+      window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+          document.body.classList.remove('mm-loading');
+          document.body.classList.add('mm-loaded');
+        }, 100);
+      });
+    </script>
+    <script src="/static/js/motion.js"></script>
 </body>
 </html>

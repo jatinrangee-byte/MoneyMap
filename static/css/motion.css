@@ -1,0 +1,451 @@
+/* ==========================================================================
+   MoneyMap — Motion Engine CSS (dotrwt.in inspired)
+   Preloader · Scroll-Reveal · Custom Cursor · Header States · Card Tilt
+   ========================================================================== */
+
+/* ----------------------------------------------------------------
+   1. PRELOADER
+   ---------------------------------------------------------------- */
+#mm-preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: #0a1a14;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: opacity 0.6s cubic-bezier(0.33,1,0.68,1),
+                transform 0.6s cubic-bezier(0.33,1,0.68,1);
+}
+
+#mm-preloader.mm-preloader-exit {
+    opacity: 0;
+    transform: scale(1.04);
+    pointer-events: none;
+}
+
+.mm-preloader-noise {
+    position: absolute;
+    inset: 0;
+    background-image: url('data:image/svg+xml,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%25" height="100%25" filter="url(%23n)"/></svg>');
+    opacity: 0.12;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+}
+
+.mm-preloader-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+}
+
+.mm-preloader-svg {
+    width: 460px;
+    max-width: 88vw;
+    height: auto;
+    overflow: visible;
+    filter: drop-shadow(0 0 18px rgba(209, 228, 134, 0.18));
+}
+
+.mm-draw-text {
+    stroke-dasharray: 800;
+    stroke-dashoffset: 800;
+}
+
+@keyframes mm-draw-text {
+    to { stroke-dashoffset: 0; }
+}
+
+@keyframes mm-fill-text {
+    to { fill: #faf8f1; }
+}
+
+.mm-preloader-bar {
+    width: 240px;
+    height: 2px;
+    background: rgba(250, 248, 241, 0.12);
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.mm-preloader-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #d1e486, #faf8f1);
+    border-radius: 9999px;
+    transition: width 0.1s ease;
+}
+
+.mm-preloader-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: rgba(250, 248, 241, 0.45);
+    text-transform: uppercase;
+}
+
+
+/* ----------------------------------------------------------------
+   2. SCROLL-REVEAL
+   ---------------------------------------------------------------- */
+.mm-reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+        opacity 0.72s cubic-bezier(0.33, 1, 0.68, 1) var(--mm-stagger, 0ms),
+        transform 0.72s cubic-bezier(0.33, 1, 0.68, 1) var(--mm-stagger, 0ms);
+    will-change: opacity, transform;
+}
+
+.mm-reveal.mm-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Title lines slide up with extra height */
+.builder-title-line.mm-reveal {
+    transform: translateY(44px) skewY(1.5deg);
+    overflow: hidden;
+}
+
+.builder-title-line.mm-revealed {
+    transform: translateY(0) skewY(0deg);
+}
+
+/* Panels slide up from further below */
+.build-panel.mm-reveal {
+    transform: translateY(48px) scale(0.97);
+    transition:
+        opacity 0.8s cubic-bezier(0.33, 1, 0.68, 1) var(--mm-stagger, 0ms),
+        transform 0.8s cubic-bezier(0.33, 1, 0.68, 1) var(--mm-stagger, 0ms);
+}
+
+.build-panel.mm-revealed {
+    transform: translateY(0) scale(1);
+}
+
+/* Floating cards fan in */
+.floating-glass-card.mm-reveal {
+    transform: translateY(36px) scale(0.95);
+    transition:
+        opacity 0.65s cubic-bezier(0.33, 1, 0.68, 1) var(--mm-stagger, 0ms),
+        transform 0.65s cubic-bezier(0.33, 1, 0.68, 1) var(--mm-stagger, 0ms);
+}
+
+.floating-glass-card.mm-revealed {
+    transform: translateY(0) scale(1);
+}
+
+/* Kicker badge pops in */
+.builder-kicker.mm-reveal {
+    transform: translateY(16px) scale(0.92);
+    transition:
+        opacity 0.5s ease var(--mm-stagger, 0ms),
+        transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) var(--mm-stagger, 0ms);
+}
+
+.builder-kicker.mm-revealed {
+    transform: translateY(0) scale(1);
+}
+
+
+/* ----------------------------------------------------------------
+   3. CUSTOM CURSOR
+   ---------------------------------------------------------------- */
+@media (pointer: fine) {
+    body { cursor: none; }
+
+    a, button, [role="button"], input, textarea, select, label {
+        cursor: none;
+    }
+}
+
+#mm-cursor-dot {
+    position: fixed;
+    top: -4px;
+    left: -4px;
+    width: 8px;
+    height: 8px;
+    background: #173f32;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 999999;
+    transform: translate(-100px, -100px);
+    transition: width 0.2s ease, height 0.2s ease, background 0.2s ease;
+    will-change: transform;
+    mix-blend-mode: multiply;
+}
+
+[data-theme="dark"] #mm-cursor-dot {
+    background: #d1e486;
+    mix-blend-mode: screen;
+}
+
+#mm-cursor-ring {
+    position: fixed;
+    top: -20px;
+    left: -20px;
+    width: 40px;
+    height: 40px;
+    border: 1.5px solid #173f32;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 999998;
+    transform: translate(-100px, -100px);
+    transition: width 0.25s ease, height 0.25s ease,
+                border-color 0.25s ease, opacity 0.25s ease;
+    will-change: transform;
+    opacity: 0.6;
+}
+
+[data-theme="dark"] #mm-cursor-ring {
+    border-color: #d1e486;
+}
+
+/* Hover state — ring expands, dot shrinks */
+#mm-cursor-dot.mm-cursor-hover {
+    width: 6px;
+    height: 6px;
+    background: #d1e486;
+}
+
+#mm-cursor-ring.mm-cursor-hover {
+    width: 56px;
+    height: 56px;
+    top: -28px;
+    left: -28px;
+    border-color: #173f32;
+    opacity: 0.4;
+}
+
+/* Click burst */
+#mm-cursor-dot.mm-cursor-click {
+    transform: translate(var(--tx, -100px), var(--ty, -100px)) scale(0.6);
+    background: #c9da60;
+}
+
+#mm-cursor-ring.mm-cursor-click {
+    width: 64px;
+    height: 64px;
+    opacity: 0.15;
+}
+
+
+/* ----------------------------------------------------------------
+   4. HEADER STATES — scroll shrink + hide
+   ---------------------------------------------------------------- */
+.nyc-site-header {
+    will-change: transform, opacity;
+    transition: transform 0.4s cubic-bezier(0.33,1,0.68,1),
+                opacity 0.3s ease;
+}
+
+.nyc-site-header.mm-header-scrolled .nyc-header-inner {
+    height: 56px;
+    box-shadow: 0 20px 44px -12px rgba(0,0,0,0.5), 0 4px 16px rgba(23,63,50,0.3);
+    transition: height 0.35s cubic-bezier(0.33,1,0.68,1),
+                box-shadow 0.35s ease;
+}
+
+.nyc-site-header.mm-header-hidden {
+    transform: translateY(calc(-100% - 32px));
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Show header again on hover near top */
+.nyc-site-header.mm-header-hidden:hover {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
+/* ----------------------------------------------------------------
+   5. PAGE ENTRANCE — body content fades in after preloader
+   ---------------------------------------------------------------- */
+body.mm-loading .landing-experience {
+    opacity: 0;
+}
+
+body.mm-loaded .landing-experience {
+    opacity: 1;
+    transition: opacity 0.6s ease 0.2s;
+}
+
+
+/* ----------------------------------------------------------------
+   6. HOVER EFFECTS on interactive surfaces
+   ---------------------------------------------------------------- */
+
+/* Bento panels — subtle lift on hover */
+.build-panel {
+    will-change: transform, box-shadow;
+    transition: transform 0.5s cubic-bezier(0.33,1,0.68,1),
+                box-shadow 0.5s ease;
+}
+
+.build-panel:hover {
+    box-shadow: 0 20px 48px -8px rgba(23,63,50,0.2), 0 0 0 1.5px #173f32;
+}
+
+[data-theme="dark"] .build-panel:hover {
+    box-shadow: 0 20px 48px -8px rgba(0,0,0,0.5), 0 0 0 1.5px #d1e486;
+}
+
+/* Floating glass cards on the hero */
+.floating-glass-card {
+    will-change: transform, box-shadow;
+    transition: transform 0.4s cubic-bezier(0.33,1,0.68,1),
+                box-shadow 0.4s ease;
+}
+
+/* Builder primary button shimmer sweep */
+.builder-primary {
+    overflow: hidden;
+}
+
+.builder-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transform: skewX(-15deg);
+    transition: left 0s;
+}
+
+.builder-primary:hover::after {
+    left: 150%;
+    transition: left 0.6s cubic-bezier(0.33,1,0.68,1);
+}
+
+.builder-primary {
+    position: relative;
+}
+
+/* NYC Register button shimmer */
+.nyc-btn-register {
+    position: relative;
+    overflow: hidden;
+}
+
+.nyc-btn-register::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(23,63,50,0.14), transparent);
+    transform: skewX(-15deg);
+    transition: left 0s;
+}
+
+.nyc-btn-register:hover::after {
+    left: 150%;
+    transition: left 0.55s cubic-bezier(0.33,1,0.68,1);
+}
+
+
+/* ----------------------------------------------------------------
+   7. NAV LINK underline draw animation
+   ---------------------------------------------------------------- */
+.nyc-nav-link {
+    position: relative;
+}
+
+.nyc-nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    right: 50%;
+    height: 1.5px;
+    background: #d1e486;
+    border-radius: 9999px;
+    transition: left 0.28s cubic-bezier(0.33,1,0.68,1),
+                right 0.28s cubic-bezier(0.33,1,0.68,1);
+}
+
+.nyc-nav-link:hover::after {
+    left: 0;
+    right: 0;
+}
+
+.nyc-nav-link:hover {
+    color: #faf8f1;
+    background: rgba(209, 228, 134, 0.18);
+}
+
+
+/* ----------------------------------------------------------------
+   8. AMBIENT BLOB PARALLAX animation override
+   ---------------------------------------------------------------- */
+.ambient-blob {
+    will-change: transform;
+    transition: transform 0.08s linear;
+}
+
+
+/* ----------------------------------------------------------------
+   9. SECTION EYEBROW / kicker-glyph pulse
+   ---------------------------------------------------------------- */
+.kicker-glyph {
+    display: inline-block;
+    animation: mm-glyph-pulse 3s ease-in-out infinite;
+}
+
+@keyframes mm-glyph-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50%       { transform: scale(1.14); opacity: 1; }
+}
+
+
+/* ----------------------------------------------------------------
+   10. SCROLL PROGRESS BAR
+   ---------------------------------------------------------------- */
+#mm-scroll-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2.5px;
+    background: linear-gradient(90deg, #173f32, #d1e486);
+    z-index: 99998;
+    width: 0%;
+    transition: width 0.08s linear;
+    pointer-events: none;
+}
+
+[data-theme="dark"] #mm-scroll-bar {
+    background: linear-gradient(90deg, #d1e486, #c9da60);
+}
+
+
+/* ----------------------------------------------------------------
+   11. REDUCED MOTION OVERRIDES
+   ---------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    .mm-reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+    .mm-reveal.mm-revealed {
+        opacity: 1;
+        transform: none;
+    }
+    #mm-cursor-dot,
+    #mm-cursor-ring { display: none; }
+    #mm-preloader { display: none; }
+    .kicker-glyph { animation: none; }
+    .builder-primary::after,
+    .nyc-btn-register::after { display: none; }
+}
