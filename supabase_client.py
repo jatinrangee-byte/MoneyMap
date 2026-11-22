@@ -96,27 +96,9 @@ def verify_supabase_token(jwt_token: str) -> Optional[Dict[str, Any]]:
     except Exception:
         pass
 
-    # 2. Resilient JWT fallback (validates claims and unexpired exp)
-    try:
-        if not pyjwt:
-            return None
-        payload = pyjwt.decode(jwt_token, options={"verify_signature": False})
-        if payload and "sub" in payload:
-            exp = payload.get("exp", 0)
-            if exp == 0 or exp > time.time():
-                meta = payload.get("user_metadata", {}) or {}
-                email = payload.get("email", "")
-                name = meta.get("name") or meta.get("full_name") or (email.split("@")[0] if email else "User")
-                currency = meta.get("currency", "₹")
-                return {
-                    "id": str(payload["sub"]),
-                    "email": email,
-                    "name": name,
-                    "currency": currency
-                }
-    except Exception:
-        pass
-
+    # NOTE: Fallback without signature verification has been intentionally removed
+    # to prevent JWT forgery attacks. If the Supabase Auth API is unavailable,
+    # we return None so require_auth returns a proper 401.
     return None
 
 

@@ -58,12 +58,6 @@ def get_db_connection(db_path: Optional[str] = None) -> sqlite3.Connection:
     conn.execute('PRAGMA temp_store=MEMORY;')
     conn.execute('PRAGMA foreign_keys = ON;')
     return conn
-    """Returns a connection to the SQLite database with Row factory enabled."""
-    path = db_path or get_db_path()
-    conn = sqlite3.connect(path)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
-    return conn
 
 
 def init_db(db_path: Optional[str] = None) -> None:

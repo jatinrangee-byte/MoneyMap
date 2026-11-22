@@ -202,7 +202,14 @@ async function checkAuth() {
             setTimeout(toggleAIChat, 100);
         }
     } catch (e) {
+        // Token was stored but server rejected it — clear it and show auth screen
+        state.token = null;
+        localStorage.removeItem("moneymap_token");
+        localStorage.removeItem("expenseai_token");
         showAuthScreen();
+        if (e.message && !e.message.includes("401")) {
+            showToast("Connection error — please sign in again.", "error");
+        }
     }
 }
 
@@ -320,7 +327,7 @@ function showMainApp() {
     if (state.user) {
         const initials = state.user.name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
         const initialsEl = document.getElementById("nav-user-initials");
-        if (initialsEl) initialsEl.textContent = initials || "AS";
+        if (initialsEl) initialsEl.textContent = initials || "Me";
         const nameEl = document.getElementById("nav-user-name");
         if (nameEl) nameEl.textContent = state.user.name;
         const greetingEl = document.getElementById("dash-greeting-name");
@@ -405,6 +412,14 @@ function filterByCategory(category) {
 // ==========================================================================
 
 async function loadDashboardData() {
+    // Set loading placeholders on KPI elements before fetching
+    const kpiIds = ["kpi-balance", "kpi-income", "kpi-expense"];
+    kpiIds.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = "Loading…"; });
+    const scoreEl = document.getElementById("kpi-health-score");
+    if (scoreEl) scoreEl.textContent = "…";
+    const healthBadge = document.getElementById("kpi-health-badge");
+    if (healthBadge) { healthBadge.textContent = ""; healthBadge.className = "health-score-badge"; }
+
     // Use allSettled so a single failing endpoint never crashes the whole dashboard
     const [sumResult, mlResult, txResult] = await Promise.allSettled([
         apiRequest("/api/summary", { silent: true }),
@@ -432,18 +447,31 @@ async function loadDashboardData() {
         renderCategoryChart(summary.category_breakdown || []);
     } else {
         console.error("Summary load failed:", sumResult.reason);
+        // Show meaningful error on KPI elements instead of leaving "Loading…"
+        ["kpi-balance", "kpi-income", "kpi-expense"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = "Error — retry";
+        });
+        showToast("Could not load financial summary. Check your connection.", "error");
     }
 
     // --- ML Insights / Health Score / Forecast block ---
     if (mlResult.status === "fulfilled") {
         const ml = mlResult.value;
-        const healthScore = ml.health ? ml.health.score : 0;
-        const scoreEl = document.getElementById("kpi-health-score");
-        if (scoreEl) scoreEl.textContent = `${healthScore}`;
-        const healthBadge = document.getElementById("kpi-health-badge");
-        if (healthBadge) { healthBadge.textContent = ml.health ? ml.health.grade : "--"; healthBadge.className = "health-score-badge"; }
+        const health = ml.health || {};
+        const healthScore = (health.score !== null && health.score !== undefined) ? health.score : null;
+
+        const scoreEl2 = document.getElementById("kpi-health-score");
+        if (scoreEl2) scoreEl2.textContent = healthScore !== null ? `${healthScore}` : "N/A";
+
+        const healthBadge2 = document.getElementById("kpi-health-badge");
+        if (healthBadge2) {
+            healthBadge2.textContent = health.grade || "Unavailable";
+            healthBadge2.className = "health-score-badge";
+        }
+
         const healthFill = document.getElementById("kpi-health-fill");
-        if (healthFill) {
+        if (healthFill && healthScore !== null) {
             if (healthFill.tagName && healthFill.tagName.toLowerCase() === "circle") {
                 const circumference = 251.2;
                 healthFill.style.strokeDashoffset = circumference * (1 - (healthScore / 100));
@@ -451,6 +479,7 @@ async function loadDashboardData() {
                 healthFill.style.width = `${healthScore}%`;
             }
         }
+
         const forecast = ml.forecast || {};
         const fMsg = document.getElementById("forecast-status-msg"); if (fMsg) fMsg.textContent = forecast.status_message || "";
         const fBurn = document.getElementById("forecast-burn-rate"); if (fBurn) fBurn.textContent = `${state.currency}${Math.round(forecast.daily_burn_rate || 0)}/day`;
@@ -458,8 +487,10 @@ async function loadDashboardData() {
         const fBudg = document.getElementById("forecast-total-budget"); if (fBudg) fBudg.textContent = `${state.currency}${Math.round(ml.total_budget || 0).toLocaleString('en-IN')}`;
     } else {
         console.error("ML insights load failed:", mlResult.reason);
-        const scoreEl = document.getElementById("kpi-health-score"); if (scoreEl) scoreEl.textContent = "--";
-        const healthBadge = document.getElementById("kpi-health-badge"); if (healthBadge) healthBadge.textContent = "N/A";
+        const scoreEl2 = document.getElementById("kpi-health-score");
+        if (scoreEl2) scoreEl2.textContent = "N/A";
+        const healthBadge2 = document.getElementById("kpi-health-badge");
+        if (healthBadge2) healthBadge2.textContent = "Unavailable";
     }
 
     // --- Recent Transactions block ---
@@ -467,7 +498,12 @@ async function loadDashboardData() {
         renderRecentTransactions(txResult.value.transactions || []);
     } else {
         console.error("Transactions load failed:", txResult.reason);
-        renderRecentTransactions([]);
+        // Show empty state with retry rather than silent blank
+        const tbody = document.getElementById("recent-transactions-tbody");
+        if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4" style="color:var(--text-muted)">
+            Could not load transactions.
+            <button onclick="loadDashboardData()" style="margin-left:8px;text-decoration:underline;cursor:pointer;background:none;border:none;color:inherit;">Retry</button>
+        </td></tr>`;
     }
 }
 

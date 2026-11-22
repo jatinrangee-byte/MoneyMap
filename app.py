@@ -482,10 +482,26 @@ def get_ml_insights():
     total_budget = sum(float(b.get("monthly_limit", 0)) for b in budgets)
 
     # ML Forecast Engine
-    forecast = ml_engine.forecast_monthly_spending(transactions, total_budget)
+    try:
+        forecast = ml_engine.forecast_monthly_spending(transactions, total_budget)
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        forecast = {
+            "current_spent": 0, "projected_total": 0, "daily_burn_rate": 0,
+            "days_elapsed": 0, "days_remaining": 0, "days_in_month": 30,
+            "spending_slope": 0, "status": "unavailable",
+            "status_message": "Insufficient data to compute forecast.", "budget_usage_pct": 0
+        }
 
     # AI Financial Health Score & Advisor
-    health = ml_engine.compute_financial_health_score(summary, budgets)
+    try:
+        health = ml_engine.compute_financial_health_score(summary, budgets)
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        health = {
+            "score": None, "grade": "Unavailable", "badge_color": "gray",
+            "breakdown": {}, "recommendations": ["Add transactions to generate a health score."]
+        }
 
     # Flagged Anomalies
     anomalies = [t for t in transactions if t.get("is_anomaly") == 1]
