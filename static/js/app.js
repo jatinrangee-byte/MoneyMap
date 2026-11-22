@@ -672,11 +672,19 @@ async function fetchTransactions() {
     if (startDate) params.append("start_date", startDate);
     if (endDate) params.append("end_date", endDate);
 
+    // Show loading state in table
+    const tbody = document.getElementById("full-transactions-tbody");
+    if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4" style="color:var(--text-muted)">Loading…</td></tr>`;
+
     try {
         const data = await apiRequest(`/api/transactions?${params.toString()}`);
         renderFullTransactions(data.transactions);
     } catch (err) {
         console.error("Fetch transactions error", err);
+        if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4" style="color:var(--text-muted)">
+            Failed to load transactions.
+            <button onclick="fetchTransactions()" style="margin-left:8px;text-decoration:underline;cursor:pointer;background:none;border:none;color:inherit;">Retry</button>
+        </td></tr>`;
     }
 }
 
@@ -702,8 +710,8 @@ function renderFullTransactions(transactions) {
                 ${t.is_anomaly ? '<span class="anomaly-badge" title="Statistical outlier: Amount significantly deviates from category distribution">Outlier (+2.5σ)</span>' : '<span class="anomaly-badge normal">Normal</span>'}
             </td>
             <td class="text-right">
-                <button class="table-action-btn" onclick="openEditTransactionModal(${t.id})" title="Edit transaction">Edit</button>
-                <button class="table-action-btn delete-btn" onclick="deleteTransaction(${t.id})" title="Delete transaction">Delete</button>
+                <button class="table-action-btn" onclick="openEditTransactionModal('${t.id}')" title="Edit transaction">Edit</button>
+                <button class="table-action-btn delete-btn" onclick="deleteTransaction('${t.id}')" title="Delete transaction">Delete</button>
             </td>
         </tr>
     `).join("");
@@ -926,7 +934,7 @@ function renderBudgetCards(budgets) {
                         <span class="budget-cat-name">${b.category}</span>
                         ${statusBadge}
                     </div>
-                    <button class="budget-del-btn" onclick="deleteBudget(${b.id})" title="Delete Budget" aria-label="Delete Budget">✕</button>
+                    <button class="budget-del-btn" onclick="deleteBudget('${b.id}')" title="Delete Budget" aria-label="Delete Budget">✕</button>
                 </div>
 
                 <div class="budget-amounts">
