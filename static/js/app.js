@@ -204,6 +204,27 @@ async function checkAuth() {
     }
 }
 
+function openAuthModal(tab = "login") {
+    const modal = document.getElementById("auth-modal");
+    if (modal) {
+        modal.classList.remove("hidden");
+    }
+    switchAuthTab(tab);
+}
+
+function closeAuthModal() {
+    const modal = document.getElementById("auth-modal");
+    if (modal) {
+        modal.classList.add("hidden");
+    }
+}
+
+function handleAuthModalBackdropClick(e) {
+    if (e.target.id === "auth-modal") {
+        closeAuthModal();
+    }
+}
+
 function switchAuthTab(tab) {
     const loginForm = document.getElementById("login-form");
     const regForm = document.getElementById("register-form");
@@ -287,6 +308,7 @@ function showAuthScreen() {
 }
 
 function showMainApp() {
+    closeAuthModal();
     document.getElementById("auth-screen").classList.add("hidden");
     document.getElementById("main-app").classList.remove("hidden");
     const launcher = document.getElementById("ai-chat-launcher");
@@ -398,11 +420,23 @@ async function loadDashboardData() {
 
         // Health Score
         const healthScore = ml.health.score;
-        document.getElementById("kpi-health-score").textContent = `${healthScore}/100`;
+        const scoreEl = document.getElementById("kpi-health-score");
+        if (scoreEl) scoreEl.textContent = `${healthScore}`;
         const healthBadge = document.getElementById("kpi-health-badge");
-        healthBadge.textContent = ml.health.grade;
-        healthBadge.className = `health-score-badge`;
-        document.getElementById("kpi-health-fill").style.width = `${healthScore}%`;
+        if (healthBadge) {
+            healthBadge.textContent = ml.health.grade;
+            healthBadge.className = `health-score-badge`;
+        }
+        const healthFill = document.getElementById("kpi-health-fill");
+        if (healthFill) {
+            if (healthFill.tagName && healthFill.tagName.toLowerCase() === "circle") {
+                const circumference = 251.2;
+                const offset = circumference * (1 - (healthScore / 100));
+                healthFill.style.strokeDashoffset = offset;
+            } else {
+                healthFill.style.width = `${healthScore}%`;
+            }
+        }
 
         // Update Category Photo Grid spends
         const catMap = {};

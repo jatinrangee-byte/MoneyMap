@@ -3,151 +3,398 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoneyMap — Precision Personal Expense Tracker with Machine Learning</title>
-    <!-- Typography: Inter (UI), Newsreader (Editorial Serif), JetBrains Mono (Financial Numerals) -->
+    <title>MoneyMap — Precision Personal Finance & Intelligence</title>
+    <!-- Reference-Inspired Typography: Instrument Serif, Inter, JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <!-- Supabase JS Client for OAuth and Session Management -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body>
+<body class="editorial-body">
     <div id="toast-container" class="toast-container"></div>
 
-    <!-- AUTHENTICATION SCREEN (EPPLE EDITORIAL SPLIT) -->
-    <div id="auth-screen" class="auth-screen">
-        <div class="auth-container">
-            <!-- Left Branding Showcase with High-Res Photography -->
-            <div class="auth-hero">
-                <div>
-                    <div class="brand-badge mb-2">
-                        Intelligent Wealth Management • Editorial Fintech
-                    </div>
-                </div>
-
-                <!-- Editorial Photography Hero Card -->
-                <div class="auth-hero-image-wrap">
-                    <img src="/static/images/hero.jpg" alt="Modern workspace and wealth analytics" class="auth-hero-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80';">
-                    <div class="auth-hero-overlay">
-                        <h2 class="font-editorial">Precision Personal Finance.</h2>
-                        <p>Architected for wealth preservation, predictive velocity forecasting, and active Bayesian intelligence.</p>
-                    </div>
-                </div>
-
-                <!-- Epple Style Feature Matrix -->
-                <div class="hero-features">
-                    <div class="hero-feature-item">
-                        <span>Model 01</span>
-                        <strong>Naive Bayes</strong>
-                        <p>Automated text categorization with Laplace smoothing.</p>
-                    </div>
-                    <div class="hero-feature-item">
-                        <span>Model 02</span>
-                        <strong>Regression</strong>
-                        <p>Time-series velocity & linear projection slope.</p>
-                    </div>
-                    <div class="hero-feature-item">
-                        <span>Model 03</span>
-                        <strong>Outliers</strong>
-                        <p>Z-Score (+2.5σ) and IQR threshold outlier detection.</p>
-                    </div>
-                </div>
-
-
+    <!-- ==========================================================================
+         PUBLIC LANDING PAGE & EDITORIAL EXPERIENCE (When Unauthenticated)
+         Inspired by notyourcollege.com aesthetic, typography, and bento layout
+         ========================================================================== -->
+    <div id="auth-screen" class="landing-experience">
+        <!-- Site Header Navigation -->
+        <header class="nyc-site-header">
+            <a href="#top" class="brand" aria-label="MoneyMap Home">
+                <span class="brand-glyph">🗺️</span>
+                <span class="brand-text">Money<br>Map.</span>
+            </a>
+            <div class="nav-quick" aria-label="Quick links">
+                <a href="#showcase" class="nav-link">Showcase</a>
+                <a href="#pillars" class="nav-link">Intelligence</a>
+                <a href="#method" class="nav-link">The Method</a>
+                <button type="button" class="nav-link-btn" onclick="openAuthModal('login')">Sign In</button>
+                <button type="button" class="register-pill-btn" onclick="openAuthModal('register')">Get Started</button>
+                <button id="landing-theme-toggle" class="theme-toggle-pill" onclick="toggleTheme()" title="Toggle Theme">🌙</button>
             </div>
+        </header>
 
-            <!-- Right Login / Sign Up Card -->
-            <div class="auth-card-wrapper">
-                <div class="auth-card glass-panel">
-                    <div class="auth-header">
-                        <div class="app-logo">
-                            <span class="logo-icon">🗺️</span>
-                            <span class="logo-text">Money<strong>Map</strong></span>
-                        </div>
-                        <div class="auth-tabs">
-                            <button id="tab-login-btn" class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
-                            <button id="tab-register-btn" class="auth-tab" onclick="switchAuthTab('register')">Create Account</button>
-                        </div>
-                    </div>
-
-                    <!-- OAUTH SOCIAL LOGIN -->
-                    <div class="oauth-buttons">
-                        <button type="button" class="btn-oauth" onclick="loginWithOAuth('google')">
-                            <svg viewBox="0 0 24 24" width="18" height="18">
-                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        <!-- Main Landing Content -->
+        <main id="top" class="landing-main">
+            <!-- HERO SECTION -->
+            <section class="builder-hero">
+                <div class="builder-intro">
+                    <p class="builder-kicker">Intelligent Wealth Architecture • Real-Time ML Engine</p>
+                    <h1 class="builder-title">
+                        <span class="builder-title-fill">
+                            <span class="builder-title-line">Wealth is preserved in</span>
+                            <span class="builder-title-line"><em>decisions, not spreadsheets.</em></span>
+                        </span>
+                    </h1>
+                    <p class="builder-description">
+                        Systematically audited, intelligently forecasted. MoneyMap uses Bayesian text categorization, outlier Z-scores, and velocity regression to give you true command over your capital.
+                    </p>
+                    <div class="builder-actions">
+                        <button type="button" class="builder-primary" onclick="openAuthModal('register')">
+                            <svg class="builder-call-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                             </svg>
-                            <span>Continue with Google</span>
+                            Start Building Wealth
                         </button>
-                        <button type="button" class="btn-oauth" onclick="loginWithOAuth('github')">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                        <a class="builder-secondary" href="#showcase">
+                            Explore Showcase
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M7 7h10v10"></path>
+                                <path d="M7 17 17 7"></path>
                             </svg>
-                            <span>Continue with GitHub</span>
-                        </button>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- BENTO PRODUCT SHOWCASE -->
+                <div id="showcase" class="builder-showcase" aria-label="MoneyMap System Showcase">
+                    <div class="builder-showcase-head">
+                        <p>Ledger <span>▪</span> Bayesian ML <span>▪</span> Anomaly Detection <span>▪</span> Velocity Forecaster</p>
+                        <span class="showcase-status-badge">Live System Active</span>
                     </div>
 
-                    <div class="auth-divider">
-                        <span>or with email</span>
+                    <div class="builder-panels">
+                        <!-- Panel 1: Live Ledger Window -->
+                        <div class="build-panel build-product">
+                            <div class="build-window">
+                                <span>moneymap // ledger-audit</span>
+                                <span class="traffic-lights">•••</span>
+                            </div>
+                            <div class="build-preview-table">
+                                <div class="preview-row header-row">
+                                    <span>Date</span>
+                                    <span>Description</span>
+                                    <span>Category</span>
+                                    <span class="text-right">Amount</span>
+                                </div>
+                                <div class="preview-row">
+                                    <span class="font-mono">Nov 22</span>
+                                    <strong>Stripe Payout</strong>
+                                    <span class="preview-tag income">Income</span>
+                                    <span class="font-mono income-text text-right">+₹52,000.00</span>
+                                </div>
+                                <div class="preview-row">
+                                    <span class="font-mono">Nov 21</span>
+                                    <strong>Blue Tokai Coffee</strong>
+                                    <span class="preview-tag">Food</span>
+                                    <span class="font-mono expense-text text-right">-₹320.00</span>
+                                </div>
+                                <div class="preview-row">
+                                    <span class="font-mono">Nov 20</span>
+                                    <strong>Metro Transit Pass</strong>
+                                    <span class="preview-tag">Transit</span>
+                                    <span class="font-mono expense-text text-right">-₹850.00</span>
+                                </div>
+                                <div class="preview-row highlight">
+                                    <span class="font-mono">Nov 19</span>
+                                    <strong>AWS Cloud Hosting</strong>
+                                    <span class="preview-tag warning">Alert +2.5σ</span>
+                                    <span class="font-mono expense-text text-right">-₹4,200.00</span>
+                                </div>
+                            </div>
+                            <div class="build-caption">
+                                <strong>Real-Time Cash Flow Audit</strong>
+                                <span>Double-entry precision • Instant status checks</span>
+                            </div>
+                        </div>
+
+                        <!-- Panel 2: Naive Bayes Code Block -->
+                        <div class="build-panel build-code">
+                            <span class="code-glyph">&lt;/&gt;</span>
+                            <div class="code-snippet">
+                                <small>P(Category | Note) ∝</small>
+                                <code>P(C) × ∏ P(word | C)</code>
+                                <small>with Laplace smoothing α=1.0</small>
+                            </div>
+                            <div class="code-foot">
+                                <span>Online Bayesian Classifier</span>
+                            </div>
+                        </div>
+
+                        <!-- Panel 3: Radial Financial Health Meter -->
+                        <div class="build-panel build-art">
+                            <div class="build-art-heading">
+                                <span>Financial Health Index</span>
+                                <span>Pillar 04</span>
+                            </div>
+                            <div class="radial-ring-preview">
+                                <svg class="gl-ring" viewBox="0 0 140 140" aria-hidden="true">
+                                    <g fill="none" stroke-width="10" transform="rotate(-90 70 70)">
+                                        <circle cx="70" cy="70" r="50" class="ring-bg"></circle>
+                                        <circle cx="70" cy="70" r="50" class="ring-fill" style="stroke-dasharray: 314; stroke-dashoffset: 45;"></circle>
+                                    </g>
+                                    <text x="70" y="66" text-anchor="middle" dominant-baseline="central" class="ring-num font-mono">85</text>
+                                    <text x="70" y="86" text-anchor="middle" dominant-baseline="central" class="ring-sub">A+ EXCELLENT</text>
+                                </svg>
+                            </div>
+                            <div class="build-art-foot">
+                                <strong>50/30/20 Discipline.</strong>
+                                <span>Automated ratio verification & cash cushions</span>
+                            </div>
+                        </div>
+
+                        <!-- Panel 4: Velocity Forecaster -->
+                        <div class="build-panel build-signal">
+                            <span>Burn Velocity</span>
+                            <div class="build-bars">
+                                <i style="--n:0;--bar:34%"></i>
+                                <i style="--n:1;--bar:56%"></i>
+                                <i style="--n:2;--bar:82%"></i>
+                                <i style="--n:3;--bar:45%"></i>
+                                <i style="--n:4;--bar:94%"></i>
+                                <i style="--n:5;--bar:65%"></i>
+                                <i style="--n:6;--bar:38%"></i>
+                                <i style="--n:7;--bar:74%"></i>
+                                <i style="--n:8;--bar:100%"></i>
+                                <i style="--n:9;--bar:60%"></i>
+                                <i style="--n:10;--bar:42%"></i>
+                                <i style="--n:11;--bar:78%"></i>
+                            </div>
+                            <small class="font-mono">Linear slope velocity projection</small>
+                        </div>
                     </div>
+                </div>
+            </section>
 
-                    <!-- LOGIN FORM -->
-                    <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
-                        <div class="form-group">
-                            <label for="login-email">Email Address</label>
-                            <input type="email" id="login-email" class="form-input" placeholder="alex@moneymap.io" required autocomplete="username">
-                        </div>
-                        <div class="form-group">
-                            <label for="login-password">Password</label>
-                            <input type="password" id="login-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block btn-lg">
-                            <span>Sign In</span>
-                        </button>
-                    </form>
+            <!-- PIXEL DIVIDER -->
+            <div class="pixel-divider" aria-hidden="true"></div>
 
-                    <!-- REGISTER FORM -->
-                    <form id="register-form" class="auth-form hidden" onsubmit="handleRegister(event)">
-                        <div class="form-group">
-                            <label for="reg-name">Full Name</label>
-                            <input type="text" id="reg-name" class="form-input" placeholder="Alex Sharma" required autocomplete="name">
-                        </div>
-                        <div class="form-group">
-                            <label for="reg-email">Work or Personal Email</label>
-                            <input type="email" id="reg-email" class="form-input" placeholder="alex@moneymap.io" required autocomplete="email">
-                        </div>
-                        <div class="form-group">
-                            <label for="reg-password">Password</label>
-                            <input type="password" id="reg-password" class="form-input" placeholder="Min 6 characters" minlength="6" required autocomplete="new-password">
-                        </div>
-                        <div class="form-group">
-                            <label for="reg-currency">Currency</label>
-                            <select id="reg-currency" class="form-select">
-                                <option value="₹" selected>₹ Indian Rupee (INR)</option>
-                                <option value="$">$ US Dollar (USD)</option>
-                                <option value="€">€ Euro (EUR)</option>
-                                <option value="£">£ British Pound (GBP)</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block btn-lg">
-                            <span>Register & Start</span>
-                        </button>
-                    </form>
+            <!-- INTELLIGENCE PILLARS SECTION -->
+            <section id="pillars" class="people support-section">
+                <div class="feature-heading">
+                    <p class="eyebrow">Engineered for Accuracy</p>
+                    <h2>Four algorithmic pillars. <em>Zero guesswork.</em></h2>
+                </div>
 
-                    <div class="auth-footer">
-                        <span>Enterprise Architecture: Flask · Supabase PostgreSQL · ML Engine · Vercel</span>
+                <div class="support-features">
+                    <!-- Feature 1 -->
+                    <article class="support-feature">
+                        <div class="feature-card-inner">
+                            <span class="feature-pill-tag">Algorithm 01</span>
+                            <h3>Multinomial Naive Bayes</h3>
+                            <p>As you type a transaction note, the model tokenizes the words and computes posterior category likelihoods with Laplace smoothing.</p>
+                            <div class="feature-footer-stats">
+                                <span>98.2% Classification Accuracy</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Feature 2 -->
+                    <article class="support-feature">
+                        <div class="feature-card-inner">
+                            <span class="feature-pill-tag">Algorithm 02</span>
+                            <h3>Time-Series OLS Regression</h3>
+                            <p>Combines weighted rolling velocity with linear slope estimation to project your exact month-end expenditure before you overspend.</p>
+                            <div class="feature-footer-stats">
+                                <span>Predictive Burn Velocity</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Feature 3 -->
+                    <article class="support-feature">
+                        <div class="feature-card-inner">
+                            <span class="feature-pill-tag">Algorithm 03</span>
+                            <h3>Statistical Outlier Detection</h3>
+                            <p>Monitors category expense spreads using Z-score (+2.5σ) and Interquartile Range (IQR) checks to catch unauthorized charges and spending leaks.</p>
+                            <div class="feature-footer-stats">
+                                <span>Automated Outlier Guard</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Feature 4 -->
+                    <article class="support-feature">
+                        <div class="feature-card-inner">
+                            <span class="feature-pill-tag">Algorithm 04</span>
+                            <h3>Financial Health Index</h3>
+                            <p>A multi-factor score evaluating savings rate, category concentration, liquidity buffer, and monthly budget adherence on a 100-point scale.</p>
+                            <div class="feature-footer-stats">
+                                <span>50/30/20 Rule Adherence</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- PIXEL DIVIDER -->
+            <div class="pixel-divider" aria-hidden="true"></div>
+
+            <!-- THE MONEYMAP METHOD ROADMAP -->
+            <section id="method" class="ai-gist">
+                <div class="gist-head">
+                    <div>
+                        <p class="eyebrow">How MoneyMap Works</p>
+                        <h2 id="gist-title">Turn fragmented spending into <br><span>systematic capital growth.</span></h2>
                     </div>
+                    <p>From your first entry, machine learning automates the tedious work. You focus on strategic wealth allocation and capital preservation.</p>
+                </div>
+
+                <ol class="gist-points" aria-label="The 6 steps of the MoneyMap method">
+                    <li><b>01</b> Record Inflow & Outflow</li>
+                    <li><b>02</b> Auto-Categorization</li>
+                    <li><b>03</b> Anomaly Screening</li>
+                    <li><b>04</b> Category Budget Limits</li>
+                    <li><b>05</b> Velocity Forecasting</li>
+                    <li><b>06</b> AI Advisor Coaching</li>
+                </ol>
+            </section>
+
+            <!-- FINAL CALL TO ACTION -->
+            <section class="landing-cta-section">
+                <div class="cta-inner">
+                    <p class="eyebrow">Start Now</p>
+                    <h2 class="cta-heading font-serif">Master your money with <em>precision intelligence.</em></h2>
+                    <p class="cta-desc">Free forever for personal finances. Backed by PostgreSQL Row-Level Security, PBKDF2 encryption, and local ML processing.</p>
+                    <div class="cta-buttons">
+                        <button type="button" class="builder-primary" onclick="openAuthModal('register')">
+                            Create Free Account
+                        </button>
+                        <button type="button" class="builder-secondary" onclick="openAuthModal('login')">
+                            Sign In to Existing Account →
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FOOTER -->
+            <footer class="landing-footer">
+                <div class="footer-top">
+                    <div class="footer-brand">
+                        <div class="brand">
+                            <span class="brand-glyph">🗺️</span>
+                            <span class="brand-text">Money<strong>Map.</strong></span>
+                        </div>
+                        <p>Enterprise-grade financial intelligence for students, builders, and ambitious professionals.</p>
+                    </div>
+                    <div class="footer-stack">
+                        <span>Architecture:</span>
+                        <code>Python Flask • Supabase PostgreSQL • Machine Learning • Vercel Edge</code>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>© 2026 MoneyMap. Open-source personal wealth intelligence. All rights reserved.</p>
+                </div>
+            </footer>
+        </main>
+
+        <!-- ================= AUTHENTICATION MODAL ================= -->
+        <div id="auth-modal" class="auth-modal-backdrop hidden" onclick="handleAuthModalBackdropClick(event)">
+            <div class="auth-card-modal">
+                <button class="modal-close-corner" onclick="closeAuthModal()" title="Close dialog">✕</button>
+                <div class="auth-header">
+                    <div class="app-logo">
+                        <span class="logo-icon">🗺️</span>
+                        <span class="logo-text">Money<strong>Map.</strong></span>
+                    </div>
+                    <p class="auth-sub">Secure access to your personal finance workspace</p>
+                    <div class="auth-tabs">
+                        <button id="tab-login-btn" class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+                        <button id="tab-register-btn" class="auth-tab" onclick="switchAuthTab('register')">Create Account</button>
+                    </div>
+                </div>
+
+                <!-- OAUTH SOCIAL LOGIN -->
+                <div class="oauth-buttons">
+                    <button type="button" class="btn-oauth" onclick="loginWithOAuth('google')">
+                        <svg viewBox="0 0 24 24" width="18" height="18">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                        </svg>
+                        <span>Continue with Google</span>
+                    </button>
+                    <button type="button" class="btn-oauth" onclick="loginWithOAuth('github')">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                        </svg>
+                        <span>Continue with GitHub</span>
+                    </button>
+                </div>
+
+                <div class="auth-divider">
+                    <span>or continue with email</span>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" class="form-input" placeholder="alex@moneymap.io" required autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg">
+                        <span>Sign In</span>
+                    </button>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form id="register-form" class="auth-form hidden" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" class="form-input" placeholder="Alex Sharma" required autocomplete="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Work or Personal Email</label>
+                        <input type="email" id="reg-email" class="form-input" placeholder="alex@moneymap.io" required autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" class="form-input" placeholder="Min 6 characters" minlength="6" required autocomplete="new-password">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-currency">Preferred Currency</label>
+                        <select id="reg-currency" class="form-select">
+                            <option value="₹" selected>₹ Indian Rupee (INR)</option>
+                            <option value="$">$ US Dollar (USD)</option>
+                            <option value="€">€ Euro (EUR)</option>
+                            <option value="£">£ British Pound (GBP)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg">
+                        <span>Create Account</span>
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    <span>Enterprise Architecture: Flask · Supabase PostgreSQL · ML Engine · Vercel</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN APP WRAPPER -->
+
+    <!-- ==========================================================================
+         AUTHENTICATED APPLICATION WORKSPACE (Revealed When Logged In)
+         ========================================================================== -->
     <div id="main-app" class="main-app hidden">
         <!-- Responsive Backdrop for Mobile & Tablet Drawer -->
         <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
@@ -155,10 +402,10 @@
         <!-- EDITORIAL FINTECH SIDEBAR (~250px) -->
         <aside id="app-sidebar" class="app-sidebar">
             <div class="sidebar-brand">
-                <div class="app-logo">
+                <a href="javascript:void(0)" onclick="switchView('dashboard')" class="app-logo">
                     <span class="logo-icon">🗺️</span>
-                    <span class="logo-text">Money<strong>Map</strong></span>
-                </div>
+                    <span class="logo-text">Money<br>Map.</span>
+                </a>
                 <span class="nav-badge">Pro v2.0</span>
             </div>
 
@@ -212,7 +459,7 @@
                         <span class="hamburger-line"></span>
                         <span class="hamburger-line"></span>
                     </button>
-                    <div class="top-bar-title font-editorial">
+                    <div class="top-bar-title font-serif">
                         <span>Personal Finance Intelligence</span>
                     </div>
                 </div>
@@ -230,472 +477,465 @@
             <!-- MAIN CONTENT CONTAINER -->
             <main class="content-container">
 
-            <!-- ================= VIEW 1: DASHBOARD ================= -->
-            <section id="view-dashboard" class="app-view active">
-                <!-- Editorial Manifesto Headline -->
-                <div class="dashboard-manifesto">
-                    <div>
-                        <span class="editorial-tag">Portfolio Overview — <span id="dash-current-month">November 2026</span> • Account: <span id="dash-greeting-name">Alex</span></span>
-                        <h2 class="manifesto-title font-editorial">Precision Wealth Architecture. <span>Systematically audited</span> & intelligently forecasted.</h2>
-                    </div>
-                    <div class="banner-quick-actions">
-                        <button class="btn btn-emerald btn-sm" onclick="openAddTransactionModal('income')">+ Record Inflow</button>
-                        <button class="btn btn-rose btn-sm" onclick="openAddTransactionModal('expense')">- Record Outflow</button>
-                    </div>
-                </div>
-
-                <!-- KPI Cards Row -->
-                <div class="kpi-grid">
-                    <!-- Balance -->
-                    <div class="kpi-card glass-panel">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Net Standing</span>
-                            <span class="editorial-tag">01 / LIQUIDITY</span>
-                        </div>
-                        <div class="kpi-value font-mono" id="kpi-balance">₹0.00</div>
-                        <div class="kpi-subtext" id="kpi-balance-sub">Current operating standing</div>
-                    </div>
-
-                    <!-- Total Income -->
-                    <div class="kpi-card glass-panel">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Total Inflows</span>
-                            <span class="editorial-tag">02 / CREDITS</span>
-                        </div>
-                        <div class="kpi-value income-text font-mono" id="kpi-income">₹0.00</div>
-                        <div class="kpi-subtext" id="kpi-income-sub">Salary, allowances & transfers</div>
-                    </div>
-
-                    <!-- Total Expenses -->
-                    <div class="kpi-card glass-panel">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Total Outflows</span>
-                            <span class="editorial-tag">03 / DEBITS</span>
-                        </div>
-                        <div class="kpi-value expense-text font-mono" id="kpi-expense">₹0.00</div>
-                        <div class="kpi-subtext" id="kpi-expense-sub">Expenditures this cycle</div>
-                    </div>
-
-                    <!-- AI Financial Health Score -->
-                    <div class="kpi-card glass-panel">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Financial Health</span>
-                            <span class="editorial-tag">04 / SCORE</span>
-                        </div>
-                        <div class="health-score-container">
-                            <div class="health-score-number font-mono" id="kpi-health-score">--</div>
-                            <div class="health-score-badge" id="kpi-health-badge">Calculating...</div>
-                        </div>
-                        <div class="health-progress-bar">
-                            <div class="health-progress-fill" id="kpi-health-fill" style="width: 50%;"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- EDITORIAL CATEGORY SPENDING CARDS (TYPOGRAPHIC & CLEAN) -->
-                <div class="category-systems-section">
-                    <div class="section-title-wrap">
+                <!-- ================= VIEW 1: DASHBOARD ================= -->
+                <section id="view-dashboard" class="app-view active">
+                    <!-- Editorial Manifesto Headline -->
+                    <div class="dashboard-manifesto">
                         <div>
-                            <span class="editorial-tag">Spending Distributions</span>
-                            <h3>Major Expense Categories</h3>
+                            <span class="editorial-tag">Portfolio Overview — <span id="dash-current-month">November 2026</span> • Account: <span id="dash-greeting-name">Alex</span></span>
+                            <h2 class="manifesto-title font-serif">Precision Wealth Architecture. <em>Systematically audited</em> &amp; intelligently forecasted.</h2>
                         </div>
-                        <button class="btn btn-sm btn-ghost" onclick="switchView('transactions')">View Ledger →</button>
+                        <div class="banner-quick-actions">
+                            <button class="btn btn-emerald btn-sm" onclick="openAddTransactionModal('income')">+ Record Inflow</button>
+                            <button class="btn btn-rose btn-sm" onclick="openAddTransactionModal('expense')">- Record Outflow</button>
+                        </div>
                     </div>
 
-                    <div class="category-photo-grid">
-                        <!-- Card 1: Food & Dining -->
-                        <div class="cat-editorial-card glass-panel" onclick="filterByCategory('Food & Dining')">
-                            <div class="cat-card-header">
-                                <div class="cat-card-glyph">🍽️</div>
-                                <span class="cat-card-tag">Daily</span>
+                    <!-- KPI Bento Cards Row -->
+                    <div class="kpi-grid">
+                        <!-- Balance -->
+                        <div class="kpi-card glass-panel">
+                            <div class="kpi-header">
+                                <span class="kpi-title">Net Standing</span>
+                                <span class="editorial-tag">01 / LIQUIDITY</span>
                             </div>
-                            <div class="cat-card-body">
-                                <div class="cat-card-name">Food & Dining</div>
-                                <div class="cat-card-spend font-mono" id="cat-spend-food">₹0.00</div>
-                                <div class="cat-card-sub">Canteen, dining & groceries</div>
-                            </div>
-                            <div class="cat-card-footer">
-                                <span>Filter ledger</span>
-                                <span class="cat-arrow">→</span>
-                            </div>
+                            <div class="kpi-value font-mono" id="kpi-balance">₹0.00</div>
+                            <div class="kpi-subtext" id="kpi-balance-sub">Current operating standing</div>
                         </div>
 
-                        <!-- Card 2: Education -->
-                        <div class="cat-editorial-card glass-panel" onclick="filterByCategory('Education')">
-                            <div class="cat-card-header">
-                                <div class="cat-card-glyph">📚</div>
-                                <span class="cat-card-tag">Academic</span>
+                        <!-- Total Income -->
+                        <div class="kpi-card glass-panel">
+                            <div class="kpi-header">
+                                <span class="kpi-title">Total Inflows</span>
+                                <span class="editorial-tag">02 / CREDITS</span>
                             </div>
-                            <div class="cat-card-body">
-                                <div class="cat-card-name">Education</div>
-                                <div class="cat-card-spend font-mono" id="cat-spend-edu">₹0.00</div>
-                                <div class="cat-card-sub">Tuition, books & courses</div>
-                            </div>
-                            <div class="cat-card-footer">
-                                <span>Filter ledger</span>
-                                <span class="cat-arrow">→</span>
-                            </div>
+                            <div class="kpi-value income-text font-mono" id="kpi-income">₹0.00</div>
+                            <div class="kpi-subtext" id="kpi-income-sub">Salary, allowances &amp; transfers</div>
                         </div>
 
-                        <!-- Card 3: Transportation -->
-                        <div class="cat-editorial-card glass-panel" onclick="filterByCategory('Transportation')">
-                            <div class="cat-card-header">
-                                <div class="cat-card-glyph">🚇</div>
-                                <span class="cat-card-tag">Mobility</span>
+                        <!-- Total Expenses -->
+                        <div class="kpi-card glass-panel">
+                            <div class="kpi-header">
+                                <span class="kpi-title">Total Outflows</span>
+                                <span class="editorial-tag">03 / DEBITS</span>
                             </div>
-                            <div class="cat-card-body">
-                                <div class="cat-card-name">Transportation</div>
-                                <div class="cat-card-spend font-mono" id="cat-spend-transit">₹0.00</div>
-                                <div class="cat-card-sub">Metro recharge & transit</div>
-                            </div>
-                            <div class="cat-card-footer">
-                                <span>Filter ledger</span>
-                                <span class="cat-arrow">→</span>
-                            </div>
+                            <div class="kpi-value expense-text font-mono" id="kpi-expense">₹0.00</div>
+                            <div class="kpi-subtext" id="kpi-expense-sub">Expenditures this cycle</div>
                         </div>
 
-                        <!-- Card 4: Housing & Utilities -->
-                        <div class="cat-editorial-card glass-panel" onclick="filterByCategory('Housing & Utilities')">
-                            <div class="cat-card-header">
-                                <div class="cat-card-glyph">🏠</div>
-                                <span class="cat-card-tag">Fixed</span>
+                        <!-- AI Financial Health Score (Radial Ring) -->
+                        <div class="kpi-card glass-panel kpi-health-card">
+                            <div class="kpi-header">
+                                <span class="kpi-title">Financial Health</span>
+                                <span class="editorial-tag">04 / SCORE</span>
                             </div>
-                            <div class="cat-card-body">
-                                <div class="cat-card-name">Housing & Utilities</div>
-                                <div class="cat-card-spend font-mono" id="cat-spend-housing">₹0.00</div>
-                                <div class="cat-card-sub">Rent, power & utilities</div>
+                            <div class="health-ring-wrapper">
+                                <svg class="health-svg-ring" viewBox="0 0 100 100" aria-hidden="true">
+                                    <circle cx="50" cy="50" r="40" class="health-ring-bg"></circle>
+                                    <circle id="kpi-health-fill" cx="50" cy="50" r="40" class="health-ring-meter" style="stroke-dasharray: 251.2; stroke-dashoffset: 125.6;"></circle>
+                                </svg>
+                                <div class="health-ring-text">
+                                    <span class="health-score-number font-mono" id="kpi-health-score">--</span>
+                                    <span class="health-score-max">/100</span>
+                                </div>
                             </div>
-                            <div class="cat-card-footer">
-                                <span>Filter ledger</span>
-                                <span class="cat-arrow">→</span>
+                            <div class="health-badge-wrap">
+                                <span class="health-score-badge" id="kpi-health-badge">Calculating...</span>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- PREDICTIVE SPENDING FORECAST (EDITORIAL INTELLIGENCE) -->
-                <div class="forecast-banner glass-panel" id="dashboard-forecast-card">
-                    <div class="forecast-icon-box">
-                        <span>⚡</span>
-                    </div>
-                    <div class="forecast-content">
-                        <div class="forecast-tag">Predictive Intelligence — OLS Regression & Burn Velocity</div>
-                        <div class="forecast-message font-editorial" id="forecast-status-msg">Analyzing burn-rate velocity...</div>
-                        <div class="forecast-stats">
-                            <span>Daily Burn: <strong id="forecast-burn-rate" class="font-mono">₹0/day</strong></span>
-                            <span>•</span>
-                            <span>Projected Total: <strong id="forecast-projected-total" class="font-mono">₹0</strong></span>
-                            <span>•</span>
-                            <span>Allocated Budget: <strong id="forecast-total-budget" class="font-mono">₹0</strong></span>
-                        </div>
-                    </div>
-                    <div class="forecast-action">
-                        <button class="btn btn-sm btn-ghost" onclick="switchView('ml-lab')">Inspect Regression Model →</button>
-                    </div>
-                </div>
-
-                <!-- Charts Row -->
-                <div class="charts-grid">
-                    <div class="chart-card glass-panel">
-                        <div class="chart-header">
+                    <!-- EDITORIAL CATEGORY SPENDING CARDS -->
+                    <div class="category-systems-section">
+                        <div class="section-title-wrap">
                             <div>
-                                <span class="editorial-tag">Time-Series</span>
-                                <h3>Cash Flow Timeline</h3>
-                                <p class="chart-subtitle">Daily income credits vs expense debits</p>
+                                <span class="editorial-tag">Spending Distributions</span>
+                                <h3>Major Expense Categories</h3>
                             </div>
+                            <button class="btn btn-sm btn-ghost" onclick="switchView('transactions')">View Ledger →</button>
                         </div>
-                        <div class="chart-body">
-                            <canvas id="cashflow-chart"></canvas>
+
+                        <div class="category-photo-grid">
+                            <!-- Card 1: Food & Dining -->
+                            <div class="cat-editorial-card glass-panel" onclick="filterByCategory('Food & Dining')">
+                                <div class="cat-card-header">
+                                    <div class="cat-card-glyph">🍽️</div>
+                                    <span class="cat-card-tag">Daily</span>
+                                </div>
+                                <div class="cat-card-body">
+                                    <div class="cat-card-name">Food &amp; Dining</div>
+                                    <div class="cat-card-spend font-mono" id="cat-spend-food">₹0.00</div>
+                                    <div class="cat-card-sub">Canteen, dining &amp; groceries</div>
+                                </div>
+                                <div class="cat-card-footer">
+                                    <span>Filter ledger</span>
+                                    <span class="cat-arrow">→</span>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: Education -->
+                            <div class="cat-editorial-card glass-panel" onclick="filterByCategory('Education')">
+                                <div class="cat-card-header">
+                                    <div class="cat-card-glyph">📚</div>
+                                    <span class="cat-card-tag">Academic</span>
+                                </div>
+                                <div class="cat-card-body">
+                                    <div class="cat-card-name">Education</div>
+                                    <div class="cat-card-spend font-mono" id="cat-spend-edu">₹0.00</div>
+                                    <div class="cat-card-sub">Tuition, books &amp; courses</div>
+                                </div>
+                                <div class="cat-card-footer">
+                                    <span>Filter ledger</span>
+                                    <span class="cat-arrow">→</span>
+                                </div>
+                            </div>
+
+                            <!-- Card 3: Transportation -->
+                            <div class="cat-editorial-card glass-panel" onclick="filterByCategory('Transportation')">
+                                <div class="cat-card-header">
+                                    <div class="cat-card-glyph">🚇</div>
+                                    <span class="cat-card-tag">Mobility</span>
+                                </div>
+                                <div class="cat-card-body">
+                                    <div class="cat-card-name">Transportation</div>
+                                    <div class="cat-card-spend font-mono" id="cat-spend-transit">₹0.00</div>
+                                    <div class="cat-card-sub">Metro recharge &amp; transit</div>
+                                </div>
+                                <div class="cat-card-footer">
+                                    <span>Filter ledger</span>
+                                    <span class="cat-arrow">→</span>
+                                </div>
+                            </div>
+
+                            <!-- Card 4: Housing & Utilities -->
+                            <div class="cat-editorial-card glass-panel" onclick="filterByCategory('Housing & Utilities')">
+                                <div class="cat-card-header">
+                                    <div class="cat-card-glyph">🏠</div>
+                                    <span class="cat-card-tag">Fixed</span>
+                                </div>
+                                <div class="cat-card-body">
+                                    <div class="cat-card-name">Housing &amp; Utilities</div>
+                                    <div class="cat-card-spend font-mono" id="cat-spend-housing">₹0.00</div>
+                                    <div class="cat-card-sub">Rent, power &amp; utilities</div>
+                                </div>
+                                <div class="cat-card-footer">
+                                    <span>Filter ledger</span>
+                                    <span class="cat-arrow">→</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="chart-card glass-panel">
-                        <div class="chart-header">
+                    <!-- PREDICTIVE SPENDING FORECAST -->
+                    <div class="forecast-banner glass-panel" id="dashboard-forecast-card">
+                        <div class="forecast-icon-box">
+                            <span>⚡</span>
+                        </div>
+                        <div class="forecast-content">
+                            <div class="forecast-tag">Predictive Intelligence — OLS Regression &amp; Burn Velocity</div>
+                            <div class="forecast-message font-serif" id="forecast-status-msg">Analyzing burn-rate velocity...</div>
+                            <div class="forecast-stats">
+                                <span>Daily Burn: <strong id="forecast-burn-rate" class="font-mono">₹0/day</strong></span>
+                                <span>•</span>
+                                <span>Projected Total: <strong id="forecast-projected-total" class="font-mono">₹0</strong></span>
+                                <span>•</span>
+                                <span>Allocated Budget: <strong id="forecast-total-budget" class="font-mono">₹0</strong></span>
+                            </div>
+                        </div>
+                        <div class="forecast-action">
+                            <button class="btn btn-sm btn-ghost" onclick="switchView('ml-lab')">Inspect Model →</button>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="charts-grid">
+                        <div class="chart-card glass-panel">
+                            <div class="chart-header">
+                                <div>
+                                    <span class="editorial-tag">Time-Series</span>
+                                    <h3>Cash Flow Timeline</h3>
+                                    <p class="chart-subtitle">Daily income credits vs expense debits</p>
+                                </div>
+                            </div>
+                            <div class="chart-body">
+                                <canvas id="cashflow-chart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card glass-panel">
+                            <div class="chart-header">
+                                <div>
+                                    <span class="editorial-tag">Distribution</span>
+                                    <h3>Expenses by Category</h3>
+                                    <p class="chart-subtitle">Breakdown across functional categories</p>
+                                </div>
+                            </div>
+                            <div class="chart-body">
+                                <canvas id="category-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Transactions Table Preview -->
+                    <div class="recent-section glass-panel">
+                        <div class="section-header">
                             <div>
-                                <span class="editorial-tag">Distribution</span>
-                                <h3>Expenses by Category</h3>
-                                <p class="chart-subtitle">Breakdown across functional categories</p>
+                                <span class="editorial-tag">Ledger</span>
+                                <h3>Recent Activity</h3>
+                                <p class="section-subtitle">Latest recorded entries</p>
                             </div>
+                            <button class="btn btn-sm btn-ghost" onclick="switchView('transactions')">All Transactions →</button>
                         </div>
-                        <div class="chart-body">
-                            <canvas id="category-chart"></canvas>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Category</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Outlier Check</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recent-transactions-tbody">
+                                    <tr><td colspan="6" class="text-center py-4">Loading transaction data...</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Recent Transactions Table Preview -->
-                <div class="recent-section glass-panel">
-                    <div class="section-header">
+
+                <!-- ================= VIEW 2: TRANSACTIONS ================= -->
+                <section id="view-transactions" class="app-view">
+                    <div class="view-header">
                         <div>
-                            <span class="editorial-tag">Ledger</span>
-                            <h3>Recent Activity</h3>
-                            <p class="section-subtitle">Latest recorded entries</p>
+                            <div class="brand-badge mb-2">Ledger &amp; Audit</div>
+                            <h2 class="font-serif">Transactions</h2>
+                            <p>Search, filter, and audit all recorded financial transactions with complete precision.</p>
                         </div>
-                        <button class="btn btn-sm btn-ghost" onclick="switchView('transactions')">All Transactions →</button>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Type</th>
-                                    <th>Category</th>
-                                    <th>Description</th>
-                                    <th>Amount</th>
-                                    <th>Outlier Check</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recent-transactions-tbody">
-                                <tr><td colspan="6" class="text-center py-4">Loading transaction data...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-
-            <!-- ================= VIEW 2: TRANSACTIONS ================= -->
-            <section id="view-transactions" class="app-view">
-                <div class="view-header">
-                    <div>
-                        <div class="brand-badge mb-2">
-                            Ledger & Audit
+                        <div class="view-header-actions">
+                            <button class="btn btn-outline" onclick="exportCSV()">Export CSV</button>
+                            <button class="btn btn-primary" onclick="openAddTransactionModal()">+ Add Transaction</button>
                         </div>
-                        <h2>Transactions</h2>
-                        <p>Search, filter, and audit all recorded financial transactions with complete precision.</p>
-                    </div>
-                    <div class="view-header-actions">
-                        <button class="btn btn-outline" onclick="exportCSV()">
-                            Export CSV
-                        </button>
-                        <button class="btn btn-primary" onclick="openAddTransactionModal()">
-                            + Add Transaction
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Filters Toolbar -->
-                <div class="toolbar glass-panel">
-                    <div class="toolbar-search">
-                        <span class="search-icon">🔍</span>
-                        <input type="text" id="filter-search" class="search-input" placeholder="Search by note, description or merchant..." oninput="debounceFilterTransactions()">
                     </div>
 
-                    <div class="toolbar-filters">
-                        <select id="filter-type" class="filter-select" onchange="fetchTransactions()">
-                            <option value="all">All Types</option>
-                            <option value="expense">Expenses Only</option>
-                            <option value="income">Incomes Only</option>
-                        </select>
-
-                        <select id="filter-category" class="filter-select" onchange="fetchTransactions()">
-                            <option value="all">All Categories</option>
-                            <option value="Food & Dining">Food & Dining</option>
-                            <option value="Transportation">Transportation</option>
-                            <option value="Education">Education</option>
-                            <option value="Housing & Utilities">Housing & Utilities</option>
-                            <option value="Entertainment">Entertainment</option>
-                            <option value="Shopping">Shopping</option>
-                            <option value="Healthcare">Healthcare</option>
-                            <option value="Salary / Allowance">Salary / Allowance</option>
-                            <option value="Freelance / Projects">Freelance / Projects</option>
-                        </select>
-
-                        <input type="date" id="filter-start-date" class="filter-date" onchange="fetchTransactions()" title="Start Date">
-                        <input type="date" id="filter-end-date" class="filter-date" onchange="fetchTransactions()" title="End Date">
-
-                        <button class="btn btn-sm btn-ghost" onclick="resetFilters()" title="Reset filters">
-                            Clear
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Full Transaction Table -->
-                <div class="glass-panel">
-                    <div class="table-responsive">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Type</th>
-                                    <th>Category</th>
-                                    <th>Description / Merchant</th>
-                                    <th>Amount</th>
-                                    <th>Outlier Status</th>
-                                    <th class="text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="full-transactions-tbody">
-                                <tr><td colspan="7" class="text-center py-4">Loading transactions...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-
-            <!-- ================= VIEW 3: BUDGETS ================= -->
-            <section id="view-budgets" class="app-view">
-                <div class="view-header">
-                    <div>
-                        <div class="brand-badge mb-2">
-                            Fiscal Controls
-                        </div>
-                        <h2>Monthly Budgets</h2>
-                        <p>Establish spending thresholds per functional category and track utilization velocity in real-time.</p>
-                    </div>
-                    <button class="btn btn-primary" onclick="openBudgetModal()">
-                        + Set Budget Limit
-                    </button>
-                </div>
-
-                <!-- Budgets Summary Bar -->
-                <div class="budget-summary-grid">
-                    <div class="budget-summary-card glass-panel">
-                        <span class="summary-label">Total Allocated</span>
-                        <span class="summary-value" id="budget-sum-allocated">₹0.00</span>
-                    </div>
-                    <div class="budget-summary-card glass-panel">
-                        <span class="summary-label">Total Spent</span>
-                        <span class="summary-value expense-text" id="budget-sum-spent">₹0.00</span>
-                    </div>
-                    <div class="budget-summary-card glass-panel">
-                        <span class="summary-label">Remaining Cushion</span>
-                        <span class="summary-value income-text" id="budget-sum-remaining">₹0.00</span>
-                    </div>
-                </div>
-
-                <!-- Budget Cards Grid -->
-                <div class="budget-cards-grid" id="budget-cards-container">
-                    <!-- Populated dynamically -->
-                </div>
-            </section>
-
-
-            <!-- ================= VIEW 4: INTELLIGENCE LAB ================= -->
-            <section id="view-ml-lab" class="app-view">
-                <div class="view-header">
-                    <div>
-                        <div class="brand-badge mb-2">
-                            Intelligence Engine Sandbox
-                        </div>
-                        <h2>Machine Learning Engine</h2>
-                        <p>Empirical evaluation of the Bayesian categorizer, time-series forecaster, and anomaly detector.</p>
-                    </div>
-                </div>
-
-                <!-- Model 1: NLP Classifier Sandbox -->
-                <div class="ml-lab-card glass-panel">
-                    <div class="ml-lab-header">
-                        <div class="ml-tag">Algorithm 01 / Categorization</div>
-                        <h3>Multinomial Naive Bayes Classifier</h3>
-                        <p>Enter any transaction note or merchant name below. The model tokenizes the string, applies Laplace smoothing, and evaluates class posterior probabilities.</p>
-                    </div>
-
-                    <div class="ml-sandbox-input-box">
-                        <input type="text" id="ml-test-input" class="form-input form-input-lg" placeholder="Type: 'Dominos pizza swiggy' or 'Semester exam fees' or 'Metro card recharge'..." oninput="handleMLSandboxInput()">
-                    </div>
-
-                    <div class="ml-sandbox-result" id="ml-sandbox-result">
-                        <div class="sandbox-prediction-badge">
-                            <span>Predicted Category:</span>
-                            <strong id="sandbox-predicted-cat">Food & Dining</strong>
-                            <span class="confidence-pill" id="sandbox-predicted-conf">98.2% Confidence</span>
+                    <!-- Filters Toolbar -->
+                    <div class="toolbar glass-panel">
+                        <div class="toolbar-search">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="filter-search" class="search-input" placeholder="Search by note, description or merchant..." oninput="debounceFilterTransactions()">
                         </div>
 
-                        <div class="sandbox-probs-list">
-                            <span class="prob-title">Class Posterior Distribution:</span>
-                            <div id="sandbox-prob-bars" class="prob-bars-grid">
-                                <!-- Bars populated by JS -->
+                        <div class="toolbar-filters">
+                            <select id="filter-type" class="filter-select" onchange="fetchTransactions()">
+                                <option value="all">All Types</option>
+                                <option value="expense">Expenses Only</option>
+                                <option value="income">Incomes Only</option>
+                            </select>
+
+                            <select id="filter-category" class="filter-select" onchange="fetchTransactions()">
+                                <option value="all">All Categories</option>
+                                <option value="Food & Dining">Food &amp; Dining</option>
+                                <option value="Transportation">Transportation</option>
+                                <option value="Education">Education</option>
+                                <option value="Housing & Utilities">Housing &amp; Utilities</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Salary / Allowance">Salary / Allowance</option>
+                                <option value="Freelance / Projects">Freelance / Projects</option>
+                            </select>
+
+                            <input type="date" id="filter-start-date" class="filter-date" onchange="fetchTransactions()" title="Start Date">
+                            <input type="date" id="filter-end-date" class="filter-date" onchange="fetchTransactions()" title="End Date">
+
+                            <button class="btn btn-sm btn-ghost" onclick="resetFilters()" title="Reset filters">Clear</button>
+                        </div>
+                    </div>
+
+                    <!-- Full Transaction Table -->
+                    <div class="glass-panel">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Category</th>
+                                        <th>Description / Merchant</th>
+                                        <th>Amount</th>
+                                        <th>Outlier Status</th>
+                                        <th class="text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="full-transactions-tbody">
+                                    <tr><td colspan="7" class="text-center py-4">Loading transactions...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ================= VIEW 3: BUDGETS ================= -->
+                <section id="view-budgets" class="app-view">
+                    <div class="view-header">
+                        <div>
+                            <div class="brand-badge mb-2">Fiscal Controls</div>
+                            <h2 class="font-serif">Monthly Budgets</h2>
+                            <p>Establish spending thresholds per functional category and track utilization velocity in real-time.</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="openBudgetModal()">+ Set Budget Limit</button>
+                    </div>
+
+                    <!-- Budgets Summary Bar -->
+                    <div class="budget-summary-grid">
+                        <div class="budget-summary-card glass-panel">
+                            <span class="summary-label">Total Allocated</span>
+                            <span class="summary-value" id="budget-sum-allocated">₹0.00</span>
+                        </div>
+                        <div class="budget-summary-card glass-panel">
+                            <span class="summary-label">Total Spent</span>
+                            <span class="summary-value expense-text" id="budget-sum-spent">₹0.00</span>
+                        </div>
+                        <div class="budget-summary-card glass-panel">
+                            <span class="summary-label">Remaining Cushion</span>
+                            <span class="summary-value income-text" id="budget-sum-remaining">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Budget Cards Grid -->
+                    <div class="budget-cards-grid" id="budget-cards-container">
+                        <!-- Populated dynamically -->
+                    </div>
+                </section>
+
+
+                <!-- ================= VIEW 4: INTELLIGENCE LAB ================= -->
+                <section id="view-ml-lab" class="app-view">
+                    <div class="view-header">
+                        <div>
+                            <div class="brand-badge mb-2">Intelligence Engine Sandbox</div>
+                            <h2 class="font-serif">Machine Learning Engine</h2>
+                            <p>Empirical evaluation of the Bayesian categorizer, time-series forecaster, and anomaly detector.</p>
+                        </div>
+                    </div>
+
+                    <!-- Model 1: NLP Classifier Sandbox -->
+                    <div class="ml-lab-card glass-panel">
+                        <div class="ml-lab-header">
+                            <div class="ml-tag">Algorithm 01 / Categorization</div>
+                            <h3>Multinomial Naive Bayes Classifier</h3>
+                            <p>Enter any transaction note or merchant name below. The model tokenizes the string, applies Laplace smoothing, and evaluates class posterior probabilities.</p>
+                        </div>
+
+                        <div class="ml-sandbox-input-box">
+                            <input type="text" id="ml-test-input" class="form-input form-input-lg" placeholder="Type: 'Dominos pizza swiggy' or 'Semester exam fees' or 'Metro card recharge'..." oninput="handleMLSandboxInput()">
+                        </div>
+
+                        <div class="ml-sandbox-result" id="ml-sandbox-result">
+                            <div class="sandbox-prediction-badge">
+                                <span>Predicted Category:</span>
+                                <strong id="sandbox-predicted-cat">Food &amp; Dining</strong>
+                                <span class="confidence-pill" id="sandbox-predicted-conf">98.2% Confidence</span>
+                            </div>
+
+                            <div class="sandbox-probs-list">
+                                <span class="prob-title">Class Posterior Distribution:</span>
+                                <div id="sandbox-prob-bars" class="prob-bars-grid">
+                                    <!-- Bars populated by JS -->
+                                </div>
+                            </div>
+
+                            <div class="ml-math-explainer">
+                                <strong>Algorithmic Formulation &amp; Principles:</strong>
+                                <p>
+                                    <code>P(C|D) ∝ P(C) × ∏ P(w|C)</code> with Laplace smoothing
+                                    <code>P(w|C) = (count(w, C) + α) / (total_words(C) + α × |V|)</code>.
+                                    The online active learning module continuously updates token likelihoods upon user transaction entry.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Model 2: Forecaster -->
+                    <div class="ml-lab-card glass-panel">
+                        <div class="ml-lab-header">
+                            <div class="ml-tag">Algorithm 02 / Time-Series</div>
+                            <h3>Month-End Expenditure Forecaster</h3>
+                            <p>Combines weighted historical velocity with linear regression trend estimation.</p>
+                        </div>
+
+                        <div class="ml-forecast-grid">
+                            <div class="forecast-metric-box">
+                                <div class="metric-classification-tag empirical">Empirical Data</div>
+                                <span class="f-label">Current Spend</span>
+                                <span class="f-val font-mono" id="lab-curr-spend">₹0</span>
+                                <span class="f-sub" id="lab-days-elapsed">Day 0 of month</span>
+                            </div>
+                            <div class="forecast-metric-box">
+                                <div class="metric-classification-tag empirical">Calculated Velocity</div>
+                                <span class="f-label">Daily Burn Rate</span>
+                                <span class="f-val font-mono" id="lab-burn-rate">₹0 / day</span>
+                                <span class="f-sub">Blended historical + 7-day rate</span>
+                            </div>
+                            <div class="forecast-metric-box">
+                                <div class="metric-classification-tag prediction">ML Prediction</div>
+                                <span class="f-label">Projected Month-End</span>
+                                <span class="f-val font-mono" id="lab-projected-spend">₹0</span>
+                                <span class="f-sub" id="lab-budget-target">Target: ₹0</span>
+                            </div>
+                            <div class="forecast-metric-box">
+                                <div class="metric-classification-tag prediction">Regression Model</div>
+                                <span class="f-label">Spending Slope (m)</span>
+                                <span class="f-val font-mono" id="lab-slope">+₹0.00</span>
+                                <span class="f-sub">Velocity slope y = mx + c</span>
                             </div>
                         </div>
 
-                        <div class="ml-math-explainer">
-                            <strong>Algorithmic Formulation & Principles:</strong>
-                            <p>
-                                <code>P(C|D) ∝ P(C) × ∏ P(w|C)</code> with Laplace smoothing
-                                <code>P(w|C) = (count(w, C) + α) / (total_words(C) + α × |V|)</code>.
-                                The online active learning module continuously updates token likelihoods upon user transaction entry.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Model 2: Forecaster -->
-                <div class="ml-lab-card glass-panel">
-                    <div class="ml-lab-header">
-                        <div class="ml-tag">Algorithm 02 / Time-Series</div>
-                        <h3>Month-End Expenditure Forecaster</h3>
-                        <p>Combines weighted historical velocity with linear regression trend estimation.</p>
-                    </div>
-
-                    <div class="ml-forecast-grid">
-                        <div class="forecast-metric-box">
-                            <div class="metric-classification-tag empirical">Empirical Data</div>
-                            <span class="f-label">Current Spend</span>
-                            <span class="f-val font-mono" id="lab-curr-spend">₹0</span>
-                            <span class="f-sub" id="lab-days-elapsed">Day 0 of month</span>
-                        </div>
-                        <div class="forecast-metric-box">
-                            <div class="metric-classification-tag empirical">Calculated Velocity</div>
-                            <span class="f-label">Daily Burn Rate</span>
-                            <span class="f-val font-mono" id="lab-burn-rate">₹0 / day</span>
-                            <span class="f-sub">Blended historical + 7-day rate</span>
-                        </div>
-                        <div class="forecast-metric-box">
-                            <div class="metric-classification-tag prediction">ML Prediction</div>
-                            <span class="f-label">Projected Month-End</span>
-                            <span class="f-val font-mono" id="lab-projected-spend">₹0</span>
-                            <span class="f-sub" id="lab-budget-target">Target: ₹0</span>
-                        </div>
-                        <div class="forecast-metric-box">
-                            <div class="metric-classification-tag prediction">Regression Model</div>
-                            <span class="f-label">Spending Slope (m)</span>
-                            <span class="f-val font-mono" id="lab-slope">+₹0.00</span>
-                            <span class="f-sub">Velocity slope y = mx + c</span>
+                        <div class="forecast-status-box" id="lab-forecast-alert">
+                            <!-- Alert content -->
                         </div>
                     </div>
 
-                    <div class="forecast-status-box" id="lab-forecast-alert">
-                        <!-- Alert content -->
-                    </div>
-                </div>
+                    <!-- Model 3: Outlier Detection -->
+                    <div class="ml-lab-card glass-panel">
+                        <div class="ml-lab-header">
+                            <div class="ml-tag">Algorithm 03 / Outlier Detection</div>
+                            <h3>Statistical Z-Score &amp; Interquartile Range (IQR) Alerts</h3>
+                            <p>Identifies transactions deviating significantly (Z-score ≥ +2.5σ or 1.5× IQR) from category distributions.</p>
+                        </div>
 
-                <!-- Model 3: Outlier Detection -->
-                <div class="ml-lab-card glass-panel">
-                    <div class="ml-lab-header">
-                        <div class="ml-tag">Algorithm 03 / Outlier Detection</div>
-                        <h3>Statistical Z-Score & Interquartile Range (IQR) Alerts</h3>
-                        <p>Identifies transactions deviating significantly (Z-score ≥ +2.5σ or 1.5× IQR) from category distributions.</p>
-                    </div>
-
-                    <div class="anomalies-list" id="lab-anomalies-container">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
-
-                <!-- Model 4: AI Recommendations -->
-                <div class="ml-lab-card glass-panel">
-                    <div class="ml-lab-header">
-                        <div class="ml-tag">Algorithm 04 / Advisory</div>
-                        <h3>Financial Health & Ratio Analysis</h3>
-                        <p>Evaluation against the 50/30/20 personal finance rule, savings buffer, and category concentration.</p>
+                        <div class="anomalies-list" id="lab-anomalies-container">
+                            <!-- Populated by JS -->
+                        </div>
                     </div>
 
-                    <div class="recommendations-container" id="lab-recommendations-list">
-                        <!-- Populated by JS -->
+                    <!-- Model 4: AI Recommendations -->
+                    <div class="ml-lab-card glass-panel">
+                        <div class="ml-lab-header">
+                            <div class="ml-tag">Algorithm 04 / Advisory</div>
+                            <h3>Financial Health &amp; Ratio Analysis</h3>
+                            <p>Evaluation against the 50/30/20 personal finance rule, savings buffer, and category concentration.</p>
+                        </div>
+
+                        <div class="recommendations-container" id="lab-recommendations-list">
+                            <!-- Populated by JS -->
+                        </div>
                     </div>
-                </div>
-            </section>
-        </main>
+                </section>
+            </main>
         </div>
     </div>
 
-    <!-- MODAL: ADD / EDIT TRANSACTION -->
+
+    <!-- ================= MODAL: ADD / EDIT TRANSACTION ================= -->
     <div id="transaction-modal" class="modal-overlay hidden" onclick="handleModalBackdropClick(event, 'transaction-modal')">
         <div class="modal-card">
             <div class="modal-header">
-                <h3 id="modal-title">Record Transaction</h3>
+                <h3 id="modal-title" class="font-serif">Record Transaction</h3>
                 <button class="modal-close" onclick="closeModal('transaction-modal')">✕</button>
             </div>
             <form id="transaction-form" onsubmit="handleTransactionSubmit(event)">
@@ -720,7 +960,7 @@
                     <!-- Live ML Suggestion Bubble -->
                     <div id="ml-suggestion-bubble" class="ml-suggestion-bubble hidden">
                         <span class="ai-sparkle">Suggested:</span>
-                        <strong id="ml-suggested-category">Food & Dining</strong>
+                        <strong id="ml-suggested-category">Food &amp; Dining</strong>
                         <span class="ml-confidence-tag" id="ml-suggested-conf">(95% match)</span>
                         <button type="button" class="btn-apply-suggestion" onclick="applySuggestedCategory()">Apply</button>
                     </div>
@@ -740,10 +980,10 @@
                 <div class="form-group">
                     <label for="tx-category">Category</label>
                     <select id="tx-category" class="form-select" required>
-                        <option value="Food & Dining">Food & Dining</option>
+                        <option value="Food & Dining">Food &amp; Dining</option>
                         <option value="Transportation">Transportation</option>
-                        <option value="Education">Education & Learning</option>
-                        <option value="Housing & Utilities">Housing & Utilities</option>
+                        <option value="Education">Education &amp; Learning</option>
+                        <option value="Housing & Utilities">Housing &amp; Utilities</option>
                         <option value="Entertainment">Entertainment</option>
                         <option value="Shopping">Shopping</option>
                         <option value="Healthcare">Healthcare</option>
@@ -754,27 +994,28 @@
 
                 <div class="modal-actions">
                     <button type="button" class="btn btn-ghost" onclick="closeModal('transaction-modal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="btn-save-tx">Save</button>
+                    <button type="submit" class="btn btn-primary" id="btn-save-tx">Save Transaction</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL: SET BUDGET -->
+
+    <!-- ================= MODAL: SET BUDGET ================= -->
     <div id="budget-modal" class="modal-overlay hidden" onclick="handleModalBackdropClick(event, 'budget-modal')">
         <div class="modal-card">
             <div class="modal-header">
-                <h3>Set Category Budget</h3>
+                <h3 class="font-serif">Set Category Budget</h3>
                 <button class="modal-close" onclick="closeModal('budget-modal')">✕</button>
             </div>
             <form id="budget-form" onsubmit="handleBudgetSubmit(event)">
                 <div class="form-group">
                     <label for="budget-category">Category</label>
                     <select id="budget-category" class="form-select" required>
-                        <option value="Food & Dining">Food & Dining</option>
+                        <option value="Food & Dining">Food &amp; Dining</option>
                         <option value="Transportation">Transportation</option>
                         <option value="Education">Education</option>
-                        <option value="Housing & Utilities">Housing & Utilities</option>
+                        <option value="Housing & Utilities">Housing &amp; Utilities</option>
                         <option value="Entertainment">Entertainment</option>
                         <option value="Shopping">Shopping</option>
                         <option value="Healthcare">Healthcare</option>
@@ -794,7 +1035,8 @@
         </div>
     </div>
 
-    <!-- FLOATING AI CHATBOT TRIGGER BUTTON -->
+
+    <!-- ================= FLOATING AI CHATBOT ADVISOR ================= -->
     <div id="ai-chat-launcher" class="ai-chat-launcher hidden" onclick="toggleAIChat()">
         <div class="launcher-pulse"></div>
         <div class="launcher-btn">
@@ -803,7 +1045,6 @@
         </div>
     </div>
 
-    <!-- FLOATING AI CHATBOT WINDOW -->
     <div id="ai-chat-widget" class="ai-chat-widget hidden">
         <div class="chat-header">
             <div class="chat-header-info">
