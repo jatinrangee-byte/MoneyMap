@@ -9,8 +9,11 @@ import tempfile
 import json
 import sqlite3
 
-# Set test secret key before app and auth import
-os.environ.setdefault("TRACKER_SECRET_KEY", "test-secret-key-moneymap-unit-tests-12345678")
+# Configure test environment for SQLite isolation before importing modules
+os.environ["TESTING"] = "1"
+os.environ["TRACKER_SECRET_KEY"] = "test-secret-key-moneymap-unit-tests-12345678"
+os.environ["SUPABASE_URL"] = ""
+os.environ["SUPABASE_KEY"] = ""
 
 # Import application modules
 import database

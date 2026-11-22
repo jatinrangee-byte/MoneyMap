@@ -5,22 +5,32 @@ Enforces Row Level Security (RLS) by passing the authenticated user's JWT to Pos
 
 import os
 from typing import Optional, Dict, Any
+from dotenv import load_dotenv
 
-SUPABASE_URL = (
-    os.environ.get("SUPABASE_URL")
-    or os.environ.get("NEXT_PUBLIC_SUPABASE_URL", "")
-).strip()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if not os.environ.get("TESTING"):
+    load_dotenv(os.path.join(BASE_DIR, ".env"))
+    load_dotenv(os.path.join(BASE_DIR, ".env.local"), override=True)
 
-SUPABASE_KEY = (
-    os.environ.get("SUPABASE_KEY")
-    or os.environ.get("SUPABASE_ANON_KEY")
-    or os.environ.get("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "")
-).strip()
+
+def get_supabase_url() -> str:
+    return (
+        os.environ.get("SUPABASE_URL")
+        or os.environ.get("NEXT_PUBLIC_SUPABASE_URL", "")
+    ).strip()
+
+
+def get_supabase_key() -> str:
+    return (
+        os.environ.get("SUPABASE_KEY")
+        or os.environ.get("SUPABASE_ANON_KEY")
+        or os.environ.get("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "")
+    ).strip()
 
 
 def is_supabase_enabled() -> bool:
     """Returns True if Supabase configuration is present in environment."""
-    return bool(SUPABASE_URL and SUPABASE_KEY)
+    return bool(get_supabase_url() and get_supabase_key())
 
 
 def get_supabase_client(jwt: Optional[str] = None):
@@ -34,7 +44,7 @@ def get_supabase_client(jwt: Optional[str] = None):
 
     from supabase import create_client
 
-    client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    client = create_client(get_supabase_url(), get_supabase_key())
     if jwt:
         client.postgrest.auth(jwt)
     return client

@@ -9,6 +9,12 @@ import csv
 import io
 from datetime import datetime
 from functools import wraps
+from dotenv import load_dotenv
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if not os.environ.get("TESTING"):
+    load_dotenv(os.path.join(BASE_DIR, ".env"))
+    load_dotenv(os.path.join(BASE_DIR, ".env.local"), override=True)
 
 from flask import Flask, request, jsonify, render_template, send_from_directory, Response
 
@@ -19,7 +25,6 @@ import ai_chat
 import supabase_client
 
 # Initialize Flask App
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(
     __name__,
     template_folder=os.path.join(BASE_DIR, "templates"),
