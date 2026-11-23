@@ -672,13 +672,16 @@ async function fetchTransactions() {
     if (startDate) params.append("start_date", startDate);
     if (endDate) params.append("end_date", endDate);
 
-    // Show loading state in table
+    // Show loading state in table only if no cached data
     const tbody = document.getElementById("full-transactions-tbody");
-    if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4" style="color:var(--text-muted)">Loading…</td></tr>`;
+    if (tbody && (!state.cachedTransactions || !state.cachedTransactions.length)) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4" style="color:var(--text-muted)">Loading…</td></tr>`;
+    }
 
     try {
         const data = await apiRequest(`/api/transactions?${params.toString()}`);
-        renderFullTransactions(data.transactions);
+        state.cachedTransactions = data.transactions || [];
+        renderFullTransactions(state.cachedTransactions);
     } catch (err) {
         console.error("Fetch transactions error", err);
         if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4" style="color:var(--text-muted)">
@@ -702,7 +705,7 @@ function renderFullTransactions(transactions) {
             <td class="font-mono" style="font-size: 0.85rem; color: var(--text-muted);">${t.date}</td>
             <td><span class="type-pill ${t.type}">${t.type === 'income' ? '+ Income' : '- Expense'}</span></td>
             <td><span class="cat-pill">${t.category}</span></td>
-            <td><strong style="font-weight: 600; color: var(--text-primary);">${escapeHtml(t.description || '-')}</strong></td>
+            <td><strong style="font-weight: 600; color: var(--text-primary);">${escapeHtml(t.description || t.note || '-')}</strong></td>
             <td class="amount-cell ${t.type === 'income' ? 'income-text' : 'expense-text'} font-mono">
                 ${t.type === 'income' ? '+' : '-'}${state.currency}${t.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </td>
@@ -718,13 +721,18 @@ function renderFullTransactions(transactions) {
 }
 
 function resetFilters() {
-    if (document.getElementById("filter-search")) document.getElementById("filter-search").value = "";
-    if (document.getElementById("filter-type")) document.getElementById("filter-type").value = "all";
-    if (document.getElementById("filter-category")) document.getElementById("filter-category").value = "all";
-    if (document.getElementById("filter-start-date")) document.getElementById("filter-start-date").value = "";
-    if (document.getElementById("filter-end-date")) document.getElementById("filter-end-date").value = "";
+    const s = document.getElementById("filter-search");
+    const t = document.getElementById("filter-type");
+    const c = document.getElementById("filter-category");
+    const d1 = document.getElementById("filter-start-date");
+    const d2 = document.getElementById("filter-end-date");
+    if (s) s.value = "";
+    if (t) t.value = "all";
+    if (c) c.value = "all";
+    if (d1) d1.value = "";
+    if (d2) d2.value = "";
     fetchTransactions();
-    showToast("Filters cleared", "info");
+    showToast("Filters reset — showing all transactions", "info");
 }
 
 // Modal Handlers
@@ -741,24 +749,49 @@ function openAddTransactionModal(presetType = null) {
     openModal("transaction-modal");
 }
 
+function populateTransactionModal(t) {
+    if (!t) return;
+    const idEl = document.getElementById("tx-id");
+    const titleEl = document.getElementById("modal-title");
+    const saveBtn = document.getElementById("btn-save-tx");
+    const amountEl = document.getElementById("tx-amount");
+    const descEl = document.getElementById("tx-description");
+    const dateEl = document.getElementById("tx-date");
+    const catEl = document.getElementById("tx-category");
+
+    if (idEl) idEl.value = t.id ?? "";
+    if (titleEl) titleEl.textContent = "Edit Transaction";
+    if (saveBtn) saveBtn.textContent = "Update";
+    if (amountEl) amountEl.value = t.amount ?? "";
+    if (descEl) descEl.value = t.description || t.note || "";
+    if (dateEl) dateEl.value = t.date ?? "";
+    if (catEl && t.category) catEl.value = t.category;
+
+    const bubble = document.getElementById("ml-suggestion-bubble");
+    if (bubble) bubble.classList.add("hidden");
+
+    selectTxType((t.type || "expense").toLowerCase());
+}
+
 async function openEditTransactionModal(id) {
-    try {
-        const data = await apiRequest(`/api/transactions/${id}`);
-        const t = data.transaction;
-
-        document.getElementById("tx-id").value = t.id;
-        document.getElementById("modal-title").textContent = "Edit Transaction";
-        document.getElementById("btn-save-tx").textContent = "Update";
-        document.getElementById("tx-amount").value = t.amount;
-        document.getElementById("tx-description").value = t.description;
-        document.getElementById("tx-date").value = t.date;
-        document.getElementById("tx-category").value = t.category;
-        document.getElementById("ml-suggestion-bubble").classList.add("hidden");
-
-        selectTxType(t.type);
+    // 1. Instant optimistic lookup from cached transactions so modal opens with ZERO latency
+    const localTx = (state.cachedTransactions || []).find(x => String(x.id) === String(id));
+    if (localTx) {
+        populateTransactionModal(localTx);
         openModal("transaction-modal");
+    }
+
+    // 2. Fetch fresh from API in background or if not cached
+    try {
+        const data = await apiRequest(`/api/transactions/${id}`, { silent: !!localTx });
+        if (data && data.transaction) {
+            populateTransactionModal(data.transaction);
+            if (!localTx) openModal("transaction-modal");
+        }
     } catch (err) {
-        showToast("Failed to load transaction", "error");
+        if (!localTx) {
+            showToast("Failed to load transaction", "error");
+        }
     }
 }
 
@@ -860,9 +893,16 @@ async function deleteTransaction(id) {
     if (!confirm("Delete this transaction entry?")) return;
     try {
         await apiRequest(`/api/transactions/${id}`, { method: "DELETE" });
-        showToast("Transaction removed", "success");
+        showToast("Transaction removed successfully", "success");
+        // Optimistically remove from cached transactions
+        if (state.cachedTransactions) {
+            state.cachedTransactions = state.cachedTransactions.filter(x => String(x.id) !== String(id));
+            renderFullTransactions(state.cachedTransactions);
+        }
         fetchTransactions();
         if (state.currentView === "dashboard") loadDashboardData();
+        if (state.currentView === "budgets") loadBudgets();
+        if (state.currentView === "ml-lab") loadMLLabData();
     } catch (err) {
         showToast(err.message || "Failed to delete transaction", "error");
     }

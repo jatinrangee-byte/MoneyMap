@@ -779,3 +779,471 @@ body.mm-loaded .landing-experience {
     transform: translateY(-2px);
 }
 
+
+/* ==========================================================================
+   13. MONEY-THEMED ANIMATIONS & DYNAMIC CASH-FLOW EFFECTS
+   ========================================================================== */
+
+/* Ambient Floating 3D Coin Field in Hero */
+.ambient-coins-field {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.floating-coin-3d {
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    color: #4a3400;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+    will-change: transform;
+    user-select: none;
+    background: radial-gradient(circle at 35% 35%, #ffd700, #d4a017 60%, #8c6403);
+    box-shadow: 0 8px 24px rgba(212, 167, 69, 0.35), inset 0 2px 3px rgba(255, 255, 255, 0.7), inset 0 -3px 5px rgba(0, 0, 0, 0.55);
+    border: 1.5px solid rgba(255, 223, 0, 0.85);
+}
+
+.floating-coin-3d:hover {
+    transform: scale(1.22) rotateY(180deg) !important;
+    box-shadow: 0 12px 36px rgba(255, 215, 0, 0.65), 0 0 20px rgba(255, 215, 0, 0.8);
+    filter: brightness(1.2);
+}
+
+.floating-coin-3d.coin-emerald {
+    background: radial-gradient(circle at 35% 35%, #34d399, #10b981 60%, #064e3b);
+    color: #064e3b;
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35), inset 0 2px 3px rgba(255, 255, 255, 0.6), inset 0 -3px 5px rgba(0, 0, 0, 0.5);
+    border: 1.5px solid rgba(52, 211, 153, 0.85);
+}
+
+.floating-coin-3d.coin-emerald:hover {
+    box-shadow: 0 12px 36px rgba(16, 185, 129, 0.65), 0 0 20px rgba(16, 185, 129, 0.8);
+}
+
+.floating-coin-3d.coin-lg {
+    width: 46px;
+    height: 46px;
+    font-size: 1.25rem;
+}
+
+.floating-coin-3d.coin-md {
+    width: 36px;
+    height: 36px;
+    font-size: 0.95rem;
+}
+
+.floating-coin-3d.coin-sm {
+    width: 26px;
+    height: 26px;
+    font-size: 0.72rem;
+    opacity: 0.85;
+}
+
+/* Individual Coin Positions & Staggered Gentle Float Animations */
+.coin-pos-1 {
+    top: 18%;
+    left: 8%;
+    animation: coin-spin-float-1 9s ease-in-out infinite;
+}
+.coin-pos-2 {
+    top: 65%;
+    left: 12%;
+    animation: coin-spin-float-2 11s ease-in-out infinite 1.5s;
+}
+.coin-pos-3 {
+    top: 25%;
+    right: 14%;
+    animation: coin-spin-float-3 10s ease-in-out infinite 0.7s;
+}
+.coin-pos-4 {
+    top: 72%;
+    right: 8%;
+    animation: coin-spin-float-1 12s ease-in-out infinite 2.2s;
+}
+.coin-pos-5 {
+    top: 48%;
+    left: 2%;
+    animation: coin-spin-float-2 8s ease-in-out infinite 3.1s;
+}
+
+@keyframes coin-spin-float-1 {
+    0%, 100% {
+        transform: translateY(0px) rotateY(0deg) rotateZ(0deg);
+    }
+    50% {
+        transform: translateY(-22px) rotateY(180deg) rotateZ(8deg);
+    }
+}
+
+@keyframes coin-spin-float-2 {
+    0%, 100% {
+        transform: translateY(0px) rotateY(0deg) rotateZ(0deg);
+    }
+    50% {
+        transform: translateY(-28px) rotateY(-180deg) rotateZ(-10deg);
+    }
+}
+
+@keyframes coin-spin-float-3 {
+    0%, 100% {
+        transform: translateY(0px) rotateY(0deg) rotateZ(0deg);
+    }
+    50% {
+        transform: translateY(-16px) rotateY(360deg) rotateZ(6deg);
+    }
+}
+
+/* Holographic Currency Foil Shine */
+.foil-currency {
+    background: linear-gradient(110deg, #10b981 15%, #ffd700 45%, #ffffff 55%, #10b981 85%);
+    background-size: 240% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    animation: foil-glint 6s ease-in-out infinite;
+}
+
+[data-theme="dark"] .foil-currency {
+    background: linear-gradient(110deg, #34d399 15%, #fde047 45%, #ffffff 55%, #34d399 85%);
+    background-size: 240% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+@keyframes foil-glint {
+    0%, 100% { background-position: 100% 0; }
+    45%, 55%  { background-position: -100% 0; }
+}
+
+/* Interactive Floating Vault Companion (dotrwt.in Mascot Style) */
+.vault-companion-widget {
+    position: fixed;
+    bottom: 24px;
+    right: 28px;
+    z-index: 9998;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vault-companion-widget:hover {
+    transform: translateY(-3px) scale(1.05);
+}
+
+.vault-speech-bubble {
+    position: absolute;
+    bottom: 64px;
+    background: #ffffff;
+    color: #0a0a0a;
+    font-family: var(--dotrwt-font-mono, monospace);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 2px solid #000000;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    pointer-events: none;
+    z-index: 10000;
+}
+
+.vault-companion-widget:hover .vault-speech-bubble,
+.vault-speech-bubble.bubble-active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.vault-speech-bubble:after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px 6px 0;
+    border-style: solid;
+    border-color: #ffffff transparent;
+    display: block;
+    width: 0;
+}
+
+.vault-speech-bubble:before {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 7px 7px 0;
+    border-style: solid;
+    border-color: #000000 transparent;
+    display: block;
+    width: 0;
+    z-index: -1;
+}
+
+.vault-coin-emblem {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ffd700, #b8860b 70%, #5c4302);
+    border: 2px solid #fff59d;
+    box-shadow: 0 8px 24px rgba(212, 167, 69, 0.45), inset 0 2px 4px rgba(255, 255, 255, 0.75), inset 0 -3px 6px rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: vault-bob 3.5s ease-in-out infinite;
+}
+
+.vault-emblem-glyph {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #3b2800;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+    font-family: var(--font-heading);
+}
+
+.vault-companion-shadow {
+    width: 38px;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 50%;
+    filter: blur(2px);
+    margin-top: 4px;
+    animation: vault-shadow-pulse 3.5s ease-in-out infinite;
+}
+
+@keyframes vault-bob {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50%       { transform: translateY(-8px) rotate(4deg); }
+}
+
+@keyframes vault-shadow-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.35; }
+    50%       { transform: scale(0.75); opacity: 0.18; }
+}
+
+@media (max-width: 640px) {
+    .vault-companion-widget { display: none; }
+}
+
+
+/* ==========================================================================
+   14. NOT YOUR COLLEGE (notyourcollege.com) SIGNATURE STYLING
+   ========================================================================== */
+
+/* Infinite Running Ticker Marquee */
+.nyc-marquee-container {
+    overflow: hidden;
+    white-space: nowrap;
+    background-color: var(--nyc-paper, #faf8f2);
+    border-top: 1px solid rgba(23, 63, 50, 0.18);
+    border-bottom: 1px solid rgba(23, 63, 50, 0.18);
+    padding: 14px 0;
+    user-select: none;
+    position: relative;
+    z-index: 5;
+}
+
+[data-theme="dark"] .nyc-marquee-container {
+    background-color: #08140f;
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.nyc-marquee-track {
+    display: inline-flex;
+    gap: 32px;
+    animation: nyc-marquee 32s linear infinite;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--nyc-green, #173f32);
+    text-transform: uppercase;
+}
+
+[data-theme="dark"] .nyc-marquee-track {
+    color: #34d399;
+}
+
+@keyframes nyc-marquee {
+    0%   { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+}
+
+/* NYC Community Card (.cm) */
+.nyc-community-section {
+    padding: 70px 24px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.cm {
+    margin-top: 32px;
+}
+
+.cm-w {
+    background: var(--bg-surface, #ffffff);
+    border: 1px solid rgba(23, 63, 50, 0.2);
+    border-radius: 12px;
+    padding: 36px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    box-shadow: 0 8px 24px rgba(23, 63, 50, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+[data-theme="dark"] .cm-w {
+    background: #0c1c15;
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.cm-w:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(23, 63, 50, 0.14);
+}
+
+.cm-k {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--nyc-green, #173f32);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+[data-theme="dark"] .cm-k {
+    color: #34d399;
+}
+
+.cm-big {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 14px;
+}
+
+.cm-big b {
+    font-family: var(--font-heading);
+    font-size: clamp(2.5rem, 4.5vw, 4rem);
+    font-weight: 900;
+    line-height: 1;
+    color: var(--nyc-green, #173f32);
+    letter-spacing: -0.04em;
+}
+
+[data-theme="dark"] .cm-big b {
+    color: #f2f5f3;
+}
+
+.cm-big span {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.cm-dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 12px 0;
+}
+
+.cm-dots i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(23, 63, 50, 0.25);
+    display: block;
+    animation: dot-pulse 2.4s ease-in-out infinite;
+}
+
+[data-theme="dark"] .cm-dots i {
+    background: rgba(52, 211, 153, 0.3);
+}
+
+.cm-dots i:nth-child(3n)   { animation-delay: 0.2s; }
+.cm-dots i:nth-child(3n+1) { animation-delay: 0.4s; }
+.cm-dots i:nth-child(3n+2) { animation-delay: 0.6s; }
+
+@keyframes dot-pulse {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50%      { opacity: 1; transform: scale(1.3); background: #173f32; }
+}
+
+.cm-go {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-start;
+    padding: 12px 24px;
+    background: #173f32;
+    color: #fffef3;
+    border: none;
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    text-decoration: none;
+}
+
+.cm-go:hover {
+    background: #245e47;
+    transform: translateY(-2px);
+}
+
+/* Clear Filters Button Styling */
+.nyc-btn-clear {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    font-weight: 600;
+    border: 1px solid rgba(23, 63, 50, 0.25);
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.nyc-btn-clear:hover {
+    background: rgba(23, 63, 50, 0.08);
+    color: var(--nyc-green, #173f32);
+    border-color: var(--nyc-green, #173f32);
+    transform: translateY(-1px);
+}
+
+[data-theme="dark"] .nyc-btn-clear:hover {
+    background: rgba(52, 211, 153, 0.15);
+    color: #34d399;
+    border-color: #34d399;
+}
+
+/* Modal Elevation to guarantee it's always above all elements */
+.modal-overlay {
+    z-index: 99999 !important;
+}
+
+

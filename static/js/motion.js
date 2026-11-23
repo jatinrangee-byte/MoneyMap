@@ -687,3 +687,42 @@ function mmAnimateCounter(el, target, duration = 1200, prefix = '', suffix = '')
   });
   obs.observe(document.body, { childList: true, subtree: true });
 })();
+
+// ==========================================================================
+// INTERACTIVE VAULT COMPANION (NYC Mascot Interaction)
+// ==========================================================================
+const financialWisdom = [
+    "Wealth is preserved in decisions. ✦",
+    "50% Needs • 30% Wants • 20% Compound Vault.",
+    "Bayesian sentry active: 0 deficit leaks detected.",
+    "Velocity regression: 6-month buffer insulated.",
+    "Double-entry discipline • Real-time command.",
+    "Compounding freedom starts with one recorded rupee."
+];
+let wisdomIndex = 0;
+
+function handleCompanionClick() {
+    const bubble = document.getElementById("vault-bubble-text");
+    const emblem = document.querySelector(".vault-coin-emblem");
+    
+    wisdomIndex = (wisdomIndex + 1) % financialWisdom.length;
+    if (bubble) {
+        bubble.textContent = financialWisdom[wisdomIndex];
+        bubble.classList.add("bubble-active");
+        setTimeout(() => bubble.classList.remove("bubble-active"), 3200);
+    }
+
+    if (emblem) {
+        emblem.style.transform = "scale(1.28) rotate(360deg)";
+        emblem.style.transition = "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)";
+        setTimeout(() => {
+            emblem.style.transform = "";
+        }, 500);
+    }
+
+    if (typeof triggerCelebrationConfetti === "function") {
+        triggerCelebrationConfetti();
+    }
+}
+window.handleCompanionClick = handleCompanionClick;
+
