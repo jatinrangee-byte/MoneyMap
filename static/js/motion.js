@@ -635,11 +635,11 @@ function mmAnimateCounter(el, target, duration = 1200, prefix = '', suffix = '')
    ================================================================ */
 (function initHeroTelemetryCycler() {
   const telemetry = [
-    '15,800+ Transactions Audited Across Campus Builders',
-    'Bayesian ML Posterior: 98.4% Prediction Accuracy',
-    '50/30/20 Shield: 6-Month Compounding Buffer Active',
-    'Anomaly Sentry: Zero Deficit Leaks Detected',
-    'Linear Velocity Slope: Safe Burn Limit Intact'
+    'Bayesian ML Posterior: 98.4% Classification Precision',
+    'Statistical Anomaly Sentry: Zero (+2.5σ) Deficit Leaks',
+    '50/30/20 Wealth Shield: 6-Month Compounding Buffer Active',
+    'Burn Velocity Forecaster: OLS Linear Regression Online',
+    'Double-Entry Ledger: Real-Time Cash Flow Audit Active'
   ];
   let tIdx = 0;
   const tEl = document.getElementById('hero-telemetry-cycle');
