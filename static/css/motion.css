@@ -1246,4 +1246,201 @@ body.mm-loaded .landing-experience {
     z-index: 99999 !important;
 }
 
+/* ==========================================================================
+   15. NYC HERO STATUS DOCK & TELEMETRY PILL (Replaces bare top row)
+   ========================================================================== */
+.nyc-hero-status-bar {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 18px;
+    margin-bottom: 2rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(23, 63, 50, 0.2);
+    box-shadow: 3px 3px 0 rgba(23, 63, 50, 0.12);
+    z-index: 10;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+[data-theme="dark"] .nyc-hero-status-bar {
+    background: rgba(14, 30, 23, 0.82);
+    border-color: rgba(52, 211, 153, 0.25);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
+}
+
+.nyc-hero-status-bar:hover {
+    transform: translateY(-2px);
+    box-shadow: 5px 5px 0 rgba(23, 63, 50, 0.18);
+}
+
+[data-theme="dark"] .nyc-hero-status-bar:hover {
+    box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.65);
+}
+
+/* Sticker Pill */
+.nyc-sticker-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 9999px;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 1.5px solid #173f32;
+    box-shadow: 2px 2px 0 #173f32;
+    transform: rotate(-1.5deg);
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.nyc-sticker-chip.sticker-lime {
+    background: #c9da60;
+    color: #173f32;
+}
+
+[data-theme="dark"] .nyc-sticker-chip.sticker-lime {
+    background: #34d399;
+    color: #064e3b;
+    border-color: #064e3b;
+    box-shadow: 2px 2px 0 #064e3b;
+}
+
+.sticker-star {
+    font-size: 0.85rem;
+    animation: star-spin 8s linear infinite;
+    display: inline-block;
+}
+
+@keyframes star-spin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Center Live Telemetry Capsule */
+.nyc-telemetry-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(23, 63, 50, 0.05);
+    padding: 6px 16px;
+    border-radius: 9999px;
+    border: 1px dashed rgba(23, 63, 50, 0.25);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    max-width: 580px;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+[data-theme="dark"] .nyc-telemetry-pill {
+    background: rgba(52, 211, 153, 0.08);
+    border-color: rgba(52, 211, 153, 0.3);
+}
+
+.nyc-telemetry-pill:hover {
+    background: rgba(23, 63, 50, 0.1);
+    border-style: solid;
+    border-color: #173f32;
+    transform: scale(1.02);
+}
+
+[data-theme="dark"] .nyc-telemetry-pill:hover {
+    background: rgba(52, 211, 153, 0.16);
+    border-color: #34d399;
+}
+
+.status-pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: status-pulse-glow 2s infinite;
+    flex-shrink: 0;
+}
+
+@keyframes status-pulse-glow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+.telemetry-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--nyc-green, #173f32);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+[data-theme="dark"] .telemetry-label {
+    color: #f2f5f3;
+}
+
+.telemetry-arrow {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--nyc-green, #173f32);
+    opacity: 0.7;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+[data-theme="dark"] .telemetry-arrow {
+    color: #34d399;
+}
+
+.nyc-telemetry-pill:hover .telemetry-arrow {
+    transform: translate(2px, -2px);
+    opacity: 1;
+}
+
+/* Right Status Chip */
+.nyc-status-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    background: rgba(23, 63, 50, 0.06);
+    border-radius: 9999px;
+    color: var(--text-secondary);
+    user-select: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+[data-theme="dark"] .nyc-status-chip {
+    background: rgba(255, 255, 255, 0.05);
+    color: #aebbaa;
+}
+
+@media (max-width: 860px) {
+    .nyc-hero-status-bar {
+        flex-direction: column;
+        border-radius: 16px;
+        padding: 14px;
+        gap: 10px;
+    }
+    .nyc-telemetry-pill {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 

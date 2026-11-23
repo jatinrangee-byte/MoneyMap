@@ -80,14 +80,25 @@
                 </div>
 
                 <div class="hero-grid">
-                    <!-- Top Status Row (dotrwt.in status beacon) -->
-                    <div class="hero-top-row">
-                        <div class="hero-intro">
-                            <span class="text-mono intro-text">moneymap // personal finance intelligence</span>
+                    <!-- NYC Hero Top Interactive Status Dock (Replaces bare text row) -->
+                    <div class="hero-top-row nyc-hero-status-bar">
+                        <!-- Left Sticker: NYC Builder Badge -->
+                        <div class="nyc-sticker-chip sticker-lime">
+                            <span class="sticker-star">✦</span>
+                            <span>NYC INTELLIGENCE PLATFORM</span>
                         </div>
-                        <div class="hero-status">
+
+                        <!-- Center: Live Cycling Financial Telemetry Capsule -->
+                        <div class="nyc-telemetry-pill" onclick="switchView('ml-lab')" title="Inspect Live ML Lab Telemetry">
+                            <span class="status-pulse-dot"></span>
+                            <span class="telemetry-label font-mono" id="hero-telemetry-cycle">15,800+ Transactions Audited Across Campus Builders</span>
+                            <span class="telemetry-arrow">↗</span>
+                        </div>
+
+                        <!-- Right: Live System Status Beacon -->
+                        <div class="nyc-status-chip">
                             <span class="status-dot"></span>
-                            <span class="text-mono status-text">bayesian engine active</span>
+                            <span class="font-mono text-xs">Bayesian Engine Active (2.5σ)</span>
                         </div>
                     </div>
 

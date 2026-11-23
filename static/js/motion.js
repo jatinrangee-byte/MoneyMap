@@ -630,6 +630,33 @@ function mmAnimateCounter(el, target, duration = 1200, prefix = '', suffix = '')
   }, 2300);
 })();
 
+/* ================================================================
+   12B. HERO TELEMETRY CYCLER
+   ================================================================ */
+(function initHeroTelemetryCycler() {
+  const telemetry = [
+    '15,800+ Transactions Audited Across Campus Builders',
+    'Bayesian ML Posterior: 98.4% Prediction Accuracy',
+    '50/30/20 Shield: 6-Month Compounding Buffer Active',
+    'Anomaly Sentry: Zero Deficit Leaks Detected',
+    'Linear Velocity Slope: Safe Burn Limit Intact'
+  ];
+  let tIdx = 0;
+  const tEl = document.getElementById('hero-telemetry-cycle');
+  if (!tEl) return;
+
+  setInterval(() => {
+    tIdx = (tIdx + 1) % telemetry.length;
+    tEl.style.opacity = '0';
+    tEl.style.transform = 'translateY(6px)';
+    setTimeout(() => {
+      tEl.textContent = telemetry[tIdx];
+      tEl.style.opacity = '1';
+      tEl.style.transform = 'translateY(0)';
+    }, 250);
+  }, 3600);
+})();
+
 
 /* ================================================================
    13. DOTRWT.IN DYNAMIC BORDER-GLOW TRACKER
