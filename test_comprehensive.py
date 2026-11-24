@@ -462,6 +462,59 @@ class ComprehensiveTestingSuite(unittest.TestCase):
         tx_list = self.client.get("/api/transactions", headers=headers).get_json()["transactions"]
         self.assertEqual(len(tx_list), 5)  # 1 income + 4 normal expenses
 
+    def test_edge_case_inputs_and_validation(self):
+        """Test API edge cases: negative amounts, non-numeric values, missing fields, 404 lookups."""
+        uid = database.create_user("EdgeCaseUser", "edge@test.com", "hash", db_path=self.db_path)
+        token = auth.generate_session_token(uid)
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # 1. Negative transaction amount
+        res_neg = self.client.post("/api/transactions", headers=headers, json={
+            "type": "expense",
+            "amount": -150.0,
+            "category": "Food & Dining"
+        })
+        self.assertEqual(res_neg.status_code, 400)
+
+        # 2. Zero transaction amount
+        res_zero = self.client.post("/api/transactions", headers=headers, json={
+            "type": "expense",
+            "amount": 0,
+            "category": "Food & Dining"
+        })
+        self.assertEqual(res_zero.status_code, 400)
+
+        # 3. Non-numeric amount string
+        res_str = self.client.post("/api/transactions", headers=headers, json={
+            "type": "expense",
+            "amount": "not_a_number",
+            "category": "Food & Dining"
+        })
+        self.assertEqual(res_str.status_code, 400)
+
+        # 4. Invalid transaction type
+        res_type = self.client.post("/api/transactions", headers=headers, json={
+            "type": "crypto_gamble",
+            "amount": 500.0,
+            "category": "Food & Dining"
+        })
+        self.assertEqual(res_type.status_code, 400)
+
+        # 5. Negative budget limit
+        res_bud = self.client.post("/api/budgets", headers=headers, json={
+            "category": "Food & Dining",
+            "monthly_limit": -500.0
+        })
+        self.assertEqual(res_bud.status_code, 400)
+
+        # 6. Non-existent transaction 404
+        res_404 = self.client.get("/api/transactions/999999", headers=headers)
+        self.assertEqual(res_404.status_code, 404)
+
+        # 7. Non-existent transaction delete 404
+        res_del_404 = self.client.delete("/api/transactions/999999", headers=headers)
+        self.assertEqual(res_del_404.status_code, 404)
+
 
 if __name__ == "__main__":
     unittest.main()

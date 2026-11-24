@@ -255,8 +255,20 @@ function switchAuthTab(tab) {
 
 async function handleLogin(e) {
     e.preventDefault();
-    const email = document.getElementById("login-email").value;
-    const password = document.getElementById("login-password").value;
+    const email = document.getElementById("login-email")?.value.trim();
+    const password = document.getElementById("login-password")?.value;
+
+    if (!email || !password) {
+        showToast("Please enter your email and password.", "warning");
+        return;
+    }
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const origText = submitBtn ? submitBtn.textContent : "Sign In";
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Signing In…";
+    }
 
     try {
         const res = await apiRequest("/api/auth/login", {
@@ -270,15 +282,38 @@ async function handleLogin(e) {
         showToast(`Signed in as ${res.user.name}`, "success");
         showMainApp();
         initAppDashboard();
-    } catch (err) {}
+    } catch (err) {
+        // Error toast surfaced by apiRequest
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = origText;
+        }
+    }
 }
 
 async function handleRegister(e) {
     e.preventDefault();
-    const name = document.getElementById("reg-name").value;
-    const email = document.getElementById("reg-email").value;
-    const password = document.getElementById("reg-password").value;
-    const currency = document.getElementById("reg-currency").value;
+    const name = document.getElementById("reg-name")?.value.trim();
+    const email = document.getElementById("reg-email")?.value.trim();
+    const password = document.getElementById("reg-password")?.value;
+    const currency = document.getElementById("reg-currency")?.value || "₹";
+
+    if (!name || !email || !password) {
+        showToast("Please fill in all required registration fields.", "warning");
+        return;
+    }
+    if (password.length < 6) {
+        showToast("Password must be at least 6 characters.", "warning");
+        return;
+    }
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const origText = submitBtn ? submitBtn.textContent : "Create Account";
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Creating Account…";
+    }
 
     try {
         const res = await apiRequest("/api/auth/register", {
@@ -292,7 +327,14 @@ async function handleRegister(e) {
         showToast(`Welcome, ${res.user.name}! Your account is ready.`, "success");
         showMainApp();
         initAppDashboard();
-    } catch (err) {}
+    } catch (err) {
+        // Error toast surfaced by apiRequest
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = origText;
+        }
+    }
 }
 
 function handleLogout(showToastMsg = true) {
@@ -659,11 +701,16 @@ function debounceFilterTransactions() {
 }
 
 async function fetchTransactions() {
-    const search = document.getElementById("filter-search")?.value || "";
+    const search = document.getElementById("filter-search")?.value.trim() || "";
     const type = document.getElementById("filter-type")?.value || "all";
     const category = document.getElementById("filter-category")?.value || "all";
     const startDate = document.getElementById("filter-start-date")?.value || "";
     const endDate = document.getElementById("filter-end-date")?.value || "";
+
+    if (startDate && endDate && startDate > endDate) {
+        showToast("Start date cannot be after end date.", "warning");
+        return;
+    }
 
     const params = new URLSearchParams();
     if (search) params.append("search", search);
@@ -713,7 +760,7 @@ function renderFullTransactions(transactions) {
             <td class="font-mono" style="font-size: 0.85rem; color: var(--text-muted);">${t.date}</td>
             <td><span class="type-pill ${t.type}">${t.type === 'income' ? '+ Income' : '- Expense'}</span></td>
             <td><span class="cat-pill">${t.category}</span></td>
-            <td><strong style="font-weight: 600; color: var(--text-primary);">${escapeHtml(t.description || t.note || '-')}</strong></td>
+            <td><strong style="font-weight: 600; color: var(--text-primary); max-width: 260px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle;" title="${escapeHtml(t.description || t.note || '')}">${escapeHtml(t.description || t.note || '-')}</strong></td>
             <td class="amount-cell ${t.type === 'income' ? 'income-text' : 'expense-text'} font-mono">
                 ${t.type === 'income' ? '+' : '-'}${state.currency}${t.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </td>
@@ -864,13 +911,35 @@ function applySuggestedCategory() {
 async function handleTransactionSubmit(e) {
     e.preventDefault();
     const id = document.getElementById("tx-id").value;
-    const type = state.activeTxType;
-    const amount = document.getElementById("tx-amount").value;
-    const date = document.getElementById("tx-date").value;
-    const category = document.getElementById("tx-category").value;
-    const description = document.getElementById("tx-description").value;
+    const type = state.activeTxType || "expense";
+    const amountInput = document.getElementById("tx-amount");
+    const amountVal = amountInput?.value.trim();
+    const dateInput = document.getElementById("tx-date");
+    const date = dateInput?.value;
+    const category = document.getElementById("tx-category")?.value;
+    const description = document.getElementById("tx-description")?.value.trim() || "";
 
-    const payload = { type, amount, date, category, description };
+    const parsedAmount = parseFloat(amountVal);
+    if (!amountVal || isNaN(parsedAmount) || parsedAmount <= 0) {
+        showToast("Please enter a valid amount greater than ₹0.", "warning");
+        amountInput?.focus();
+        return;
+    }
+
+    if (!date) {
+        showToast("Please select a transaction date.", "warning");
+        dateInput?.focus();
+        return;
+    }
+
+    const saveBtn = document.getElementById("btn-save-tx");
+    const originalText = saveBtn ? saveBtn.textContent : (id ? "Update" : "Save");
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = id ? "Updating…" : "Recording…";
+    }
+
+    const payload = { type, amount: parsedAmount, date, category, description };
 
     try {
         if (id) {
@@ -878,7 +947,7 @@ async function handleTransactionSubmit(e) {
                 method: "PUT",
                 body: payload
             });
-            showToast("Transaction updated", "success");
+            showToast("Transaction updated successfully", "success");
         } else {
             const res = await apiRequest("/api/transactions", {
                 method: "POST",
@@ -887,7 +956,7 @@ async function handleTransactionSubmit(e) {
             if (res.is_anomaly) {
                 showToast(`Recorded (Outlier: ${res.anomaly_reason})`, "info");
             } else {
-                showToast("Transaction recorded", "success");
+                showToast("Transaction recorded successfully", "success");
             }
             if (type === "income") {
                 triggerCelebrationConfetti();
@@ -899,7 +968,14 @@ async function handleTransactionSubmit(e) {
         if (state.currentView === "transactions") fetchTransactions();
         if (state.currentView === "budgets") loadBudgets();
         if (state.currentView === "ml-lab") loadMLLabData();
-    } catch (err) {}
+    } catch (err) {
+        showToast(err.message || "Failed to save transaction", "error");
+    } finally {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = originalText;
+        }
+    }
 }
 
 async function deleteTransaction(id) {
@@ -1026,19 +1102,41 @@ function openBudgetModal() {
 
 async function handleBudgetSubmit(e) {
     e.preventDefault();
-    const category = document.getElementById("budget-category").value;
-    const monthly_limit = document.getElementById("budget-limit").value;
+    const category = document.getElementById("budget-category")?.value;
+    const limitInput = document.getElementById("budget-limit");
+    const monthly_limit = limitInput?.value.trim();
+
+    const parsedLimit = parseFloat(monthly_limit);
+    if (!monthly_limit || isNaN(parsedLimit) || parsedLimit <= 0) {
+        showToast("Please enter a valid monthly budget limit greater than ₹0.", "warning");
+        limitInput?.focus();
+        return;
+    }
+
+    const saveBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = saveBtn ? saveBtn.textContent : "Set Budget";
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = "Saving…";
+    }
 
     try {
         await apiRequest("/api/budgets", {
             method: "POST",
-            body: { category, monthly_limit }
+            body: { category, monthly_limit: parsedLimit }
         });
         showToast(`Budget for ${category} saved`, "success");
         triggerCelebrationConfetti();
         closeModal("budget-modal");
         loadBudgets();
-    } catch (err) {}
+    } catch (err) {
+        showToast(err.message || "Failed to save budget", "error");
+    } finally {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = originalText;
+        }
+    }
 }
 
 async function deleteBudget(id) {
@@ -1047,8 +1145,11 @@ async function deleteBudget(id) {
         await apiRequest(`/api/budgets/${id}`, { method: "DELETE" });
         showToast("Budget removed", "info");
         loadBudgets();
-    } catch (err) {}
+    } catch (err) {
+        showToast(err.message || "Failed to remove budget", "error");
+    }
 }
+window.deleteBudget = deleteBudget;
 
 // ==========================================================================
 // INTELLIGENCE LAB
