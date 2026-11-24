@@ -696,7 +696,15 @@ function renderFullTransactions(transactions) {
     if (!tbody) return;
 
     if (!transactions.length) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4" style="color: var(--text-muted); font-size: 0.9rem;">No matching transactions found. Try adjusting your search query or filters.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5" style="color: var(--text-muted); font-size: 0.92rem;">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding: 24px 0;">
+                <span class="material-symbols-outlined" style="font-size:36px; opacity:0.4;">search_off</span>
+                <span>No matching transactions found. Try adjusting your search query or filters.</span>
+                <button type="button" class="btn btn-sm btn-outline" onclick="resetFilters()" style="border-radius:9999px;">
+                    <span class="material-symbols-outlined" style="font-size:15px; vertical-align:-2px; margin-right:4px;">restart_alt</span>Clear Filters
+                </button>
+            </div>
+        </td></tr>`;
         return;
     }
 
@@ -734,6 +742,7 @@ function resetFilters() {
     fetchTransactions();
     showToast("Filters reset — showing all transactions", "info");
 }
+window.resetFilters = resetFilters;
 
 // Modal Handlers
 function openAddTransactionModal(presetType = null) {
@@ -747,6 +756,9 @@ function openAddTransactionModal(presetType = null) {
 
     selectTxType(presetType || "expense");
     openModal("transaction-modal");
+    setTimeout(() => {
+        document.getElementById("tx-amount")?.focus();
+    }, 120);
 }
 
 function populateTransactionModal(t) {
@@ -794,6 +806,7 @@ async function openEditTransactionModal(id) {
         }
     }
 }
+window.openEditTransactionModal = openEditTransactionModal;
 
 function selectTxType(type) {
     state.activeTxType = type;
@@ -907,6 +920,7 @@ async function deleteTransaction(id) {
         showToast(err.message || "Failed to delete transaction", "error");
     }
 }
+window.deleteTransaction = deleteTransaction;
 
 function exportCSV() {
     window.location.href = `/api/export/csv`;
@@ -1005,6 +1019,9 @@ function renderBudgetCards(budgets) {
 function openBudgetModal() {
     document.getElementById("budget-limit").value = "";
     openModal("budget-modal");
+    setTimeout(() => {
+        document.getElementById("budget-limit")?.focus();
+    }, 120);
 }
 
 async function handleBudgetSubmit(e) {

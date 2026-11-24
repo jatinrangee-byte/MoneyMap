@@ -11,7 +11,7 @@ import time
 import base64
 import json
 
-SECRET_KEY = os.environ.get("TRACKER_SECRET_KEY", "moneymap-finance-secret-key-prod")
+SECRET_KEY = os.environ.get("TRACKER_SECRET_KEY", "moneymap-finance-secret-key-production-32bytes-secure")
 ITERATIONS = 100_000
 
 
