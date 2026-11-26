@@ -1192,6 +1192,7 @@
                             <p>Search, filter, and audit all recorded financial transactions with complete precision.</p>
                         </div>
                         <div class="view-header-actions">
+                            <button class="btn btn-outline" onclick="openStatementModal()" title="Upload CSV bank statement to auto-import & categorize">📄 Import Statement</button>
                             <button class="btn btn-outline" onclick="exportCSV()">Export CSV</button>
                             <button class="btn btn-primary" onclick="openAddTransactionModal()">+ Add Transaction</button>
                         </div>
@@ -1468,7 +1469,7 @@
 
                 <div class="form-group">
                     <label for="tx-category">Category</label>
-                    <select id="tx-category" class="form-select" required>
+                    <select id="tx-category" class="form-select" onchange="state.manualCategoryOverride = true;" required>
                         <option value="Food & Dining">Food &amp; Dining</option>
                         <option value="Transportation">Transportation</option>
                         <option value="Education">Education &amp; Learning</option>
@@ -1486,6 +1487,57 @@
                     <button type="submit" class="btn btn-primary" id="btn-save-tx">Save Transaction</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+
+    <!-- ================= MODAL: IMPORT BANK STATEMENT ================= -->
+    <div id="statement-modal" class="modal-overlay hidden" onclick="handleModalBackdropClick(event, 'statement-modal')">
+        <div class="modal-card" style="max-width: 780px; width: 95%;">
+            <div class="modal-header">
+                <div>
+                    <h3 class="font-serif">Import Bank Statement (CSV)</h3>
+                    <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 2px;">Upload HDFC, SBI, ICICI, Axis, or any CSV statement — ML auto-detects &amp; categorizes every entry.</p>
+                </div>
+                <button class="modal-close" onclick="closeModal('statement-modal')">✕</button>
+            </div>
+
+            <div class="statement-upload-zone" id="statement-dropzone" style="border: 1.5px dashed rgba(23,63,50,0.35); border-radius: 14px; padding: 20px; text-align: center; margin-bottom: 16px; background: rgba(23,63,50,0.03);">
+                <input type="file" id="statement-file-input" accept=".csv,text/csv" class="hidden" onchange="handleStatementFileSelect(event)">
+                <div style="font-size: 1.6rem; margin-bottom: 6px;">🏦</div>
+                <p style="font-weight: 600; margin-bottom: 8px;">Drop your bank statement CSV here or choose a file</p>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-sm btn-primary" onclick="document.getElementById('statement-file-input').click()">Choose CSV File</button>
+                    <button type="button" class="btn btn-sm btn-outline" onclick="loadSampleBankStatement()">⚡ Load Sample Statement</button>
+                </div>
+            </div>
+
+            <div id="statement-preview-wrap" class="hidden">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                    <span id="statement-summary-badge" class="font-mono" style="font-size: 0.82rem; font-weight: 600;"></span>
+                    <button type="button" class="btn btn-sm btn-ghost" onclick="toggleAllStatementRows(true)">Select All</button>
+                </div>
+                <div class="table-responsive" style="max-height: 300px; overflow-y: auto; border: 1px solid rgba(0,0,0,0.08); border-radius: 10px;">
+                    <table class="data-table" style="font-size: 0.84rem;">
+                        <thead>
+                            <tr>
+                                <th style="width: 32px;"><input type="checkbox" id="statement-select-all" checked onchange="toggleAllStatementRows(this.checked)"></th>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Type</th>
+                                <th>Auto Category</th>
+                                <th class="text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="statement-preview-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="modal-actions" style="margin-top: 16px;">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('statement-modal')">Cancel</button>
+                <button type="button" class="btn btn-primary hidden" id="btn-confirm-statement-import" onclick="confirmStatementImport()">Import Selected Transactions</button>
+            </div>
         </div>
     </div>
 

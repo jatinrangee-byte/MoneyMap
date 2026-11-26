@@ -51,6 +51,15 @@ TRAINING_DATA = [
     ("cafe coffee day beverage mocha frappe", "Food & Dining"),
     ("bakery cakes biscuits bread cookies", "Food & Dining"),
     ("barbeque nation grill dinner buffet", "Food & Dining"),
+    ("swiggy food order delivery biryani pizza lunch dinner", "Food & Dining"),
+    ("upi swiggy instamart food order payment", "Food & Dining"),
+    ("zomato online food order restaurant delivery", "Food & Dining"),
+    ("eatsure faasos behrouz biryani ovenstory pizza", "Food & Dining"),
+    ("haldiram bikanervala sweets snacks chaat thali", "Food & Dining"),
+    ("chaayos chai point third wave coffee blue tokai", "Food & Dining"),
+    ("bigbasket jiomart dmart reliance fresh grocery shopping", "Food & Dining"),
+    ("licious freshmenu box8 meal box tiffin service", "Food & Dining"),
+    ("ordered food lunch dinner breakfast snacks", "Food & Dining"),
 
     # Transportation
     ("monthly metro card smart recharge token", "Transportation"),
@@ -68,6 +77,10 @@ TRAINING_DATA = [
     ("car service maintenance engine oil puncture tyre", "Transportation"),
     ("intercity bus redbus travel booking sleeper", "Transportation"),
     ("ev charging station electric scooter recharge", "Transportation"),
+    ("namma yatri blusmart indrive meru cab ride", "Transportation"),
+    ("indian oil iocl bpcl hpcl shell petrol pump fuel", "Transportation"),
+    ("makemytrip goibibo cleartrip akasa spicejet vistara", "Transportation"),
+    ("dmrc bmrc metro rail ticket commute", "Transportation"),
 
     # Education
     ("semester exam registration fee university examination", "Education"),
@@ -86,6 +99,8 @@ TRAINING_DATA = [
     ("gre toefl exam preparation test series gate registration", "Education"),
     ("scientific calculator casio fx engineering tool", "Education"),
     ("textbook bookstore publication academic journal", "Education"),
+    ("unacademy physicswallah byjus vedantu scaler upgrad", "Education"),
+    ("github copilot claude perplexity leetcode subscription", "Education"),
 
     # Housing & Utilities
     ("hostel room monthly rent accommodation boarding", "Housing & Utilities"),
@@ -99,6 +114,10 @@ TRAINING_DATA = [
     ("lpg cooking gas cylinder refill indane bharat", "Housing & Utilities"),
     ("room heater fan air conditioner repair appliance", "Housing & Utilities"),
     ("society maintenance flat charges security cleaning fee", "Housing & Utilities"),
+    ("nobroker nestaway stanza living zolo pg rent", "Housing & Utilities"),
+    ("tata power adani electricity msedcl bses tneb bill", "Housing & Utilities"),
+    ("jiofiber airtel xstream act fibernet hathway broadband", "Housing & Utilities"),
+    ("urban company plumber electrician carpenter repair", "Housing & Utilities"),
 
     # Entertainment
     ("netflix 4k monthly streaming subscription ott", "Entertainment"),
@@ -113,6 +132,9 @@ TRAINING_DATA = [
     ("board games sports club weekend match stadium tickets", "Entertainment"),
     ("apple music tv subscription itunes entertainment", "Entertainment"),
     ("comic con stand up comedy show live comedy ticket", "Entertainment"),
+    ("bookmyshow cinepolis imax movie booking tickets", "Entertainment"),
+    ("jiocinema sonyliv zee5 jiosaavn gaana subscription", "Entertainment"),
+    ("valorant bgmi nintendo gaming topup", "Entertainment"),
 
     # Shopping
     ("amazon online order parcel delivery package merchandise", "Shopping"),
@@ -128,6 +150,9 @@ TRAINING_DATA = [
     ("smartwatch noise boat ear buds audio headphones", "Shopping"),
     ("sunglasses eyewear ray ban specs frame lenskart", "Shopping"),
     ("shoes nike adidas sports running sneakers footwear", "Shopping"),
+    ("ajio nykaa meesho tata cliq croma reliance digital", "Shopping"),
+    ("decathlon uniqlo westside pantaloons puma skechers", "Shopping"),
+    ("ikea pepperfry home decor furniture lamp", "Shopping"),
 
     # Healthcare
     ("pharmacy medical store tablets medicines pills prescription", "Healthcare"),
@@ -141,6 +166,9 @@ TRAINING_DATA = [
     ("gym membership fitness club health center monthly workout", "Healthcare"),
     ("physiotherapy massage therapy posture relief doctor", "Healthcare"),
     ("skincare dermatologist consultation acne treatment", "Healthcare"),
+    ("pharmeasy 1mg netmeds medplus practo medicine order", "Healthcare"),
+    ("cultfit cult fit anytime fitness health checkup", "Healthcare"),
+    ("thyrocare lal pathlabs diagnostic test scan", "Healthcare"),
 
     # Salary / Allowance
     ("monthly allowance money sent from parents family support pocket", "Salary / Allowance"),
@@ -150,6 +178,7 @@ TRAINING_DATA = [
     ("part time campus job library desk assistant wage hourly", "Salary / Allowance"),
     ("monthly company salary credit direct deposit payroll", "Salary / Allowance"),
     ("academic excellence reward cash prize scholarship stipend", "Salary / Allowance"),
+    ("neft cr salary credit bonus reimbursement refund cashback", "Salary / Allowance"),
 
     # Freelance / Projects
     ("freelance web development project client payment milestone", "Freelance / Projects"),
@@ -159,6 +188,7 @@ TRAINING_DATA = [
     ("sold old engineering books second hand notes resale", "Freelance / Projects"),
     ("app development client contract milestone payment advance", "Freelance / Projects"),
     ("content writing technical blog article sponsorship payment", "Freelance / Projects"),
+    ("stripe payout razorpay payout paypal wise client invoice", "Freelance / Projects"),
 ]
 
 # Stopwords to filter out noise
@@ -172,14 +202,75 @@ STOPWORDS = {
 
 # Pre-compiled regex for ultra-fast tokenization
 _TOKEN_REGEX = re.compile(r'[a-zA-Z0-9]+')
+_ALPHA_REGEX = re.compile(r'[a-zA-Z]{2,}')
+
+# High-signal merchant & bank-narration keyword boosts for crisp detection
+MERCHANT_KEYWORD_MAP = {
+    # Food & Dining
+    "swiggy": "Food & Dining", "zomato": "Food & Dining", "eatsure": "Food & Dining",
+    "faasos": "Food & Dining", "behrouz": "Food & Dining", "dominos": "Food & Dining",
+    "pizzahut": "Food & Dining", "mcdonalds": "Food & Dining", "kfc": "Food & Dining",
+    "burgerking": "Food & Dining", "starbucks": "Food & Dining", "chaayos": "Food & Dining",
+    "blinkit": "Food & Dining", "zepto": "Food & Dining", "instamart": "Food & Dining",
+    "bigbasket": "Food & Dining", "dmart": "Food & Dining", "jiomart": "Food & Dining",
+    "haldiram": "Food & Dining", "biryani": "Food & Dining", "canteen": "Food & Dining",
+    "restaurant": "Food & Dining", "cafe": "Food & Dining", "grocery": "Food & Dining",
+    # Transportation
+    "uber": "Transportation", "ola": "Transportation", "rapido": "Transportation",
+    "blusmart": "Transportation", "indrive": "Transportation", "irctc": "Transportation",
+    "redbus": "Transportation", "fastag": "Transportation", "metro": "Transportation",
+    "petrol": "Transportation", "diesel": "Transportation", "indigo": "Transportation",
+    "makemytrip": "Transportation", "goibibo": "Transportation", "cab": "Transportation",
+    # Education
+    "coursera": "Education", "udemy": "Education", "unacademy": "Education",
+    "physicswallah": "Education", "tuition": "Education", "semester": "Education",
+    "textbook": "Education", "stationery": "Education", "xerox": "Education",
+    "hackathon": "Education", "chatgpt": "Education", "openai": "Education",
+    # Housing & Utilities
+    "rent": "Housing & Utilities", "nobroker": "Housing & Utilities", "bescom": "Housing & Utilities",
+    "electricity": "Housing & Utilities", "broadband": "Housing & Utilities", "wifi": "Housing & Utilities",
+    "jiofiber": "Housing & Utilities", "airtel": "Housing & Utilities", "jio": "Housing & Utilities",
+    "recharge": "Housing & Utilities", "laundry": "Housing & Utilities", "indane": "Housing & Utilities",
+    # Entertainment
+    "netflix": "Entertainment", "spotify": "Entertainment", "hotstar": "Entertainment",
+    "bookmyshow": "Entertainment", "pvr": "Entertainment", "inox": "Entertainment",
+    "jiocinema": "Entertainment", "sonyliv": "Entertainment", "steam": "Entertainment",
+    "playstation": "Entertainment", "xbox": "Entertainment", "cinema": "Entertainment",
+    # Shopping
+    "amazon": "Shopping", "flipkart": "Shopping", "myntra": "Shopping",
+    "ajio": "Shopping", "nykaa": "Shopping", "meesho": "Shopping",
+    "croma": "Shopping", "decathlon": "Shopping", "lenskart": "Shopping",
+    "ikea": "Shopping", "sneakers": "Shopping", "shoes": "Shopping",
+    # Healthcare
+    "apollo": "Healthcare", "pharmeasy": "Healthcare", "netmeds": "Healthcare",
+    "medplus": "Healthcare", "practo": "Healthcare", "thyrocare": "Healthcare",
+    "pharmacy": "Healthcare", "hospital": "Healthcare", "clinic": "Healthcare",
+    "dentist": "Healthcare", "medicine": "Healthcare", "gym": "Healthcare",
+    # Salary / Allowance
+    "salary": "Salary / Allowance", "stipend": "Salary / Allowance", "payroll": "Salary / Allowance",
+    "scholarship": "Salary / Allowance", "allowance": "Salary / Allowance",
+    # Freelance / Projects
+    "freelance": "Freelance / Projects", "upwork": "Freelance / Projects", "fiverr": "Freelance / Projects",
+    "stripe": "Freelance / Projects", "razorpay": "Freelance / Projects", "bounty": "Freelance / Projects",
+}
 
 
 def tokenize(text: str) -> list[str]:
-    """Tokenizes text into cleaned lowercase words without punctuation and stopwords."""
+    """Tokenizes text into cleaned lowercase words, splitting bank narration codes cleanly."""
     if not text:
         return []
-    words = _TOKEN_REGEX.findall(text.lower())
-    return [w for w in words if len(w) > 1 and w not in STOPWORDS]
+    lowered = text.lower()
+    raw_words = _TOKEN_REGEX.findall(lowered)
+    tokens = []
+    for w in raw_words:
+        if len(w) > 1 and w not in STOPWORDS:
+            tokens.append(w)
+        # Also extract pure alpha parts from mixed bank narration tokens (e.g. swiggy200 -> swiggy)
+        if not w.isalpha():
+            for alpha in _ALPHA_REGEX.findall(w):
+                if alpha not in STOPWORDS and alpha != w:
+                    tokens.append(alpha)
+    return tokens
 
 
 class NaiveBayesExpenseClassifier:
@@ -281,6 +372,10 @@ class NaiveBayesExpenseClassifier:
                     log_prob += math.log(count + self.alpha) - log_denom
                 else:
                     log_prob += unseen_lp
+
+                # Apply high-signal merchant/keyword boost when a known brand or keyword matches
+                if MERCHANT_KEYWORD_MAP.get(token) == category:
+                    log_prob += 3.5
 
             log_probs[category] = log_prob
 
@@ -579,4 +674,240 @@ def compute_financial_health_score(summary: dict, budgets: list[dict]) -> dict:
             "cash_buffer": round(buffer_score, 1)
         },
         "recommendations": recommendations
+    }
+
+
+
+# ---------------- BANK STATEMENT PARSER ----------------
+
+_DATE_FORMATS = (
+    "%Y-%m-%d",
+    "%d/%m/%Y",
+    "%d-%m-%Y",
+    "%d/%m/%y",
+    "%d-%m-%y",
+    "%m/%d/%Y",
+    "%d %b %Y",
+    "%d-%b-%Y",
+    "%d %B %Y",
+    "%d-%b-%y",
+    "%Y/%m/%d",
+)
+
+
+def _normalize_date(raw_date: str) -> str | None:
+    """Normalizes common bank statement date formats to YYYY-MM-DD."""
+    if not raw_date:
+        return None
+    cleaned = re.sub(r'\s+', ' ', str(raw_date).strip())
+    # Strip trailing time if present (e.g. "2026-11-20 14:30:00")
+    cleaned_date_only = cleaned.split(' ')[0] if re.search(r'\d{2}:\d{2}', cleaned) else cleaned
+    for candidate in (cleaned_date_only, cleaned):
+        for fmt in _DATE_FORMATS:
+            try:
+                return datetime.strptime(candidate, fmt).strftime("%Y-%m-%d")
+            except ValueError:
+                continue
+    return None
+
+
+def _parse_amount(raw_val: str) -> float:
+    """Parses currency/amount strings like '₹1,250.50', 'Rs. 200', '(500.00)' into float."""
+    if raw_val is None:
+        return 0.0
+    s = str(raw_val).strip()
+    if not s or s in ("-", "--", "N/A", "na", "null"):
+        return 0.0
+    negative = s.startswith("(") and s.endswith(")")
+    s = re.sub(r'[₹$€£,\s()]', '', s)
+    s = re.sub(r'^(rs\.?|inr|usd|eur|gbp)\s*', '', s, flags=re.IGNORECASE)
+    # Strip trailing Dr/Cr markers
+    s = re.sub(r'(dr|cr)\.?$', '', s, flags=re.IGNORECASE).strip()
+    try:
+        val = float(s)
+        return -val if negative else val
+    except ValueError:
+        return 0.0
+
+
+def parse_bank_statement_csv(csv_text: str) -> dict:
+    """
+    Parses a CSV bank statement (HDFC, SBI, ICICI, Axis, Kotak, or generic CSV)
+    and auto-categorizes every transaction using the trained ML predictor.
+
+    Supports:
+    - Metadata header lines before the actual table header
+    - Separate Debit/Withdrawal and Credit/Deposit columns
+    - Single Amount column + Type/Dr-Cr column, or signed Amount (+/-)
+    - Common date formats normalized to YYYY-MM-DD
+    """
+    import csv
+    import io
+
+    if not csv_text or not csv_text.strip():
+        return {"transactions": [], "total_rows": 0, "skipped_rows": 0, "error": "Empty CSV content."}
+
+    # Strip UTF-8 BOM if present
+    text = csv_text.lstrip("\ufeff").strip()
+    lines = text.splitlines()
+    if not lines:
+        return {"transactions": [], "total_rows": 0, "skipped_rows": 0, "error": "No rows found."}
+
+    # Detect delimiter from non-empty sample
+    sample = "\n".join(lines[:20])
+    delimiter = ","
+    try:
+        dialect = csv.Sniffer().sniff(sample, delimiters=",;\t|")
+        delimiter = dialect.delimiter
+    except csv.Error:
+        delimiter = ","
+
+    all_rows = list(csv.reader(io.StringIO(text), delimiter=delimiter))
+
+    # Locate the header row (skip bank metadata preamble lines)
+    header_idx = None
+    date_keys = ("date", "txn date", "transaction date", "value date", "posting date", "value dt")
+    desc_keys = ("description", "narration", "particulars", "remarks", "details", "merchant", "transaction remarks", "memo")
+    amt_keys = ("amount", "debit", "credit", "withdrawal", "deposit", "withdrawal amt", "deposit amt", "debit amount", "credit amount")
+
+    for i, row in enumerate(all_rows[:25]):
+        norm_cells = [c.strip().lower() for c in row if c and c.strip()]
+        if len(norm_cells) < 3:
+            continue
+        has_date = any(any(dk in c for dk in date_keys) for c in norm_cells)
+        has_desc_or_amt = any(any(k in c for k in desc_keys + amt_keys) for c in norm_cells)
+        if has_date and has_desc_or_amt:
+            header_idx = i
+            break
+
+    if header_idx is None:
+        return {
+            "transactions": [],
+            "total_rows": 0,
+            "skipped_rows": len(all_rows),
+            "error": "Could not detect bank statement columns (expected Date, Description/Narration, and Amount/Debit/Credit)."
+        }
+
+    headers = [h.strip().lower() for h in all_rows[header_idx]]
+
+    def _find_col(candidates: tuple[str, ...]) -> int | None:
+        for cand in candidates:
+            for idx, h in enumerate(headers):
+                if h == cand:
+                    return idx
+        for cand in candidates:
+            for idx, h in enumerate(headers):
+                if cand in h:
+                    return idx
+        return None
+
+    date_col = _find_col(("txn date", "transaction date", "value date", "date", "posting date", "value dt"))
+    desc_col = _find_col(("narration", "particulars", "description", "transaction remarks", "remarks", "details", "merchant", "memo"))
+    debit_col = _find_col(("withdrawal amt", "debit amount", "withdrawal", "debit", "dr"))
+    credit_col = _find_col(("deposit amt", "credit amount", "deposit", "credit", "cr"))
+    amount_col = _find_col(("amount", "txn amount", "transaction amount"))
+    type_col = _find_col(("type", "dr/cr", "cr/dr", "drcr", "transaction type"))
+    cat_col = _find_col(("category",))
+
+    if date_col is None or (debit_col is None and credit_col is None and amount_col is None):
+        return {
+            "transactions": [],
+            "total_rows": 0,
+            "skipped_rows": len(all_rows) - header_idx - 1,
+            "error": "Missing required Date or Amount/Debit/Credit columns in CSV."
+        }
+
+    parsed = []
+    skipped = 0
+
+    for row in all_rows[header_idx + 1:]:
+        if not row or all(not c.strip() for c in row):
+            continue
+
+        def _cell(idx: int | None) -> str:
+            if idx is None or idx >= len(row):
+                return ""
+            return row[idx].strip()
+
+        norm_date = _normalize_date(_cell(date_col))
+        if not norm_date:
+            skipped += 1
+            continue
+
+        description = _cell(desc_col) or "Bank Statement Entry"
+        # Clean excessive whitespace in bank narrations
+        description = re.sub(r'\s+', ' ', description).strip()
+
+        tx_type = "expense"
+        amount = 0.0
+
+        if debit_col is not None or credit_col is not None:
+            debit_amt = _parse_amount(_cell(debit_col))
+            credit_amt = _parse_amount(_cell(credit_col))
+            if credit_amt > 0 and debit_amt <= 0:
+                tx_type = "income"
+                amount = credit_amt
+            elif debit_amt > 0:
+                tx_type = "expense"
+                amount = debit_amt
+            elif amount_col is not None:
+                raw_amt = _parse_amount(_cell(amount_col))
+                amount = abs(raw_amt)
+                if raw_amt > 0 and _cell(type_col).lower() in ("cr", "credit", "income"):
+                    tx_type = "income"
+        elif amount_col is not None:
+            raw_amt_str = _cell(amount_col)
+            raw_amt = _parse_amount(raw_amt_str)
+            t_flag = _cell(type_col).lower()
+            if t_flag in ("cr", "credit", "income", "deposit"):
+                tx_type = "income"
+                amount = abs(raw_amt)
+            elif t_flag in ("dr", "debit", "expense", "withdrawal"):
+                tx_type = "expense"
+                amount = abs(raw_amt)
+            elif raw_amt_str.lower().endswith("cr"):
+                tx_type = "income"
+                amount = abs(raw_amt)
+            elif raw_amt < 0:
+                tx_type = "expense"
+                amount = abs(raw_amt)
+            else:
+                # Positive single-column amount without explicit type -> treat as expense unless income keywords match
+                amount = abs(raw_amt)
+                if any(k in description.lower() for k in ("salary", "stipend", "credit", "refund", "payout", "allowance", "dividend")):
+                    tx_type = "income"
+
+        if amount <= 0:
+            skipped += 1
+            continue
+
+        # Use explicit CSV category only if valid, otherwise run ML predictor
+        explicit_cat = _cell(cat_col)
+        prediction = predict_category(description)
+        if explicit_cat in CATEGORIES:
+            category = explicit_cat
+            confidence = 100.0
+        else:
+            category = prediction["category"]
+            confidence = prediction["confidence"]
+            # If it's an income row and ML picked an expense category with low confidence, map to Salary / Allowance
+            if tx_type == "income" and category not in ("Salary / Allowance", "Freelance / Projects"):
+                if any(k in description.lower() for k in ("freelance", "upwork", "fiverr", "stripe", "razorpay", "client")):
+                    category = "Freelance / Projects"
+                else:
+                    category = "Salary / Allowance"
+
+        parsed.append({
+            "date": norm_date,
+            "type": tx_type,
+            "amount": round(amount, 2),
+            "category": category,
+            "confidence": confidence,
+            "description": description[:200],
+        })
+
+    return {
+        "transactions": parsed,
+        "total_rows": len(parsed),
+        "skipped_rows": skipped,
     }

@@ -838,6 +838,7 @@ window.resetFilters = resetFilters;
 
 // Modal Handlers
 function openAddTransactionModal(presetType = null) {
+    state.manualCategoryOverride = false;
     document.getElementById("tx-id").value = "";
     document.getElementById("modal-title").textContent = "Record Transaction";
     document.getElementById("btn-save-tx").textContent = "Save";
@@ -855,6 +856,7 @@ function openAddTransactionModal(presetType = null) {
 
 function populateTransactionModal(t) {
     if (!t) return;
+    state.manualCategoryOverride = true;
     const idEl = document.getElementById("tx-id");
     const titleEl = document.getElementById("modal-title");
     const saveBtn = document.getElementById("btn-save-tx");
@@ -914,7 +916,7 @@ function selectTxType(type) {
     }
 }
 
-// Live ML Suggestion as user types note
+// Live ML Auto-Categorization as user types note
 function handleDescriptionInput(e) {
     const text = e.target.value.trim();
     const bubble = document.getElementById("ml-suggestion-bubble");
@@ -935,8 +937,23 @@ function handleDescriptionInput(e) {
             const data = await res.json();
             if (data && data.category && data.confidence > 25) {
                 state.suggestedCategory = data.category;
+                const catEl = document.getElementById("tx-category");
+                const sparkleEl = bubble.querySelector(".ai-sparkle");
+                const applyBtn = bubble.querySelector(".btn-apply-suggestion");
+
+                // Auto-apply category when confidence >= 40% and user hasn't manually overridden
+                const autoApplied = !state.manualCategoryOverride && data.confidence >= 40 && catEl;
+                if (autoApplied) {
+                    catEl.value = data.category;
+                    if (sparkleEl) sparkleEl.textContent = "⚡ Auto-applied:";
+                    if (applyBtn) applyBtn.classList.add("hidden");
+                } else {
+                    if (sparkleEl) sparkleEl.textContent = "Suggested:";
+                    if (applyBtn) applyBtn.classList.remove("hidden");
+                }
+
                 document.getElementById("ml-suggested-category").textContent = data.category;
-                document.getElementById("ml-suggested-conf").textContent = `(${data.confidence}% confidence)`;
+                document.getElementById("ml-suggested-conf").textContent = `(${data.confidence}% match)`;
                 bubble.classList.remove("hidden");
             }
         } catch (err) {
@@ -1693,3 +1710,183 @@ function initKeyboardShortcuts() {
         }
     });
 }
+
+
+// ==========================================================================
+// BANK STATEMENT IMPORT & AUTO-CATEGORIZATION
+// ==========================================================================
+
+const STATEMENT_CATEGORIES = [
+    "Food & Dining",
+    "Transportation",
+    "Education",
+    "Housing & Utilities",
+    "Entertainment",
+    "Shopping",
+    "Healthcare",
+    "Salary / Allowance",
+    "Freelance / Projects"
+];
+
+state.parsedStatementRows = [];
+
+function openStatementModal() {
+    state.parsedStatementRows = [];
+    const fileInput = document.getElementById("statement-file-input");
+    if (fileInput) fileInput.value = "";
+    const previewWrap = document.getElementById("statement-preview-wrap");
+    if (previewWrap) previewWrap.classList.add("hidden");
+    const confirmBtn = document.getElementById("btn-confirm-statement-import");
+    if (confirmBtn) confirmBtn.classList.add("hidden");
+    const tbody = document.getElementById("statement-preview-tbody");
+    if (tbody) tbody.innerHTML = "";
+    openModal("statement-modal");
+}
+window.openStatementModal = openStatementModal;
+
+async function handleStatementFileSelect(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    await parseStatementCsvText(text);
+}
+window.handleStatementFileSelect = handleStatementFileSelect;
+
+async function loadSampleBankStatement() {
+    const today = new Date();
+    const fmt = (daysAgo) => {
+        const d = new Date(today);
+        d.setDate(d.getDate() - daysAgo);
+        const dd = String(d.getDate()).padStart(2, "0");
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        return `${dd}/${mm}/${d.getFullYear()}`;
+    };
+
+    const sampleCsv = [
+        "Date,Narration,Debit,Credit",
+        `${fmt(1)},UPI-SWIGGY-ORDER200@okaxis,200.00,`,
+        `${fmt(2)},UPI-ZOMATO-DINNER@okicici,480.00,`,
+        `${fmt(3)},UBER INDIA TRIP MUMBAI,260.00,`,
+        `${fmt(4)},NEFT CR-COMPANY SALARY NOVEMBER,,45000.00`,
+        `${fmt(5)},NETFLIX COM SUBSCRIPTION,499.00,`,
+        `${fmt(6)},BESCOM ELECTRICITY BILL PAYMENT,1450.00,`,
+        `${fmt(7)},APOLLO PHARMACY MEDICINES,390.00,`,
+        `${fmt(8)},AMAZON PAY INDIA SHOPPING,1299.00,`,
+        `${fmt(9)},UPWORK FREELANCE PAYOUT,,12500.00`,
+        `${fmt(10)},UDEMY PYTHON ML COURSE,549.00,`
+    ].join("\n");
+
+    await parseStatementCsvText(sampleCsv);
+}
+window.loadSampleBankStatement = loadSampleBankStatement;
+
+async function parseStatementCsvText(csvText) {
+    try {
+        const res = await apiRequest("/api/transactions/parse-statement", {
+            method: "POST",
+            body: { csv_text: csvText }
+        });
+        state.parsedStatementRows = (res.transactions || []).map((t, idx) => ({
+            ...t,
+            _idx: idx,
+            _selected: true
+        }));
+        renderStatementPreview(res);
+    } catch (err) {
+        // Error surfaced by apiRequest
+    }
+}
+
+function renderStatementPreview(res) {
+    const previewWrap = document.getElementById("statement-preview-wrap");
+    const confirmBtn = document.getElementById("btn-confirm-statement-import");
+    const tbody = document.getElementById("statement-preview-tbody");
+    const badge = document.getElementById("statement-summary-badge");
+
+    if (!state.parsedStatementRows.length) {
+        showToast("No valid transactions found in that CSV.", "warning");
+        return;
+    }
+
+    const s = res.summary || {};
+    if (badge) {
+        badge.textContent = `${state.parsedStatementRows.length} entries parsed • +${state.currency}${(s.total_income || 0).toLocaleString()} / -${state.currency}${(s.total_expense || 0).toLocaleString()}`;
+    }
+
+    tbody.innerHTML = state.parsedStatementRows.map((row, idx) => {
+        const opts = STATEMENT_CATEGORIES.map(c =>
+            `<option value="${escapeHtml(c)}" ${c === row.category ? "selected" : ""}>${escapeHtml(c)}</option>`
+        ).join("");
+        const typeBadge = row.type === "income"
+            ? `<span class="badge badge-income">Income</span>`
+            : `<span class="badge badge-expense">Expense</span>`;
+        const amtClass = row.type === "income" ? "income-text" : "expense-text";
+        const sign = row.type === "income" ? "+" : "-";
+        return `
+            <tr>
+                <td><input type="checkbox" class="stmt-row-check" data-idx="${idx}" ${row._selected ? "checked" : ""} onchange="state.parsedStatementRows[${idx}]._selected = this.checked; updateStatementImportBtnLabel();"></td>
+                <td class="font-mono">${escapeHtml(row.date)}</td>
+                <td style="max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapeHtml(row.description)}">${escapeHtml(row.description)}</td>
+                <td>${typeBadge}</td>
+                <td>
+                    <select class="filter-select" style="padding:3px 6px;font-size:0.78rem;" onchange="state.parsedStatementRows[${idx}].category = this.value;">
+                        ${opts}
+                    </select>
+                    <small style="opacity:0.65;font-size:0.72rem;margin-left:4px;">${row.confidence}%</small>
+                </td>
+                <td class="text-right font-mono ${amtClass}">${sign}${state.currency}${Number(row.amount).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+            </tr>
+        `;
+    }).join("");
+
+    previewWrap.classList.remove("hidden");
+    confirmBtn.classList.remove("hidden");
+    updateStatementImportBtnLabel();
+}
+
+function toggleAllStatementRows(checked) {
+    state.parsedStatementRows.forEach(r => { r._selected = checked; });
+    document.querySelectorAll(".stmt-row-check").forEach(cb => { cb.checked = checked; });
+    const master = document.getElementById("statement-select-all");
+    if (master) master.checked = checked;
+    updateStatementImportBtnLabel();
+}
+window.toggleAllStatementRows = toggleAllStatementRows;
+
+function updateStatementImportBtnLabel() {
+    const confirmBtn = document.getElementById("btn-confirm-statement-import");
+    if (!confirmBtn) return;
+    const count = state.parsedStatementRows.filter(r => r._selected).length;
+    confirmBtn.textContent = `Import ${count} Selected Transaction${count === 1 ? "" : "s"}`;
+    confirmBtn.disabled = count === 0;
+}
+
+async function confirmStatementImport() {
+    const selected = state.parsedStatementRows.filter(r => r._selected);
+    if (!selected.length) {
+        showToast("Select at least one transaction to import.", "warning");
+        return;
+    }
+
+    const btn = document.getElementById("btn-confirm-statement-import");
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Importing…";
+    }
+
+    try {
+        const res = await apiRequest("/api/transactions/import-bulk", {
+            method: "POST",
+            body: { transactions: selected }
+        });
+        closeModal("statement-modal");
+        const extra = res.anomalies_flagged ? ` (${res.anomalies_flagged} outlier alert${res.anomalies_flagged > 1 ? "s" : ""})` : "";
+        showToast(`✅ Imported ${res.imported_count} transactions${extra}!`, "success");
+        await Promise.all([loadDashboardData(), fetchTransactions(), loadBudgets()]);
+    } catch (err) {
+        // Error surfaced by apiRequest
+    } finally {
+        updateStatementImportBtnLabel();
+    }
+}
+window.confirmStatementImport = confirmStatementImport;

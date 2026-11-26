@@ -515,6 +515,112 @@ def remove_transaction(t_id):
     return jsonify({"message": "Transaction deleted successfully"})
 
 
+@app.route("/api/transactions/parse-statement", methods=["POST"])
+@require_auth
+def parse_bank_statement():
+    """Parses an uploaded CSV bank statement and auto-categorizes every transaction."""
+    csv_text = ""
+    if "file" in request.files:
+        uploaded = request.files["file"]
+        raw_bytes = uploaded.read(2 * 1024 * 1024)  # 2 MB cap
+        for encoding in ("utf-8-sig", "utf-8", "latin-1"):
+            try:
+                csv_text = raw_bytes.decode(encoding)
+                break
+            except UnicodeDecodeError:
+                continue
+    else:
+        data = request.get_json(silent=True) or {}
+        csv_text = data.get("csv_text", "")
+
+    if not csv_text or not csv_text.strip():
+        return jsonify({"error": "Please upload a non-empty CSV bank statement."}), 400
+
+    result = ml_engine.parse_bank_statement_csv(csv_text)
+    if result.get("error") and not result.get("transactions"):
+        return jsonify({"error": result["error"]}), 400
+
+    txns = result["transactions"]
+    total_income = round(sum(t["amount"] for t in txns if t["type"] == "income"), 2)
+    total_expense = round(sum(t["amount"] for t in txns if t["type"] == "expense"), 2)
+    result["summary"] = {
+        "total_income": total_income,
+        "total_expense": total_expense,
+        "net": round(total_income - total_expense, 2),
+    }
+    return jsonify(result), 200
+
+
+@app.route("/api/transactions/import-bulk", methods=["POST"])
+@require_auth
+def import_transactions_bulk():
+    """Imports validated bank statement transactions, runs anomaly detection, and trains ML."""
+    data = request.get_json() or {}
+    items = data.get("transactions")
+    if not isinstance(items, list) or not items:
+        return jsonify({"error": "No transactions provided to import."}), 400
+
+    existing_txns = database.get_transactions(request.user_id)
+    imported_count = 0
+    skipped_count = 0
+    anomalies_flagged = 0
+
+    for item in items[:500]:  # Safety cap per batch
+        if not isinstance(item, dict):
+            skipped_count += 1
+            continue
+        type_ = str(item.get("type", "expense")).strip().lower()
+        category = str(item.get("category", "")).strip()
+        date = str(item.get("date", "")).strip()
+        description = str(item.get("description", "")).strip()[:200]
+        try:
+            amount = float(item.get("amount", 0))
+        except (TypeError, ValueError):
+            amount = 0.0
+
+        if type_ not in ("income", "expense") or amount <= 0 or not date or not category:
+            skipped_count += 1
+            continue
+
+        is_anomaly = 0
+        if type_ == "expense":
+            flagged, _ = ml_engine.detect_anomaly(amount, category, existing_txns)
+            if flagged:
+                is_anomaly = 1
+                anomalies_flagged += 1
+
+        new_id = database.add_transaction(
+            user_id=request.user_id,
+            type_=type_,
+            amount=amount,
+            category=category,
+            date=date,
+            description=description,
+            is_anomaly=is_anomaly,
+        )
+        if new_id:
+            imported_count += 1
+            existing_txns.append({
+                "id": new_id,
+                "type": type_,
+                "amount": amount,
+                "category": category,
+                "date": date,
+                "description": description,
+            })
+            if description:
+                ml_engine.train_user_transaction(description, category)
+        else:
+            skipped_count += 1
+
+    return jsonify({
+        "message": f"Imported {imported_count} transactions successfully.",
+        "imported_count": imported_count,
+        "skipped_count": skipped_count,
+        "anomalies_flagged": anomalies_flagged,
+    }), 201
+
+
 # ---------------- BUDGET API ----------------
 
 @app.route("/api/budgets", methods=["GET"])
