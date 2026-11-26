@@ -93,11 +93,19 @@ def require_auth(f):
 
         if supabase_client.is_supabase_enabled():
             user = supabase_client.verify_supabase_token(token)
-            if not user:
-                return jsonify({"error": "Session expired or invalid. Please log in again."}), 401
-            request.user_id = user["id"]
-            request.user_token = token
-            request.user = user
+            if user:
+                request.user_id = user["id"]
+                request.user_token = token
+                request.user = user
+            else:
+                # Allow HMAC-signed local fallback tokens (e.g. when Supabase email rate limit was hit)
+                local_uid = auth.verify_session_token(token)
+                if not local_uid:
+                    return jsonify({"error": "Session expired or invalid. Please log in again."}), 401
+                request.user_id = local_uid
+                request.user_token = None
+                request.is_demo = True  # Routes database.py queries to SQLite
+                request.user = database.get_user_by_id(local_uid) or {"id": local_uid, "name": "User", "currency": "₹"}
         else:
             user_id = auth.verify_session_token(token)
             if not user_id:
@@ -178,7 +186,11 @@ def register():
                 resp.set_cookie("session_token", token, httponly=True, max_age=86400 * 7, samesite="Lax", secure=is_secure)
             return resp, 201
         except Exception as e:
-            return jsonify({"error": str(e)}), 400
+            err_msg = str(e)
+            if "rate limit" not in err_msg.lower():
+                return jsonify({"error": err_msg}), 400
+            # Supabase free-tier email rate limit hit (2 emails/hr) — fall back to local SQLite account
+            database.init_db()
 
     # SQLite fallback
     existing = database.get_user_by_email(email)
@@ -234,6 +246,14 @@ def login():
             resp.set_cookie("session_token", token, httponly=True, max_age=86400 * 7, samesite="Lax", secure=is_secure)
             return resp, 200
         except Exception as e:
+            # Check if account exists in local SQLite fallback before returning 401
+            local_user = database.get_user_by_email(email)
+            if local_user and auth.verify_password(local_user["password_hash"], password):
+                token = auth.generate_session_token(local_user["id"])
+                user = database.get_user_by_id(local_user["id"])
+                resp = jsonify({"message": "Login successful", "user": user, "token": token})
+                resp.set_cookie("session_token", token, httponly=True, max_age=86400 * 7, samesite="Lax", secure=is_secure)
+                return resp, 200
             return jsonify({"error": "Invalid email or password."}), 401
 
     # SQLite fallback
