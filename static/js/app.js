@@ -5,9 +5,10 @@
  */
 
 // Application State
+const _rawStoredToken = localStorage.getItem("moneymap_token") || localStorage.getItem("expenseai_token");
 const state = {
     user: null,
-    token: localStorage.getItem("moneymap_token") || localStorage.getItem("expenseai_token") || null,
+    token: (_rawStoredToken && _rawStoredToken !== "null" && _rawStoredToken !== "undefined") ? _rawStoredToken : null,
     currency: "₹",
     currentView: "dashboard",
     activeTxType: "expense",
@@ -323,7 +324,10 @@ async function handleLogin(e) {
         state.token = res.token;
         state.user = res.user;
         state.currency = res.user.currency || "₹";
+        state.is_demo = false;
+        document.getElementById("demo-banner")?.remove();
         localStorage.setItem("moneymap_token", res.token);
+        closeAuthModal();
         showToast(`Signed in as ${res.user.name}`, "success");
         showMainApp();
         initAppDashboard();
@@ -365,10 +369,20 @@ async function handleRegister(e) {
             method: "POST",
             body: { name, email, password, currency }
         });
+        if (!res.token || res.requires_confirmation) {
+            showToast(res.message || "Account created! Please check your email to confirm, then sign in.", "success");
+            switchAuthTab("login");
+            const loginEmailEl = document.getElementById("login-email");
+            if (loginEmailEl) loginEmailEl.value = email;
+            return;
+        }
         state.token = res.token;
         state.user = res.user;
         state.currency = res.user.currency || "₹";
+        state.is_demo = false;
+        document.getElementById("demo-banner")?.remove();
         localStorage.setItem("moneymap_token", res.token);
+        closeAuthModal();
         showToast(`Welcome, ${res.user.name}! Your account is ready.`, "success");
         showMainApp();
         initAppDashboard();

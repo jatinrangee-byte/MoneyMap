@@ -144,6 +144,18 @@ def register():
             session = getattr(res, "session", None)
             user_id = str(user_obj.id) if user_obj else None
             token = session.access_token if session else None
+
+            # If Supabase didn't attach a session on sign_up, try signing in immediately
+            # (succeeds when email confirmation is disabled; raises if confirmation is required)
+            if not token:
+                try:
+                    login_res = supabase_client.sign_in_user(email, password)
+                    login_session = getattr(login_res, "session", None)
+                    if login_session and getattr(login_session, "access_token", None):
+                        token = login_session.access_token
+                except Exception:
+                    token = None
+
             user_data = {
                 "id": user_id,
                 "name": name,
@@ -157,9 +169,10 @@ def register():
                 except Exception:
                     pass
             resp = jsonify({
-                "message": "Registration successful",
+                "message": "Registration successful" if token else "Account created! Please verify your email before signing in.",
                 "user": user_data,
-                "token": token
+                "token": token,
+                "requires_confirmation": token is None
             })
             if token:
                 resp.set_cookie("session_token", token, httponly=True, max_age=86400 * 7, samesite="Lax", secure=is_secure)
