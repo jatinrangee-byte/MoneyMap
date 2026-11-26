@@ -60,6 +60,46 @@ def generate_session_token(user_id: int, duration_seconds: int = 86400 * 7) -> s
     return f"{payload_b64}.{signature}"
 
 
+def generate_demo_token(user_id: int, duration_seconds: int = 3600) -> str:
+    """Generates an HMAC-signed demo session token (marked demo=true, 1-hour expiry)."""
+    payload = {
+        "uid": user_id,
+        "exp": int(time.time()) + duration_seconds,
+        "rnd": secrets.token_hex(8),
+        "demo": True
+    }
+    payload_str = json.dumps(payload, separators=(',', ':'))
+    payload_b64 = base64.urlsafe_b64encode(payload_str.encode('utf-8')).decode('utf-8')
+    signature = hmac.new(
+        SECRET_KEY.encode('utf-8'),
+        payload_b64.encode('utf-8'),
+        hashlib.sha256
+    ).hexdigest()
+    return f"{payload_b64}.{signature}"
+
+
+def is_demo_token(token: str) -> bool:
+    """Returns True if the token is a valid HMAC-signed demo token (demo=True flag)."""
+    if not token or '.' not in token:
+        return False
+    try:
+        payload_b64, signature = token.split('.', 1)
+        expected_sig = hmac.new(
+            SECRET_KEY.encode('utf-8'),
+            payload_b64.encode('utf-8'),
+            hashlib.sha256
+        ).hexdigest()
+        if not hmac.compare_digest(expected_sig, signature):
+            return False
+        payload_bytes = base64.urlsafe_b64decode(payload_b64.encode('utf-8'))
+        payload = json.loads(payload_bytes.decode('utf-8'))
+        if time.time() > payload.get("exp", 0):
+            return False
+        return bool(payload.get("demo"))
+    except Exception:
+        return False
+
+
 def verify_session_token(token: str) -> int | None:
     """Verifies signature and expiration of session token. Returns user_id if valid."""
     if not token or '.' not in token:

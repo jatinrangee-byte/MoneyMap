@@ -74,6 +74,23 @@ def require_auth(f):
         if not token:
             return jsonify({"error": "Unauthorized. Please log in."}), 401
 
+        # --- Demo token: always verified locally, never via Supabase ---
+        if auth.is_demo_token(token):
+            user_id = auth.verify_session_token(token)
+            if not user_id:
+                return jsonify({"error": "Demo session expired. Please start a new demo."}), 401
+            request.user_id = user_id
+            request.user_token = None   # None → database layer skips Supabase, uses SQLite
+            request.is_demo = True
+            # Provide a lightweight user dict so endpoints that read request.user work
+            request.user = {
+                "id": user_id,
+                "name": "Demo User",
+                "email": "demo@moneymap.app",
+                "currency": "₹"
+            }
+            return f(*args, **kwargs)
+
         if supabase_client.is_supabase_enabled():
             user = supabase_client.verify_supabase_token(token)
             if not user:
@@ -294,8 +311,8 @@ def demo_login():
             except Exception:
                 pass
 
-    # Issue a standard session token
-    token = auth.generate_session_token(user_id)
+    # Issue a demo session token (HMAC-signed, demo=True flag, 1-hour expiry)
+    token = auth.generate_demo_token(user_id)
     user  = database.get_user_by_id(user_id, db_path=db_path) or {
         "id": user_id, "name": DEMO_NAME, "email": DEMO_EMAIL, "currency": DEMO_CURRENCY
     }

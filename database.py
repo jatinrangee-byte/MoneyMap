@@ -20,10 +20,14 @@ except ImportError:
 
 
 def _get_current_jwt(explicit_jwt: Optional[str] = None) -> Optional[str]:
-    """Retrieves current authenticated user's JWT from explicit arg or Flask context."""
+    """Retrieves current authenticated user's JWT from explicit arg or Flask context.
+    Returns None for demo sessions so all queries fall through to SQLite."""
     if explicit_jwt:
         return explicit_jwt
     if has_request_context() and request:
+        # Demo sessions must NOT pass a token to Supabase — force SQLite path
+        if getattr(request, "is_demo", False):
+            return None
         return getattr(request, "user_token", None)
     return None
 
