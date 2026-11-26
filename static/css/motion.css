@@ -1633,3 +1633,121 @@ body.mm-loaded .landing-experience {
 }
 
 
+
+/* ========================================================================
+   SECTION 17 — Demo Session UI
+   ======================================================================== */
+
+/* Header "Try Demo" pill button */
+.nyc-btn-demo {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1.5px solid rgba(255, 183, 0, 0.55);
+    background: rgba(255, 183, 0, 0.08);
+    color: #a07000;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    white-space: nowrap;
+    overflow: hidden;
+}
+[data-theme="dark"] .nyc-btn-demo {
+    border-color: rgba(255, 210, 60, 0.4);
+    background: rgba(255, 210, 60, 0.08);
+    color: #f0be20;
+}
+.nyc-btn-demo:hover {
+    background: rgba(255, 183, 0, 0.18);
+    border-color: rgba(255, 183, 0, 0.8);
+    color: #7a5500;
+}
+[data-theme="dark"] .nyc-btn-demo:hover {
+    background: rgba(255, 210, 60, 0.18);
+    color: #ffd83d;
+}
+
+/* Pulsing beacon dot inside the demo header button */
+.demo-btn-pulse {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #f0a500;
+    box-shadow: 0 0 0 0 rgba(240, 165, 0, 0.6);
+    animation: demo-pulse 1.6s ease-in-out infinite;
+    flex-shrink: 0;
+}
+@keyframes demo-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(240,165,0,0.6); }
+    70%  { box-shadow: 0 0 0 7px rgba(240,165,0,0); }
+    100% { box-shadow: 0 0 0 0 rgba(240,165,0,0); }
+}
+
+/* Hero CTA "Try Demo" button */
+.builder-demo-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 24px;
+    border-radius: 24px;
+    border: 1.5px solid rgba(255,183,0,0.5);
+    background: rgba(255,183,0,0.08);
+    color: #a07000;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+}
+[data-theme="dark"] .builder-demo-btn {
+    border-color: rgba(255,210,60,0.4);
+    background: rgba(255,210,60,0.07);
+    color: #f0be20;
+}
+.builder-demo-btn:hover {
+    background: rgba(255,183,0,0.17);
+    transform: translateY(-1px);
+}
+
+/* Auth modal demo row */
+.auth-demo-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: center;
+}
+.auth-demo-sep {
+    font-size: 0.75rem;
+    color: var(--color-muted, #999);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+.auth-demo-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: 1.5px dashed rgba(255,183,0,0.5);
+    background: transparent;
+    color: #a07000;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, border-style 0.2s;
+}
+[data-theme="dark"] .auth-demo-btn {
+    color: #f0be20;
+    border-color: rgba(255,210,60,0.4);
+}
+.auth-demo-btn:hover {
+    background: rgba(255,183,0,0.1);
+    border-style: solid;
+}

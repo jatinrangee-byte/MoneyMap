@@ -253,6 +253,51 @@ function switchAuthTab(tab) {
     }
 }
 
+// ==========================================================================
+// DEMO SESSION
+// ==========================================================================
+
+async function startDemoSession() {
+    const btns = document.querySelectorAll(".demo-btn");
+    btns.forEach(b => { b.disabled = true; b.textContent = "Loading demo…"; });
+
+    try {
+        const res = await apiRequest("/api/auth/demo", { method: "POST" });
+        state.token     = res.token;
+        state.user      = res.user;
+        state.currency  = res.user.currency || "₹";
+        state.is_demo   = true;
+        localStorage.setItem("moneymap_token", res.token);
+        closeAuthModal();
+        showToast("🎉 Welcome to the demo! Explore MoneyMap with sample data.", "success");
+        showMainApp();
+        initAppDashboard();
+
+        // Show a demo banner inside the app
+        setTimeout(() => {
+            const topBar = document.querySelector(".top-bar .top-bar-left");
+            if (topBar && !document.getElementById("demo-banner")) {
+                const banner = document.createElement("div");
+                banner.id = "demo-banner";
+                banner.style.cssText = `
+                    display:inline-flex;align-items:center;gap:6px;
+                    background:rgba(255,183,0,0.15);border:1px solid rgba(255,183,0,0.4);
+                    border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;
+                    color:#a07000;letter-spacing:.05em;margin-left:12px;cursor:pointer;
+                `;
+                banner.innerHTML = `⚡ DEMO MODE — <span style="text-decoration:underline;cursor:pointer" onclick="openAuthModal('register')">Create Free Account</span>`;
+                topBar.appendChild(banner);
+            }
+        }, 400);
+    } catch (err) {
+        showToast("Could not start demo session. Please try again.", "error");
+    } finally {
+        btns.forEach(b => { b.disabled = false; b.textContent = "Try Demo"; });
+    }
+}
+
+window.startDemoSession = startDemoSession;
+
 async function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById("login-email")?.value.trim();

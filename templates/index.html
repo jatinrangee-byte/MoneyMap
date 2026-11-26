@@ -54,6 +54,9 @@
                 </nav>
 
                 <div class="nyc-header-actions">
+                    <button type="button" class="nyc-btn-demo demo-btn" onclick="startDemoSession()" title="Explore with sample data — no sign-up needed">
+                        <span class="demo-btn-pulse"></span>Try Demo
+                    </button>
                     <button type="button" class="nyc-btn-ghost" onclick="openAuthModal('login')">Sign In</button>
                     <button type="button" class="nyc-btn-register" onclick="openAuthModal('register')">
                         <span>Join MoneyMap</span>
@@ -127,6 +130,10 @@
                             <button type="button" class="builder-primary dotrwt-btn" onclick="openAuthModal('register')">
                                 <span>Start Building Wealth</span>
                                 <span class="material-symbols-outlined btn-glyph">arrow_forward</span>
+                            </button>
+                            <button type="button" class="builder-demo-btn demo-btn" onclick="startDemoSession()" title="Explore with pre-filled sample data">
+                                <span class="material-symbols-outlined btn-glyph" style="font-size:16px">play_circle</span>
+                                <span>Try Demo</span>
                             </button>
                             <a class="builder-secondary dotrwt-btn-secondary" href="#showcase">
                                 <span>Explore Showcase</span>
@@ -728,8 +735,8 @@
                         <button type="button" class="builder-primary" onclick="openAuthModal('register')">
                             Create Free Account
                         </button>
-                        <button type="button" class="builder-secondary" onclick="openAuthModal('login')">
-                            Sign In to Existing Account →
+                        <button type="button" class="builder-secondary demo-btn" onclick="startDemoSession()">
+                            ⚡ Try Demo First →
                         </button>
                     </div>
                 </div>
@@ -840,6 +847,12 @@
 
                 <div class="auth-footer">
                     <span>Enterprise Architecture: Flask · Supabase PostgreSQL · ML Engine · Vercel</span>
+                    <div class="auth-demo-row">
+                        <span class="auth-demo-sep">or</span>
+                        <button type="button" class="auth-demo-btn demo-btn" onclick="startDemoSession()">
+                            <span>⚡ Try Demo — no account needed</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -220,6 +220,97 @@ def login():
 
 
 
+@app.route("/api/auth/demo", methods=["POST"])
+def demo_login():
+    """
+    Instant demo/guest session — no sign-up required.
+    Creates (or reuses) a fixed demo user in SQLite and seeds sample transactions.
+    Returns a session token identical to a real login response.
+    NOTE: Supabase mode falls back to SQLite for the demo user so no Supabase
+    account is needed; demo data is isolated to the fixed demo user ID.
+    """
+    from datetime import timedelta
+    import hashlib
+
+    DEMO_EMAIL    = "demo@moneymap.app"
+    DEMO_PASSWORD = "MoneyMapDemo2026!"
+    DEMO_NAME     = "Demo User"
+    DEMO_CURRENCY = "₹"
+
+    # Always use local SQLite for the demo account (avoids Supabase signup)
+    db_path = database.get_db_path()
+
+    # Ensure schema exists
+    database.init_db(db_path)
+
+    # Get-or-create the demo user
+    existing = database.get_user_by_email(DEMO_EMAIL, db_path=db_path)
+    if existing:
+        user_id = existing["id"]
+    else:
+        pwd_hash = auth.hash_password(DEMO_PASSWORD)
+        user_id = database.create_user(DEMO_NAME, DEMO_EMAIL, pwd_hash, DEMO_CURRENCY, db_path=db_path)
+        if not user_id:
+            return jsonify({"error": "Failed to initialise demo session."}), 500
+
+    # Seed sample transactions only if none exist yet
+    existing_txns = database.get_transactions(user_id, db_path=db_path)
+    if not existing_txns:
+        today = datetime.now()
+        seed_txns = [
+            # Incomes
+            ("income",  52000, "Income",       (today - timedelta(days=1)).strftime("%Y-%m-%d"),  "Stripe Payout — Freelance"),
+            ("income",  15000, "Income",       (today - timedelta(days=10)).strftime("%Y-%m-%d"), "Part-Time Stipend"),
+            # Food
+            ("expense",   320, "Food",         (today - timedelta(days=2)).strftime("%Y-%m-%d"),  "Blue Tokai Coffee"),
+            ("expense",   780, "Food",         (today - timedelta(days=4)).strftime("%Y-%m-%d"),  "Swiggy Dinner"),
+            ("expense",  1200, "Food",         (today - timedelta(days=7)).strftime("%Y-%m-%d"),  "Grocery Run — DMart"),
+            # Transit
+            ("expense",   850, "Transport",    (today - timedelta(days=3)).strftime("%Y-%m-%d"),  "Metro Monthly Pass"),
+            ("expense",   240, "Transport",    (today - timedelta(days=5)).strftime("%Y-%m-%d"),  "Uber Cab"),
+            # Utilities / Bills
+            ("expense",  1800, "Utilities",    (today - timedelta(days=6)).strftime("%Y-%m-%d"),  "Electricity Bill"),
+            ("expense",   499, "Entertainment",(today - timedelta(days=8)).strftime("%Y-%m-%d"),  "Netflix Premium"),
+            ("expense",   299, "Entertainment",(today - timedelta(days=9)).strftime("%Y-%m-%d"),  "Spotify Premium"),
+            # Anomaly (high spike — triggers Aura guard)
+            ("expense",  4200, "Technology",   (today - timedelta(days=11)).strftime("%Y-%m-%d"), "AWS Cloud Hosting"),
+            # Savings / Investment
+            ("income",   8000, "Income",       (today - timedelta(days=12)).strftime("%Y-%m-%d"), "Referral Bonus"),
+            ("expense",  3000, "Healthcare",   (today - timedelta(days=13)).strftime("%Y-%m-%d"), "Annual Health Checkup"),
+            ("expense",   650, "Shopping",     (today - timedelta(days=14)).strftime("%Y-%m-%d"), "Amazon — Books"),
+            ("expense",  1100, "Food",         (today - timedelta(days=15)).strftime("%Y-%m-%d"), "Weekend Outing — Cafe"),
+        ]
+        for t_type, amount, category, date, desc in seed_txns:
+            try:
+                database.add_transaction(user_id, t_type, amount, category, date, desc, db_path=db_path)
+            except Exception:
+                pass
+
+        # Seed a sample budget
+        month_year = today.strftime("%Y-%m")
+        for cat, limit in [("Food", 5000), ("Transport", 3000), ("Entertainment", 1500)]:
+            try:
+                database.set_budget(user_id, cat, limit, month_year, db_path=db_path)
+            except Exception:
+                pass
+
+    # Issue a standard session token
+    token = auth.generate_session_token(user_id)
+    user  = database.get_user_by_id(user_id, db_path=db_path) or {
+        "id": user_id, "name": DEMO_NAME, "email": DEMO_EMAIL, "currency": DEMO_CURRENCY
+    }
+
+    is_secure = os.environ.get("VERCEL") is not None
+    resp = jsonify({
+        "message": "Demo session started",
+        "user":    user,
+        "token":   token,
+        "is_demo": True
+    })
+    resp.set_cookie("session_token", token, httponly=True, max_age=3600, samesite="Lax", secure=is_secure)
+    return resp, 200
+
+
 @app.route("/api/auth/logout", methods=["POST"])
 def logout():
     resp = jsonify({"message": "Logged out successfully"})
